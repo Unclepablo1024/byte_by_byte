@@ -1,41 +1,82 @@
-
-
 import pygame
 
+
 class MainCharacter(pygame.sprite.Sprite):
-    def __init__(self, picture_path):
+    def __init__(self, idle_picture_path, walk_gif_path, jump_gif_path, run_gif_path):
         super().__init__()
-        self.sprites = []
-        self.load_sprite_sheet(picture_path)
-        self.image = self.sprites[0]
+        self.idle_image = pygame.image.load(idle_picture_path).convert_alpha()
+        self.walk_frames = self.load_gif_frames(walk_gif_path)
+        self.jump_frames = self.load_gif_frames(jump_gif_path)
+        self.run_frames = self.load_gif_frames(run_gif_path)
+        self.image = self.idle_image
         self.rect = self.image.get_rect()
         self.rect.topleft = (50, 100)  # Initial position
         self.last_update = pygame.time.get_ticks()
-        self.frame_rate = 0.1  # Milliseconds per frame
+        self.frame_rate = 100  # Milliseconds per frame
         self.current_frame = 0
+        self.is_walking = False
+        self.is_jumping = False
+        self.is_running = False
+        self.vertical_velocity = 0
+        self.gravity = 1  # Gravity force
+        self.jump_strength = -15  # Initial jump force
+        self.ground_level = 200  # Y position of the ground
 
-    def load_sprite_sheet(self, picture_path):
-        sprite_sheet = pygame.image.load(picture_path).convert_alpha()
-        sheet_width, sheet_height = sprite_sheet.get_size()
+    def load_gif_frames(self, gif_path):
+        gif = pygame.image.load(gif_path).convert_alpha()
+        gif_width, gif_height = gif.get_size()
+        frame_height = gif_height
+        frames = []
 
-        # Assuming all frames are in a single row
-        num_frames = 6  # Number of frames in the sprite sheet
-        frame_width = sheet_width // num_frames
-        frame_height = sheet_height
+        for i in range(gif_width // frame_height):
+            frame_rect = pygame.Rect(i * frame_height, 0, frame_height, frame_height)
+            frame = gif.subsurface(frame_rect)
+            frames.append(frame)
 
-        for i in range(num_frames):
-            frame_x = i * frame_width
-            frame_rect = pygame.Rect(frame_x, 0, frame_width, frame_height)
-            frame = sprite_sheet.subsurface(frame_rect)
-            self.sprites.append(frame)
+        return frames
 
     def update(self):
         now = pygame.time.get_ticks()
-        if now - self.last_update > self.frame_rate:
-            self.last_update = now
-            self.current_frame = (self.current_frame + 1) % len(self.sprites)
-            self.image = self.sprites[self.current_frame]
+        if self.is_jumping:
+            self.vertical_velocity += self.gravity
+            self.rect.y += self.vertical_velocity
+
+            if self.rect.y >= self.ground_level:
+                self.rect.y = self.ground_level
+                self.is_jumping = False
+                self.vertical_velocity = 0
+
+            if now - self.last_update > self.frame_rate:
+                self.last_update = now
+                self.current_frame = (self.current_frame + 1) % len(self.jump_frames)
+                self.image = self.jump_frames[self.current_frame]
+        elif self.is_running:
+            if now - self.last_update > self.frame_rate:
+                self.last_update = now
+                self.current_frame = (self.current_frame + 1) % len(self.run_frames)
+                self.image = self.run_frames[self.current_frame]
+        elif self.is_walking:
+            if now - self.last_update > self.frame_rate:
+                self.last_update = now
+                self.current_frame = (self.current_frame + 1) % len(self.walk_frames)
+                self.image = self.walk_frames[self.current_frame]
+        else:
+            self.image = self.idle_image
 
     def move(self, dx, dy):
         self.rect.x += dx
-        self.rect.y += dy
+        if not self.is_jumping:
+            self.rect.y += dy
+
+    def set_walking(self, walking):
+        self.is_walking = walking
+
+    def set_running(self, running):
+        self.is_running = running
+
+    def jump(self):
+        if not self.is_jumping:
+            self.is_jumping = True
+            self.current_frame = 0
+            self.image = self.jump_frames[self.current_frame]
+            self.vertical_velocity = self.jump_strength
