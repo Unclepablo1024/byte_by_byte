@@ -2,6 +2,7 @@ import pygame
 import sys
 from pygame.locals import *
 from character import MainCharacter
+from background import Background
 
 
 class Game:
@@ -17,7 +18,12 @@ class Game:
             "sprites/Gangsters_2/Jump.png",
             "sprites/Gangsters_2/Run.png"  # Update sprint animation path
         )
+
+        self.background = Background("sprites/backgrounds/City2_pale.png", (800, 600))
         self.character_group = pygame.sprite.Group(self.character)
+
+        #Movement Speed
+        self.scroll_speed = 5
 
     def run(self):
         while self.running:
@@ -40,10 +46,10 @@ class Game:
         running = False
         dx, dy = 0, 0
         if keys[K_LEFT]:
-            dx = -4
+            dx = -2
             moving = True
         if keys[K_RIGHT]:
-            dx = 4
+            dx = 2
             moving = True
         if keys[K_UP] and not self.character.is_jumping:
             self.character.jump()
@@ -58,10 +64,17 @@ class Game:
         self.character.move(dx, dy)
 
     def update(self):
+        keys = pygame.key.get_pressed()
+        dx = 0
+        if keys[K_RIGHT]:
+            dx = self.scroll_speed
+
+        self.background.update(dx)
         self.character.update()
 
     def draw(self):
         self.surface.fill((0, 0, 0))  # Clear the screen with black
+        self.background.draw(self.surface) #Loading first map into the game
         self.character_group.draw(self.surface)  # Draw the character group on the surface
         pygame.display.flip()  # Update the display
 
