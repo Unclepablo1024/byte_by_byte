@@ -1,6 +1,8 @@
-import pygame, sys
+import pygame
+import sys
 from pygame.locals import *
 from character import MainCharacter
+
 
 class Game:
     def __init__(self):
@@ -9,7 +11,12 @@ class Game:
         self.surface = pygame.display.set_mode((800, 600))
         pygame.display.set_caption("Byte by Byte")
         self.clock = pygame.time.Clock()
-        self.character = MainCharacter("sprites/Gangsters_2/Idle.png")
+        self.character = MainCharacter(
+            "sprites/Gangsters_2/Idlefix.png",
+            "sprites/Gangsters_2/Walk.png",
+            "sprites/Gangsters_2/Jump.png",
+            "sprites/Gangsters_2/Run.png"  # Update sprint animation path
+        )
         self.character_group = pygame.sprite.Group(self.character)
 
     def run(self):
@@ -27,15 +34,28 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
-            elif event.type == KEYDOWN:
-                if event.key == K_UP:
-                    self.character.move(0, -5)
-                elif event.key == K_DOWN:
-                    self.character.move(0, 5)
-                elif event.key == K_LEFT:
-                    self.character.move(-5, 0)
-                elif event.key == K_RIGHT:
-                    self.character.move(5, 0)
+
+        keys = pygame.key.get_pressed()
+        moving = False
+        running = False
+        dx, dy = 0, 0
+        if keys[K_LEFT]:
+            dx = -4
+            moving = True
+        if keys[K_RIGHT]:
+            dx = 4
+            moving = True
+        if keys[K_UP] and not self.character.is_jumping:
+            self.character.jump()
+            moving = True
+        if keys[K_LSHIFT] or keys[K_RSHIFT]:
+            if keys[K_LEFT] or keys[K_RIGHT]:
+                running = True
+                dx *= 2  # Increase the speed while sprinting
+
+        self.character.set_running(running)
+        self.character.set_walking(moving and not self.character.is_jumping and not running)
+        self.character.move(dx, dy)
 
     def update(self):
         self.character.update()
@@ -45,9 +65,11 @@ class Game:
         self.character_group.draw(self.surface)  # Draw the character group on the surface
         pygame.display.flip()  # Update the display
 
+
 def main():
     game = Game()
     game.run()
+
 
 if __name__ == '__main__':
     main()
