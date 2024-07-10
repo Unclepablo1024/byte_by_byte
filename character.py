@@ -20,7 +20,7 @@ class MainCharacter(pygame.sprite.Sprite):
         self.vertical_velocity = 0
         self.gravity = 1  # Gravity force
         self.jump_strength = -15  # Initial jump force
-        self.ground_level = 200  # Y position of the ground
+        self.ground_level = 420  # Y position of the ground
 
     def load_gif_frames(self, gif_path):
         gif = pygame.image.load(gif_path).convert_alpha()
