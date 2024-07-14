@@ -10,7 +10,6 @@ class MainCharacter(pygame.sprite.Sprite):
         self.run_frames = self.load_gif_frames(run_gif_path)
         self.image = self.idle_image
         self.rect = self.image.get_rect()
-        self.rect.topleft = (50, 100)  # Initial position
         self.last_update = pygame.time.get_ticks()
         self.frame_rate = 100  # Milliseconds per frame
         self.current_frame = 0
@@ -20,7 +19,10 @@ class MainCharacter(pygame.sprite.Sprite):
         self.vertical_velocity = 0
         self.gravity = 1  # Gravity force
         self.jump_strength = -15  # Initial jump force
-        self.ground_level = 420  # Y position of the ground
+        self.ground_level = 430 # Y position of the ground
+        self.rect.topleft = (50, self.ground_level)  # Initial position
+        self.screen_width = 800  # Screen width
+        self.screen_height = 600  # Screen height
 
     def load_gif_frames(self, gif_path):
         gif = pygame.image.load(gif_path).convert_alpha()
@@ -63,10 +65,15 @@ class MainCharacter(pygame.sprite.Sprite):
         else:
             self.image = self.idle_image
 
-    def move(self, dx, dy):
-        self.rect.x += dx
-        if not self.is_jumping:
-            self.rect.y += dy
+    def move(self, dx, dy): 
+        new_x = self.rect.x + dx
+        new_y = self.rect.y + dy
+
+        # Check boundaries for the character
+        if 0 <= new_x <= self.screen_width - self.rect.width:
+            self.rect.x = new_x
+        if 0 <= new_y <= self.ground_level:
+            self.rect.y = new_y
 
     def set_walking(self, walking):
         self.is_walking = walking

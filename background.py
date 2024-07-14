@@ -1,36 +1,3 @@
-# # import pygame
-
-# # #Adds the background for first level
-
-# # class Background:
-# #     def __init__(self, image_path, size):
-# #         self.image = pygame.image.load(image_path).convert_alpha()
-# #         self.image = pygame.transform.scale(self.image, size)
-# #         self.rect = self.image.get_rect()
-# #         self.rect.topleft = (0, 0)
-
-# #     def draw(self, surface):
-# #         surface.blit(self.image, self.rect.topleft)
-
-# import pygame
-
-# class Background:
-#     def __init__(self, image_path, size):
-#         self.image = pygame.image.load(image_path).convert_alpha()
-#         self.image = pygame.transform.scale(self.image, size)
-#         self.rect = self.image.get_rect()
-#         self.rect.topleft = (0, 0)
-#         self.size = size
-
-#     def update(self, dx):
-#         self.rect.x -= dx
-#         if self.rect.x <= -self.size[0]:
-#             self.rect.x = 0
-
-#     def draw(self, surface):
-#         surface.blit(self.image, self.rect.topleft)
-#         surface.blit(self.image, (self.rect.x + self.size[0], self.rect.y))
-
 import pygame
 
 class Background:
