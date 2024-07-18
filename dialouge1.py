@@ -1,70 +1,121 @@
+import sys
 import pygame
 from pygame.locals import *
 import os
+from character import MainCharacter
+from background import Background
+from healthbar import HealthBar
 
+class Game:
+    def __init__(self):
+        pygame.init()
+        pygame.font.init()
+        self.running = True
+        self.surface = pygame.display.set_mode((800, 600))
+        pygame.display.set_caption("Byte by Byte")
+        self.clock = pygame.time.Clock()
+        self.character = MainCharacter(
+        "sprites/Gangsters_2/Idlefix.png",
+        "sprites/Gangsters_2/Walk.png",
+        "sprites/Gangsters_2/Jump.png",
+        "sprites/Gangsters_2/Run.png",
+        "sprites/Gangsters_2/Hurt.png",
+        "sprites/Gangsters_2/Dead.png"
+    )
 
-#Not needed os.chdir(os.path.dirname(os.path.abspath(__file__)))
-pygame.init()
+# Define Screen
+        self.background = Background("sprites/backgrounds/City2_pale.png", (800, 600))
+        self.character_group = pygame.sprite.Group(self.character)
 
-# Set up the game window
-screen_width, screen_height = 800, 600
-screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("Byte By Byte")
+        # Health Bar
+        self.health_bar = HealthBar(100, 200, 20, 600 - 30, 10, (0, 255, 0))
 
-# Define colors of Screen
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-GRAY = (128, 128, 128)
+        # Movement Speed
+        self.scroll_speed = 5
+        self.font = pygame.font.SysFont('Arial', 24)
 
-# Player properties
-player_x = 400
-player_y = 500
-player_speed = 5
+    def run(self):
+        while self.running:
+            self.handle_events()
+            self.update()
+            self.draw()
+            self.clock.tick(60)
 
-# Enemy properties
-enemy_x = 400
-enemy_y = 100
-enemy_speed = 3
+        pygame.quit()
+        sys.exit()
 
-running = True
-clock = pygame.time.Clock()
+    def handle_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
+
+            keys = pygame.key.get_pressed()
+            moving = False
+            running = False
+            dx, dy = 0, 0
+            if keys[K_LEFT]:
+                dx = -2
+                moving = True
+            if keys[K_RIGHT]:
+                dx = 2
+                moving = True
+            if keys[K_UP] and not self.character.is_jumping:
+                self.character.jump()
+                moving = True
+            if keys[K_LSHIFT] or keys[K_RSHIFT]:
+                if keys[K_LEFT] or keys[K_RIGHT]:
+                    running = True
+                    dx *= 2  # Increase the speed while sprinting
+            if keys[K_h]:
+                self.character.hurt()
+                self.health_bar.update_health(-5)
+                if self.health_bar.current_health <= 0:
+                    self.character.die()
+            self.character.set_running(running)
+            self.character.set_walking(moving and not self.character.is_jumping and not running)
+            self.character.move(dx, dy)
+
+    def update(self):
+        keys = pygame.key.get_pressed()
+        dx = 0
+        if keys[K_RIGHT] and not self.character.is_dead:
+            dx = self.scroll_speed
+
+            self.background.update(dx)
+            self.character.update()
 
 #Dialouge Box
-image_path = os.path.join('sprites', 'Dialouge', 'Dialouge boxes', 'Dialouge1ish.png')
+    def draw(self):
+        self.surface.fill((0, 0, 0))  # Clear the screen with black
+        self.background.draw(self.surface)  # Draw the background
+        self.character_group.draw(self.surface)  # Draw the character group
 
-dialouge_box = pygame.image.load(image_path)
+    # Draw the health bar
+        self.health_bar.draw(self.surface)
 
-while running:
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            running = False
+    # Draw the dialogue box
+        image_path = os.path.join('sprites', 'Dialouge', 'Dialouge boxes', 'BetterDialouge1.png')
+        dialouge_box = pygame.image.load(image_path)
+        self.surface.blit(dialouge_box,(100,100))
+        dialouge_text = "Greetings Player!"
 
-    keys = pygame.key.get_pressed()
+    #Font and text
+        text_surface = self.render_text(dialouge_text, (255, 255, 255))  # White color
+        self.surface.blit(text_surface, (150, 125))  # Adjust the position as needed
+        #Font of the text
+        pygame.display.flip()
+    def render_text(self,text, color):
+        text_surface = self.font.render(text, True, color)
+        return text_surface
 
-    # Player movement
-    if keys[K_LEFT] and player_x > 0:
-        player_x -= player_speed
-    if keys[K_RIGHT] and player_x < screen_width - 50:
-        player_x += player_speed
+def main():
+    game = Game()
+    game.run()
 
-    # Update enemy position
-    enemy_y += enemy_speed
-    if enemy_y > screen_height:
-        enemy_y = -50
+if __name__ == '__main__':
+    main()
 
-    # Check collision
-    # if pygame.Rect(player_x, player_y, 50, 50).colliderect(pygame.Rect(enemy_x, enemy_y, 50, 50)):
-    #     screen.fill(BLACK)
-    #     draw_dialogue_box(screen, "Collision detected!")
-    #     pygame.display.flip()
-    #     pygame.time.wait(2000)  # Wait for 2 seconds
-    #     running = False
-
-    screen.fill(BLACK)
-    pygame.draw.rect(screen, WHITE, (player_x, player_y, 50, 50))
-    pygame.draw.rect(screen, WHITE, (enemy_x, enemy_y, 50, 50))
-    screen.blit(dialouge_box, (100, 100))
     pygame.display.flip()
-    clock.tick(60)
 
-pygame.quit()
+
+
