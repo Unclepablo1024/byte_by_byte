@@ -1,6 +1,5 @@
 import pygame
 import os
-import sys
 
 class Dialogue:
     def __init__(self, surface):
@@ -8,7 +7,7 @@ class Dialogue:
         self.font = pygame.font.Font(None, 32)
     def draw(self):
         self.surface.fill((0, 0, 0))
-        self.draw_dialogue_box("Greettings Player! ", (100, 100))
+        self.draw_dialogue_box("Greetings Player! ", (100, 100))
         pygame.display.flip()
 
     # Draw the dialogue box
@@ -25,6 +24,4 @@ class Dialogue:
     def render_text(self, text, color):
         text_surface = self.font.render(text, True, color)
         return text_surface
-
-#it works :))
 
