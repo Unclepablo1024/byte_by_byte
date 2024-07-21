@@ -146,3 +146,13 @@ class MainCharacter(pygame.sprite.Sprite):
         self.is_dead = True
         self.current_frame = 0
         self.image = self.die_frames[self.current_frame]
+
+    def revive(self):
+        self.is_dead = False
+        self.image = self.idle_image
+        self.rect.topleft = (100, 430)  # Reset to starting position or any appropriate position
+        # Reset other necessary states here
+        
+    def reset(self):
+        self.is_dead = False
+        self.rect.bottom = 560

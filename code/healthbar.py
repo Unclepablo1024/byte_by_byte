@@ -13,6 +13,12 @@ class HealthBar:
 
     def update_health(self, amount):
         self.current_health = max(0, min(self.max_health, self.current_health + amount))
+    
+    def reset(self):
+        self.current_health = self.max_health
+    
+    def is_depleted(self):
+        return self.current_health <= 0
 
     def draw(self, screen):
         # Draw the background bar
@@ -20,3 +26,12 @@ class HealthBar:
         # Draw the current health bar
         current_width = self.width * (self.current_health / self.max_health)
         pygame.draw.rect(screen, self.color, (self.x, self.y, current_width, self.height))
+
+class LifeIcon:
+    def __init__(self, x, y, width, height, image_path):
+        self.rect = pygame.Rect(x, y, width, height)
+        self.image = pygame.image.load(image_path).convert_alpha()
+        self.image = pygame.transform.scale(self.image, (width, height))
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)

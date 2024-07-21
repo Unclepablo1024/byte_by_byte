@@ -4,7 +4,7 @@ import random
 from pygame.locals import *
 from enemy import Enemy
 from background import Background
-from healthbar import HealthBar
+from healthbar import HealthBar, LifeIcon
 from music import MusicPlayer
 from character import MainCharacter
 from dialog import DialogBox
@@ -12,10 +12,19 @@ from dialog import DialogBox
 class Game:
     def __init__(self):
         pygame.init()
-        self.running = True
         self.surface = pygame.display.set_mode((800, 600))
         pygame.display.set_caption("Byte by Byte")
         self.clock = pygame.time.Clock()
+        self.running = True
+        self.init_resources()
+        self.restart_game()
+
+    def init_resources(self):
+        self.music_player = MusicPlayer()
+        self.dialog_box = DialogBox(self.surface, 600, 150)
+        self.death_sound = pygame.mixer.Sound("../audio/pain-scream.wav")
+
+    def restart_game(self):
         self.character = MainCharacter(
             "../sprites/Gangsters_2/Idlefix.png",
             "../sprites/Gangsters_2/Walk.png",
@@ -30,15 +39,30 @@ class Game:
         self.enemy_group = pygame.sprite.Group()
         self.ground_level = 430
 
-        self.health_bar = HealthBar(100, 200, 20, 600 - 30, 10, (0, 255, 0))
-        self.scroll_speed = 5
-        self.music_player = MusicPlayer()
-        self.spawned_enemies = []
-        self.enemy_spawn_timer = pygame.time.get_ticks()
-        self.dialog_box = DialogBox(self.surface, 600, 150)
-        self.dialog_cooldown = 0
-        self.dialog_cooldown_time = 3000  # 3秒冷却时间
+        self.health_bar = HealthBar(100, 200, 20, 600 - 30, 30, (0, 255, 0))
+        self.life_icons = []
+        life_icon_path = "../sprites/life_icon.png"
+        life_icon_size = 52  
+        life_icon_spacing = 2 
 
+        health_bar_x = self.health_bar.x
+        health_bar_y = self.health_bar.y
+        health_bar_height = self.health_bar.height
+
+        for i in range(3):
+            icon_x = health_bar_x + i * (life_icon_size + life_icon_spacing)
+            icon_y = health_bar_y - health_bar_height - 20
+            icon = LifeIcon(icon_x, icon_y, life_icon_size, life_icon_size, life_icon_path)
+            self.life_icons.append(icon)
+        
+        self.lives = 3
+        self.scroll_speed = 5
+        self.dialog_cooldown = 0
+        self.dialog_cooldown_time = 2000  # 2sec cooldown
+        self.death_timer = None  # initialize death timer
+        # self.spawned_enemies = []
+        # self.enemy_spawn_timer = 
+    
     def run(self):
         self.music_player.play_main_music()
         while self.running:
@@ -67,9 +91,9 @@ class Game:
     def handle_player_input(self, event):
         if event.key == pygame.K_h:
             self.character.hurt()
-            self.health_bar.update_health(-5)
+            self.health_bar.update_health(-5)  # Decrease health by 5 units
             if self.health_bar.current_health <= 0:
-                self.character.die()
+                self.handle_character_death()
 
     def handle_continuous_input(self):
         keys = pygame.key.get_pressed()
@@ -88,16 +112,27 @@ class Game:
         if keys[K_LSHIFT] or keys[K_RSHIFT]:
             if keys[K_LEFT] or keys[K_RIGHT]:
                 running = True
-                dx *= 2
+                dx *= 2  # Increase the speed while sprinting
 
         self.character.set_running(running)
         self.character.set_walking(moving and not self.character.is_jumping and not running)
         self.character.move(dx, dy)
 
-    def show_dialog(self, text):
-        if not self.dialog_box.active:
-            self.dialog_box.show(text)
-            print(f"Dialog shown: {text}")  # Debug print
+    def revive_character(self):
+        self.character.revive()
+        self.health_bar.reset()
+        self.death_timer = None
+        
+    def handle_character_death(self):
+        if not self.character.is_dead:
+            print("Character is dying")  # Debug print
+            self.lives -= 1
+            self.character.die()
+            self.death_sound.play()  # Play death sound here
+            if self.lives > 0:
+                self.death_timer = pygame.time.get_ticks()
+            else:
+                self.death_timer = pygame.time.get_ticks() + 1000  # Additional time to show death animation
 
     def update(self):
         if not self.dialog_box.active:
@@ -110,11 +145,11 @@ class Game:
             self.all_sprites.update()
 
             now = pygame.time.get_ticks()
-            if now - self.enemy_spawn_timer > 3000:
-                self.spawn_enemy()
-                self.enemy_spawn_timer = now
+            # if now - self.enemy_spawn_timer > 3000:
+            #     self.spawn_enemy()
+            #     self.enemy_spawn_timer = now
 
-            # 更新对话框冷却时间
+            # update cooldown time
             if self.dialog_cooldown > 0:
                 self.dialog_cooldown -= self.clock.get_time()
                 if self.dialog_cooldown < 0:
@@ -130,6 +165,16 @@ class Game:
             for enemy in self.enemy_group:
                 if enemy.rect.right < 0:
                     enemy.kill()
+
+            if self.health_bar.is_depleted() and not self.character.is_dead:
+                self.handle_character_death()
+
+            if self.character.is_dead:
+                current_time = pygame.time.get_ticks()
+                if self.lives > 0 and current_time - self.death_timer >= 1000:  # 1000 milliseconds = 3 seconds
+                    self.revive_character()
+                elif self.lives == 0 and current_time - self.death_timer >= 1000:  # 1 second delay before game over
+                    self.game_over()
 
     def spawn_enemy(self):
         available_types = ["Homeless_1", "Homeless_2", "Homeless_3"]
@@ -147,8 +192,42 @@ class Game:
         self.background.draw(self.surface)
         self.all_sprites.draw(self.surface)
         self.health_bar.draw(self.surface)
+        for i in range(self.lives):
+            self.life_icons[i].draw(self.surface)
         self.dialog_box.draw()
         pygame.display.flip()
+        
+    def game_over(self):
+        print("Game Over")  # Debug print
+        font = pygame.font.Font(None, 160)
+        text = font.render('GAME OVER', True, (255, 0, 0))
+        text_rect = text.get_rect(center=(self.surface.get_width() / 2, self.surface.get_height() / 2))
+        self.surface.blit(text, text_rect)
+        pygame.display.flip()
+        pygame.time.wait(500)  # Wait for 0.5 second
+        # Ask if the user wants to play again
+        self.ask_to_play_again()
+
+    def ask_to_play_again(self):
+        font = pygame.font.Font(None, 60)
+        text = font.render('Do you want to play again? (Y/N)', True, (255, 255, 255))
+        text_rect = text.get_rect(center=(self.surface.get_width() / 2, self.surface.get_height() / 2 + 100))
+        self.surface.blit(text, text_rect)
+        pygame.display.flip()
+
+        waiting_for_input = True
+        while waiting_for_input:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    waiting_for_input = False
+                    self.running = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_y:
+                        waiting_for_input = False
+                        self.restart_game()
+                    elif event.key == pygame.K_n:
+                        waiting_for_input = False
+                        self.running = False
 
 def main():
     try:
@@ -161,5 +240,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-    
