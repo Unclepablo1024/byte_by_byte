@@ -5,34 +5,36 @@ from character import MainCharacter
 from background import Background
 from healthbar import HealthBar
 from dialogue import Dialogue
+import config
 
 class Game:
     def __init__(self):
         pygame.init()
         self.running = True
-        self.surface = pygame.display.set_mode((800, 600))
+        self.surface = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
         pygame.display.set_caption("Byte by Byte")
         self.clock = pygame.time.Clock()
         self.character = MainCharacter(
-            "sprites/Gangsters_2/Idlefix.png",
-            "sprites/Gangsters_2/Walk.png",
-            "sprites/Gangsters_2/Jump.png",
-            "sprites/Gangsters_2/Run.png",
-            "sprites/Gangsters_2/Hurt.png",
-            "sprites/Gangsters_2/Dead.png"
+            config.IDLE_PICTURE_PATH,
+            config.WALK_GIF_PATH,
+            config.JUMP_GIF_PATH,
+            config.RUN_GIF_PATH,
+            config.HURT_GIF_PATH,
+            config.DIE_GIF_PATH
         )
 
-        self.background = Background("sprites/backgrounds/City2_pale.png", (800, 600))
+        self.background = Background(config.BACKGROUND_IMAGE_PATH, config.BACKGROUND_SIZE)
         self.character_group = pygame.sprite.Group(self.character)
 
         # Dialogue Box
-        self.dialogue = Dialogue(self.surface)
+        self.dialogue = Dialogue(self.surface, config.DIALOGUE_FONT_SIZE)
 
         # Health Bar
-        self.health_bar = HealthBar(100, 200, 20, 600 - 30, 10, (0, 255, 0))
+        self.health_bar = HealthBar(100, config.HEALTH_BAR_WIDTH, config.HEALTH_BAR_HEIGHT, 
+        config.HEALTH_BAR_X, config.HEALTH_BAR_Y, config.HEALTH_BAR_COLOR)
 
         # Movement Speed
-        self.scroll_speed = 5
+        self.scroll_speed = config.SCROLL_SPEED
 
         #Dialogue Visibility
         self.show_dialogue = False
@@ -58,10 +60,10 @@ class Game:
         running = False
         dx, dy = 0, 0
         if keys[K_LEFT]:
-            dx = -2
+            dx = -config.SCROLL_SPEED
             moving = True
         if keys[K_RIGHT]:
-            dx = 2
+            dx = config.SCROLL_SPEED
             moving = True
         if keys[K_UP] and not self.character.is_jumping:
             self.character.jump()
@@ -69,7 +71,7 @@ class Game:
         if keys[K_LSHIFT] or keys[K_RSHIFT]:
             if keys[K_LEFT] or keys[K_RIGHT]:
                 running = True
-                dx *= 2  # Increase the speed while sprinting
+                dx *= config.RUN_SPEED_MULTIPLIER  # Increase the speed while sprinting
         if keys[K_h]:
             self.character.hurt()
             self.health_bar.update_health(-5)

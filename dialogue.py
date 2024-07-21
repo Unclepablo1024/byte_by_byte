@@ -1,11 +1,14 @@
 import pygame
 import os
+import config
 
 
 class Dialogue:
-    def __init__(self, surface):
+    def __init__(self, surface, font_size = config.DIALOGUE_FONT_SIZE):
         self.surface = surface  # Clear the screen with black
-        self.font = pygame.font.Font(None, 32)
+        self.font = pygame.font.Font(None, font_size)
+        self.dialogue_box_image_path = config.DIALOGUE_BOX_IMAGE_PATH
+        self.text_color = config.DIALOGUE_TEXT_COLOR
 
     def draw(self):
         self.draw_dialogue_box("Greetings Player!",(100, 100))
@@ -13,8 +16,7 @@ class Dialogue:
 
     # Draw the dialogue box
     def draw_dialogue_box(self, dialogue_text, position):
-        image_path = os.path.join('sprites', 'Dialouge', 'Dialouge boxes', 'BetterDialouge1.png')
-        dialogue_box = pygame.image.load(image_path).convert_alpha()
+        dialogue_box = pygame.image.load(self.dialogue_box_image_path).convert_alpha()
         self.surface.blit(dialogue_box, position)
 
         # Font of text
