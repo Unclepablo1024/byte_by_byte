@@ -1,7 +1,8 @@
 import pygame
+import config
 
 class Background:
-    def __init__(self, image_path, size):
+    def __init__(self, image_path = config.BACKGROUND_IMAGE_PATH, size = config.BACKGROUND_SIZE ):
         self.image = pygame.image.load(image_path).convert_alpha()
         self.image = pygame.transform.scale(self.image, size)
         self.size = size

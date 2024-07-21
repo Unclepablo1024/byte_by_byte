@@ -1,4 +1,5 @@
 import pygame
+import config
 
 
 class MainCharacter(pygame.sprite.Sprite):
@@ -21,12 +22,12 @@ class MainCharacter(pygame.sprite.Sprite):
         self.is_hurt = False
         self.is_dead = False
         self.vertical_velocity = 0
-        self.gravity = 1  # Gravity force
-        self.jump_strength = -15  # Initial jump force
-        self.ground_level = 430  # Y position of the ground
-        self.rect.topleft = (50, self.ground_level)  # Initial position
-        self.screen_width = 800  # Screen width
-        self.screen_height = 600  # Screen height
+        self.gravity = config.CHARACTER_GRAVITY  # Gravity force
+        self.jump_strength = config.CHARACTER_JUMP_STRENGTH  # Initial jump force
+        self.ground_level = config.CHARACTER_GROUND_LEVEL  # Y position of the ground
+        self.rect.topleft = (config.CHARACTER_INITIAL_X, self.ground_level)  # Initial position
+        self.screen_width = config.SCREEN_WIDTH # Screen width
+        self.screen_height = config.SCREEN_HEIGHT # Screen height
 
     def load_gif_frames(self, gif_path):
         gif = pygame.image.load(gif_path).convert_alpha()
