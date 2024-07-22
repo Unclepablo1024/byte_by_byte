@@ -6,7 +6,7 @@ SCREEN_HEIGHT = 600
 
 # Character settings
 CHARACTER_INITIAL_X = 50
-CHARACTER_GROUND_LEVEL = SCREEN_HEIGHT - 128  # Assuming character height is 128
+CHARACTER_GROUND_LEVEL = SCREEN_HEIGHT - 155  # Assuming character height is 128
 CHARACTER_GRAVITY = 1
 CHARACTER_JUMP_STRENGTH = -15
 FRAME_RATE = 100  # Milliseconds per frame
@@ -53,7 +53,7 @@ ENEMY_SPRITES_PATH = "sprites/enemies"
 
 # Music and sound settings
 DEATH_SOUND_PATH = "audio/pain-scream.wav"
-MAIN_SOUND_PATH = "../audio/western.mp3"
+MAIN_SOUND_PATH = "audio/western.mp3"
 
 
 # Game over settings
