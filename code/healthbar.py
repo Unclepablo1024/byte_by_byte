@@ -1,6 +1,5 @@
 import pygame
 
-
 class HealthBar:
     def __init__(self, max_health, width, height, x, y, color):
         self.max_health = max_health

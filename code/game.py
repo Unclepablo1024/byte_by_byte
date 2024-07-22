@@ -33,35 +33,34 @@ class Game:
             "../sprites/Gangsters_2/Hurt.png",
             "../sprites/Gangsters_2/Dead.png"
         )
-
         self.background = Background("../sprites/backgrounds/City2_pale.png", (800, 600))
         self.all_sprites = pygame.sprite.Group(self.character)
         self.enemy_group = pygame.sprite.Group()
         self.ground_level = 430
-
         self.health_bar = HealthBar(100, 200, 20, 600 - 30, 30, (0, 255, 0))
         self.life_icons = []
+        self.lives = 5
+        self.scroll_speed = 5
+        self.dialog_cooldown = 0
+        self.dialog_cooldown_time = 2000  # 2sec cooldown
+        self.death_timer = None  # initialize death timer
+        self.spawned_enemies = []
+        self.enemy_spawn_timer = pygame.time.get_ticks()
+
         life_icon_path = "../sprites/life_icon.png"
         life_icon_size = 52  
-        life_icon_spacing = 2 
+        life_icon_spacing = 1
 
         health_bar_x = self.health_bar.x
         health_bar_y = self.health_bar.y
         health_bar_height = self.health_bar.height
 
-        for i in range(3):
-            icon_x = health_bar_x + i * (life_icon_size + life_icon_spacing)
+        for i in range(self.lives):
+            icon_x = health_bar_x + i * (life_icon_size + life_icon_spacing) * 0.7
             icon_y = health_bar_y - health_bar_height - 20
             icon = LifeIcon(icon_x, icon_y, life_icon_size, life_icon_size, life_icon_path)
             self.life_icons.append(icon)
         
-        self.lives = 3
-        self.scroll_speed = 5
-        self.dialog_cooldown = 0
-        self.dialog_cooldown_time = 2000  # 2sec cooldown
-        self.death_timer = None  # initialize death timer
-        # self.spawned_enemies = []
-        # self.enemy_spawn_timer = 
     
     def run(self):
         self.music_player.play_main_music()
@@ -145,9 +144,9 @@ class Game:
             self.all_sprites.update()
 
             now = pygame.time.get_ticks()
-            # if now - self.enemy_spawn_timer > 3000:
-            #     self.spawn_enemy()
-            #     self.enemy_spawn_timer = now
+            if now - self.enemy_spawn_timer > 3000:
+                self.spawn_enemy()
+                self.enemy_spawn_timer = now
 
             # update cooldown time
             if self.dialog_cooldown > 0:
@@ -199,8 +198,8 @@ class Game:
         
     def game_over(self):
         print("Game Over")  # Debug print
-        font = pygame.font.Font(None, 160)
-        text = font.render('GAME OVER', True, (255, 0, 0))
+        font = pygame.font.Font("../fonts/determinationsans.ttf", 160)
+        text = font.render('GAME OVER', True, (186, 85, 211))
         text_rect = text.get_rect(center=(self.surface.get_width() / 2, self.surface.get_height() / 2))
         self.surface.blit(text, text_rect)
         pygame.display.flip()
@@ -209,8 +208,8 @@ class Game:
         self.ask_to_play_again()
 
     def ask_to_play_again(self):
-        font = pygame.font.Font(None, 60)
-        text = font.render('Do you want to play again? (Y/N)', True, (255, 255, 255))
+        font = pygame.font.Font("../fonts/determinationsans.ttf", 60)
+        text = font.render('Play again? (Y/N)', True, (255, 255, 255))
         text_rect = text.get_rect(center=(self.surface.get_width() / 2, self.surface.get_height() / 2 + 100))
         self.surface.blit(text, text_rect)
         pygame.display.flip()
