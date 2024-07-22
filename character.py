@@ -148,7 +148,6 @@ class MainCharacter(pygame.sprite.Sprite):
 
     def jump(self):
         if not self.is_jumping and not self.is_dead:
-        if not self.is_jumping and not self.is_dead:
             self.is_jumping = True
             self.current_frame = 0
             self.image = self.jump_frames[self.current_frame]
