@@ -22,7 +22,7 @@ class Game:
 
     def init_resources(self):
         # self.music_player = MusicPlayer()
-        self.dialog_box = DialogBox(self.surface, 600, 150)
+        self.dialog_box = DialogBox(self.surface, 600, 151)
         # self.death_sound = pygame.mixer.Sound(config.DEATH_SOUND_PATH)
 
     def restart_game(self):
