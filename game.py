@@ -5,7 +5,7 @@ from pygame.locals import *
 from enemy import Enemy
 from background import Background
 from healthbar import HealthBar, LifeIcon
-# from music import MusicPlayer
+from music import MusicPlayer
 from character import MainCharacter
 from dialog import DialogBox
 import config
@@ -21,9 +21,12 @@ class Game:
         self.restart_game()
 
     def init_resources(self):
-        # self.music_player = MusicPlayer()
+        self.music_player = MusicPlayer()
         self.dialog_box = DialogBox(self.surface, 600, 151)
-        # self.death_sound = pygame.mixer.Sound(config.DEATH_SOUND_PATH)
+        self.death_sound = pygame.mixer.Sound(config.DEATH_SOUND_PATH)
+    
+    def show_dialog(self, message):
+        self.dialog_box.show(message)
 
     def restart_game(self):
         self.character = MainCharacter(
@@ -65,13 +68,13 @@ class Game:
         
     
     def run(self):
-        # self.music_player.play_main_music()
+        self.music_player.play_main_music()
         while self.running:
             self.handle_events()
             self.update()
             self.draw()
             self.clock.tick(60)
-        # self.music_player.stop_main_music()
+        self.music_player.stop_main_music()
         pygame.quit()
         sys.exit()
 
