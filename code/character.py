@@ -2,6 +2,7 @@ import pygame
 
 class MainCharacter(pygame.sprite.Sprite):
     def __init__(self, idle_picture_path, walk_gif_path, jump_gif_path, run_gif_path, hurt_gif_path, die_gif_path):
+    def __init__(self, idle_picture_path, walk_gif_path, jump_gif_path, run_gif_path, hurt_gif_path, die_gif_path):
         super().__init__()
         # Load images
         self.idle_image = pygame.image.load(idle_picture_path).convert_alpha()
@@ -11,6 +12,8 @@ class MainCharacter(pygame.sprite.Sprite):
         self.hurt_frames = self.load_gif_frames(hurt_gif_path)
         self.die_frames = self.load_gif_frames(die_gif_path)
         
+        self.hurt_frames = self.load_gif_frames(hurt_gif_path)
+        self.die_frames = self.load_gif_frames(die_gif_path)
         self.image = self.idle_image
         self.rect = self.image.get_rect()
         
@@ -27,6 +30,8 @@ class MainCharacter(pygame.sprite.Sprite):
         self.is_dead = False
         
         # Physics variables
+        self.is_hurt = False
+        self.is_dead = False
         self.vertical_velocity = 0
         self.gravity = 1
         self.jump_strength = -15
@@ -38,6 +43,12 @@ class MainCharacter(pygame.sprite.Sprite):
 
         # Initial position
         self.rect.topleft = (50, self.ground_level)
+        self.gravity = 1  # Gravity force
+        self.jump_strength = -15  # Initial jump force
+        self.ground_level = 430  # Y position of the ground
+        self.rect.topleft = (50, self.ground_level)  # Initial position
+        self.screen_width = 800  # Screen width
+        self.screen_height = 600  # Screen height
 
     def load_gif_frames(self, gif_path):
         gif = pygame.image.load(gif_path).convert_alpha()
@@ -74,6 +85,22 @@ class MainCharacter(pygame.sprite.Sprite):
             return
         
         # Handle jumping animation
+        if self.is_dead:
+            if now - self.last_update > self.frame_rate:
+                self.last_update = now
+                self.current_frame = min(self.current_frame + 1, len(self.die_frames) - 1)
+                self.image = self.die_frames[self.current_frame]
+            return
+
+        if self.is_hurt:
+            if now - self.last_update > self.frame_rate:
+                self.last_update = now
+                self.current_frame = (self.current_frame + 1) % len(self.hurt_frames)
+                if self.current_frame == 0:
+                    self.is_hurt = False
+                self.image = self.hurt_frames[self.current_frame]
+            return
+
         if self.is_jumping:
             self.vertical_velocity += self.gravity
             self.rect.y += self.vertical_velocity
@@ -110,6 +137,9 @@ class MainCharacter(pygame.sprite.Sprite):
         if self.is_dead:
             return
         
+    def move(self, dx, dy):
+        if self.is_dead:
+            return
         new_x = self.rect.x + dx
         new_y = self.rect.y + dy
 
@@ -127,6 +157,7 @@ class MainCharacter(pygame.sprite.Sprite):
         self.is_running = running
 
     def jump(self):
+        if not self.is_jumping and not self.is_dead:
         if not self.is_jumping and not self.is_dead:
             self.is_jumping = True
             self.current_frame = 0
@@ -156,3 +187,17 @@ class MainCharacter(pygame.sprite.Sprite):
     def reset(self):
         self.is_dead = False
         self.rect.bottom = 560
+
+    def hurt(self):
+        if not self.is_dead:
+            self.is_hurt = True
+            self.current_frame = 0
+            self.image = self.hurt_frames[self.current_frame]
+
+    def stop_hurt(self):
+        self.is_hurt = False
+
+    def die(self):
+        self.is_dead = True
+        self.current_frame = 0
+        self.image = self.die_frames[self.current_frame]
