@@ -70,8 +70,10 @@ class Game:
         self.music_player.play_main_music()
         while self.running:
             self.handle_events()
-            self.update()
-            self.draw()
+            self.update()  
+            self.dialog_box.update()  # update dialog box
+            self.draw()  
+            self.dialog_box.draw()  # draw dialog box
             self.clock.tick(60)
         self.music_player.stop_main_music()
         pygame.quit()
@@ -162,7 +164,7 @@ class Game:
                 if pygame.sprite.collide_rect(self.character, enemy):
                     if self.dialog_cooldown == 0:
                         enemy.attack()
-                        self.show_dialog(f"Enemy {enemy.enemy_type} is attacking!")
+                        self.show_dialog(f"Welcome to Level 1....\nNow we will have some task for you. \nAre you ready?!")
                         self.dialog_cooldown = self.dialog_cooldown_time
 
             for enemy in self.enemy_group:

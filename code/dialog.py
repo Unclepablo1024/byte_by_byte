@@ -8,18 +8,27 @@ class DialogBox:
         self.rect = pygame.Rect((screen.get_width() - width) // 2, (screen.get_height() - height) // 2, width, height)
         self.color = pygame.Color('white')
         self.text_color = pygame.Color('black')
-        self.font = pygame.font.Font(None, 32)
+        self.font = pygame.font.Font("../fonts/undertalesans.ttf", 32)
+        self.text = ""
+        self.active = False
         # import pic path
         self.image = pygame.image.load('../pic/s3.png')
         # init image rect
-        self.image_rect = self.image.get_rect(topleft=(self.rect.right - 130, self.rect.top + 0))
-        self.text = ""
-        self.active = False
+        self.image_rect = self.image.get_rect(topleft=(self.rect.right - 130, self.rect.top + 80))
+        self.typing_speed = 50  # Number of milliseconds between characters
+        self.last_update_time = pygame.time.get_ticks()
+        self.current_char_index = 0
+        
+        
 
     def show(self, text):
-        self.text = text
+        self.full_text = text
+        self.text = ""
+        self.current_char_index = 0
+        self.current_text = ""  #init current_text
         self.active = True
-        print(f"Dialog box activated with text: {text}")  # Debug print
+        self.last_update_time = pygame.time.get_ticks()
+
 
     def hide(self):
         self.active = False
@@ -32,11 +41,22 @@ class DialogBox:
             return True
         return False
 
+    def update(self):
+        if not self.active:
+            return
+
+        current_time = pygame.time.get_ticks()
+        if current_time - self.last_update_time > self.typing_speed and self.current_char_index < len(self.full_text):
+            self.last_update_time = current_time
+            self.text += self.full_text[self.current_char_index]
+            self.current_char_index += 1
+
     def draw(self):
         if not self.active:
             return
         pygame.draw.rect(self.screen, self.color, self.rect)
         pygame.draw.rect(self.screen, self.text_color, self.rect, 2)
+
         words = self.text.split()
         lines = []
         current_line = []
@@ -48,11 +68,13 @@ class DialogBox:
                 lines.append(' '.join(current_line))
                 current_line = [word]
         lines.append(' '.join(current_line))
+        
+        words = self.current_text.split('\n')
         y = self.rect.top + 10
         for line in lines:
             text_surface = self.font.render(line, True, self.text_color)
             self.screen.blit(text_surface, (self.rect.left + 10, y))
             y += text_surface.get_height() + 5
 
-        # draw pic
+        # Draw the image in the top-right corner
         self.screen.blit(self.image, self.image_rect)
