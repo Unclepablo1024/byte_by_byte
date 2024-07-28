@@ -7,8 +7,8 @@ from background import Background
 from healthbar import HealthBar, LifeIcon
 from music import MusicPlayer
 from character import MainCharacter
-from dialog import DialogBox
 import config
+from dialogue import Dialogue
 
 class Game:
     def __init__(self):
@@ -22,12 +22,13 @@ class Game:
 
     def init_resources(self):
         self.music_player = MusicPlayer()
-        self.dialog_box = DialogBox(self.surface, 600, 151)
         self.death_sound = pygame.mixer.Sound(config.DEATH_SOUND_PATH)
-    
-    def show_dialog(self, message):
-        self.dialog_box.show(message)
+        self.dialogue = Dialogue(self.surface, font_size= config.DIALOGUE_FONT_SIZE)
 
+        # Different dialogue options
+        self.dialogue.add_dialogue("Greetings", "Hello PLayer!")
+        self.dialogue.add_dialogue("Warning", "Careful enemies up ahead!")
+        self.dialogue.add_dialogue("Farewell", "Goodbye, brave hero!")
     def restart_game(self):
         self.character = MainCharacter(
             config.IDLE_PICTURE_PATH,
@@ -82,14 +83,11 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
-            
-            if self.dialog_box.active:
-                if self.dialog_box.handle_event(event):
-                    print("Dialog closed")  # Debug print
+
             elif event.type == pygame.KEYDOWN:
                 self.handle_player_input(event)
 
-        if not self.dialog_box.active:
+        if not self.dialogue.draw:
             self.handle_continuous_input()
 
     def handle_player_input(self, event):
@@ -98,12 +96,19 @@ class Game:
             self.health_bar.update_health(-5)  # Decrease health by 5 units
             if self.health_bar.current_health <= 0:
                 self.handle_character_death()
+        elif event.key == pygame.K_1:
+            self.dialogue.set_dialogue("Greetings")
+        elif event.key == pygame.K_2:
+            self.dialogue.set_dialogue("Warning")
+        elif event.key == pygame.K_3:
+            self.dialogue.set_dialogue("Farewell")
 
     def handle_continuous_input(self):
         keys = pygame.key.get_pressed()
         moving = False
         running = False
         dx, dy = 0, 0
+        move_speed = 10
         if keys[K_LEFT]:
             dx = -2
             moving = True
@@ -139,7 +144,9 @@ class Game:
                 self.death_timer = pygame.time.get_ticks() + 1000  # Additional time to show death animation
 
     def update(self):
-        if not self.dialog_box.active:
+        self.handle_continuous_input()
+
+        if not self.dialogue.draw:
             keys = pygame.key.get_pressed()
             dx = 0
             if keys[K_RIGHT] and not self.character.is_dead:
@@ -163,7 +170,7 @@ class Game:
                 if pygame.sprite.collide_rect(self.character, enemy):
                     if self.dialog_cooldown == 0:
                         enemy.attack()
-                        self.show_dialog(f"Enemy {enemy.enemy_type} is attacking!")
+                        self.dialogue.set_dialogue(f"Enemy {enemy.enemy_type} is attacking!")
                         self.dialog_cooldown = self.dialog_cooldown_time
 
             for enemy in self.enemy_group:
@@ -198,7 +205,7 @@ class Game:
         self.health_bar.draw(self.surface)
         for i in range(self.lives):
             self.life_icons[i].draw(self.surface)
-        self.dialog_box.draw()
+        self.dialogue.draw()
         pygame.display.flip()
         
     def game_over(self):
