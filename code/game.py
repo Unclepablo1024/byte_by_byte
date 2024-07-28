@@ -1,5 +1,6 @@
 import pygame
 import sys
+import os
 import random
 from pygame.locals import *
 from enemy import Enemy
@@ -328,7 +329,7 @@ class Game:
 
         if available_types:
             enemy_type = random.choice(available_types)
-            new_enemy = Enemy(enemy_type, "../sprites/enemies", self.surface.get_width(), 560, self.character)
+            new_enemy = Enemy(enemy_type, os.path.join('sprites','enemies'), self.surface.get_width(), 560, self.character)
             self.all_sprites.add(new_enemy)
             self.enemy_group.add(new_enemy)
             self.spawned_enemies.append(enemy_type)
