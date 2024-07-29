@@ -23,17 +23,17 @@ class Game:
         self.dialog_box = DialogBox(self.surface, 600, 200)
         self.current_question_index = 0
         self.current_attempt = 0
-        self.attempts = 0  # Initialize attempts
+        self.attempts = 0
         self.max_attempts = 3
         self.questions = config.get_random_questions(5)
-        self.waiting_for_answer = False  # New flag to track if we're waiting for an answer
-        self.correct_answers = 0  # New variable to track correct answers
-        self.total_questions = 5  # Total number of questions to pass the level
+        self.waiting_for_answer = False
+        self.correct_answers = 0
+        self.total_questions = 5
 
     def init_resources(self):
         self.music_player = MusicPlayer()
         self.death_sound = pygame.mixer.Sound(config.DEATH_SOUND_PATH)
-    
+
     def ask_for_name(self):
         self.surface.fill((0, 0, 0))
         font = pygame.font.Font(config.GAME_OVER_FONT_PATH, 60)
@@ -44,7 +44,7 @@ class Game:
         pygame.display.flip()
 
         self.name = self.get_user_input()
-        self.show_dialog(f"Hello {self.name}!\nLet's have fun in Byte by Byte world:)", auto_hide_seconds=4)
+        self.show_dialog(f" {self.name}!!\nThat's it! You're fired! Don't come back until\nyou've learned something!", auto_hide_seconds=5)
 
     def handle_dialog_response(self, response):
         if self.current_question_index == 0 and not self.waiting_for_answer:
@@ -66,17 +66,15 @@ class Game:
             else:
                 self.current_attempt += 1
                 self.health_bar.update_health(-10)
-                
+
                 if self.current_attempt >= self.max_attempts:
-                    # Provide the correct answer after three wrong attempts
                     correct_answer = self.questions[self.current_question_index]["answer"]
                     self.show_dialog(f"Oh no! The correct answer was: {correct_answer}", auto_hide_seconds=5)
                     self.current_attempt = 0
                     self.waiting_for_answer = False
                     self.current_question_index += 1
-                    pygame.time.set_timer(pygame.USEREVENT + 2, 5000)  # Give more time to read the correct answer
+                    pygame.time.set_timer(pygame.USEREVENT + 2, 5000)
                 else:
-                    # Inform the player of remaining attempts
                     attempts_left = self.max_attempts - self.current_attempt
                     self.show_dialog(f"Wrong! Attempts left: {attempts_left}. Please try again!", auto_hide_seconds=3)
                     self.set_timer()
@@ -92,7 +90,6 @@ class Game:
         else:
             if self.correct_answers == self.total_questions:
                 self.show_dialog("Congratulations! You've answered all 5 questions correctly. You've passed Level One!", auto_hide_seconds=5)
-                # Here you can add code to move to the next level or end the game
             else:
                 self.show_dialog(f"You've only answered {self.correct_answers} out of {self.total_questions} questions correctly. You need to answer all 5 questions correctly to pass. Try again!", auto_hide_seconds=5)
                 self.restart_level()
@@ -108,14 +105,13 @@ class Game:
 
     def check_answer(self, response):
         correct_answer = self.questions[self.current_question_index]["answer"]
-        print(f"Checking answer: '{response.strip().lower()}' against correct answer: '{correct_answer.strip().lower()}'")  # Debug print
+        print(f"Checking answer: '{response.strip().lower()}' against correct answer: '{correct_answer.strip().lower()}'")
         return response.strip().lower() == correct_answer.strip().lower()
 
-    
     def get_user_input(self):
         input_text = ""
         font = pygame.font.Font(config.GAME_OVER_FONT_PATH, 60)
-        
+
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -131,20 +127,20 @@ class Game:
                         sys.exit()
                     else:
                         input_text += event.unicode
-                    
+
                     self.surface.fill((0, 0, 0))
-                    
+
                     prompt_text = 'Enter your name:'
                     prompt_surface = font.render(prompt_text, True, (255, 255, 255))
                     prompt_rect = prompt_surface.get_rect(center=(self.surface.get_width() / 2, self.surface.get_height() / 2 - 50))
                     self.surface.blit(prompt_surface, prompt_rect)
-                    
+
                     input_surface = font.render(input_text, True, (255, 255, 255))
                     input_rect = input_surface.get_rect(center=(self.surface.get_width() / 2, self.surface.get_height() / 2 + 50))
                     self.surface.blit(input_surface, input_rect)
-                    
+
                     pygame.display.flip()
-        
+
             self.clock.tick(30)
 
     def restart_game(self):
@@ -165,8 +161,8 @@ class Game:
         self.lives = config.INITIAL_LIVES
         self.scroll_speed = config.SCROLL_SPEED
         self.dialog_cooldown = 0
-        self.dialog_cooldown_time = config.DIALOG_COOLDOWN_TIME  # 2sec cooldown
-        self.death_timer = None  # initialize death timer
+        self.dialog_cooldown_time = config.DIALOG_COOLDOWN_TIME
+        self.death_timer = None
         self.spawned_enemies = []
         self.enemy_spawn_timer = pygame.time.get_ticks()
 
@@ -183,7 +179,7 @@ class Game:
             icon_y = health_bar_y - health_bar_height - 20
             icon = LifeIcon(icon_x, icon_y, life_icon_size, life_icon_size, life_icon_path)
             self.life_icons.append(icon)
-    
+
     def run(self):
         self.ask_for_name()
         self.music_player.play_main_music()
@@ -215,7 +211,7 @@ class Game:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     response = self.dialog_box.get_input()
-                    print(f"Dialog response received: {response}")  # Debug print
+                    print(f"Dialog response received: {response}")
                     self.handle_dialog_response(response)
                 elif event.key == pygame.K_BACKSPACE:
                     self.dialog_box.backspace()
@@ -233,7 +229,7 @@ class Game:
     def handle_player_input(self, event):
         if event.key == pygame.K_1:
             self.character.hurt()
-            self.health_bar.update_health(-5)  # Decrease health by 5 units
+            self.health_bar.update_health(-5)
             if self.health_bar.current_health <= 0:
                 self.handle_character_death()
 
@@ -254,7 +250,7 @@ class Game:
         if keys[K_LSHIFT] or keys[K_RSHIFT]:
             if keys[K_LEFT] or keys[K_RIGHT]:
                 running = True
-                dx *= config.RUN_SPEED_MULTIPLIER # Increase the speed while sprinting
+                dx *= config.RUN_SPEED_MULTIPLIER
 
         self.character.set_running(running)
         self.character.set_walking(moving and not self.character.is_jumping and not running)
@@ -264,17 +260,17 @@ class Game:
         self.character.revive()
         self.health_bar.reset()
         self.death_timer = None
-        
+
     def handle_character_death(self):
         if not self.character.is_dead:
-            print("Character is dying")  # Debug print
+            print("Character is dying")
             self.lives -= 1
             self.character.die()
-            self.death_sound.play()  # Play death sound here
+            self.death_sound.play()
             if self.lives > 0:
                 self.death_timer = pygame.time.get_ticks()
             else:
-                self.death_timer = pygame.time.get_ticks() + 1000  # Additional time to show death animation
+                self.death_timer = pygame.time.get_ticks() + 1000
 
     def update(self):
         self.dialog_box.update()
@@ -292,7 +288,6 @@ class Game:
                 self.spawn_enemy()
                 self.enemy_spawn_timer = now
 
-            # update cooldown time
             if self.dialog_cooldown > 0:
                 self.dialog_cooldown -= self.clock.get_time()
                 if self.dialog_cooldown < 0:
@@ -302,7 +297,10 @@ class Game:
                 if pygame.sprite.collide_rect(self.character, enemy):
                     if self.dialog_cooldown == 0:
                         enemy.attack()
-                        self.show_dialog(f"Here is Level 1....\nYou need to answer at least 5 questions correctly to pass..\nAre you ready?! Y/N")
+                        self.character.hurt()
+                        self.health_bar.update_health(-10)
+                        if self.health_bar.current_health <= 0:
+                            self.handle_character_death()
                         self.dialog_cooldown = self.dialog_cooldown_time
 
             for enemy in self.enemy_group:
@@ -314,9 +312,9 @@ class Game:
 
             if self.character.is_dead:
                 current_time = pygame.time.get_ticks()
-                if self.lives > 0 and current_time - self.death_timer >= 1000:  # 1000 milliseconds = 1 second
+                if self.lives > 0 and current_time - self.death_timer >= 1000:
                     self.revive_character()
-                elif self.lives == 0 and current_time - self.death_timer >= 1000:  # 1 second delay before game over
+                elif self.lives == 0 and current_time - self.death_timer >= 1000:
                     self.game_over()
 
     def spawn_enemy(self):
@@ -339,16 +337,15 @@ class Game:
             self.life_icons[i].draw(self.surface)
         self.dialog_box.draw()
         pygame.display.flip()
-        
+
     def game_over(self):
-        print("Game Over")  # Debug print
+        print("Game Over")
         font = pygame.font.Font(config.GAME_OVER_FONT_PATH, 160)
         text = font.render('GAME OVER', True, (186, 85, 211))
         text_rect = text.get_rect(center=(self.surface.get_width() / 2, self.surface.get_height() / 2))
         self.surface.blit(text, text_rect)
         pygame.display.flip()
-        pygame.time.wait(500)  # Wait for 0.5 second
-        # Ask if the user wants to play again
+        pygame.time.wait(500)
         self.ask_to_play_again()
 
     def ask_to_play_again(self):
