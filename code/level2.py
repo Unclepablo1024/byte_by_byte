@@ -42,7 +42,7 @@ background_music.play(-1)
 # Load images for feedback
 correct_image = pygame.image.load('../pic/correct.webp')
 wrong_image = pygame.image.load('../pic/wrong.webp')
-image_width, image_height = 420, 300
+image_width, image_height = 440, 300
 correct_image = pygame.transform.scale(correct_image, (image_width, image_height))
 wrong_image = pygame.transform.scale(wrong_image, (image_width, image_height))
 
@@ -254,7 +254,7 @@ class GameState:
         else:
             self.game_completed = True
             self.show_congratulatory_dialog = True  # Set to show congratulatory dialog
-            self.feedback_image = correct_image
+            self.feedback_image = None
 
     def get_current_level_description(self):
         return self.levels[self.current_level - 1].description
@@ -336,6 +336,7 @@ def main():
                     game_state.feedback_image = None
                 elif event.key == pygame.K_h:
                     game_state.show_hint()
+
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:  # Left mouse button
                     for block in game_state.code_blocks:
