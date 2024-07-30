@@ -8,7 +8,7 @@ from background import Background
 from healthbar import HealthBar, LifeIcon
 from music import MusicPlayer
 from character import MainCharacter
-from dialog import DialogBox
+from newDialogue import NewDialogue
 import config
 
 class Game:
@@ -21,7 +21,7 @@ class Game:
         self.name = ""
         self.init_resources()
         self.restart_game()
-        self.dialog_box = DialogBox(self.surface, 600, 200)
+        self.dialog_box = NewDialogue(self.surface, 600, 200)
         self.current_question_index = 0
         self.current_attempt = 0
         self.attempts = 0  # Initialize attempts
@@ -50,6 +50,7 @@ class Game:
     def handle_dialog_response(self, response):
         if self.current_question_index == 0 and not self.waiting_for_answer:
             if response.lower() == 'y':
+                print("User is ready, starting questions.. ") # Debug print
                 self.waiting_for_answer = True
                 self.ask_next_question()
             elif response.lower() == 'n':
@@ -57,7 +58,9 @@ class Game:
             return
 
         if self.waiting_for_answer:
+            print(f"User response: {response}") # debug print
             if self.check_answer(response):
+                print("Correct answer") # debug print
                 self.correct_answers += 1
                 self.show_dialog(f"Good job! You've answered {self.correct_answers} out of {self.total_questions} questions correctly.", auto_hide_seconds=6)
                 self.current_attempt = 0
@@ -65,6 +68,7 @@ class Game:
                 self.waiting_for_answer = False
                 pygame.time.set_timer(pygame.USEREVENT + 2, 3000)
             else:
+                print("Incorrect answer") # debug print
                 self.current_attempt += 1
                 self.health_bar.update_health(-10)
                 
@@ -86,6 +90,7 @@ class Game:
         pygame.time.set_timer(pygame.USEREVENT + 2, 3000)
 
     def ask_next_question(self):
+        print(f"Asking question index: {self.current_question_index}")
         if self.current_question_index < self.total_questions:
             question = self.questions[self.current_question_index]["question"]
             self.show_dialog(f"No# {self.current_question_index + 1}: {question}")
@@ -382,5 +387,5 @@ def main():
         import traceback
         traceback.print_exc()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

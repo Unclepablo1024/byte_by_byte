@@ -12,6 +12,7 @@ class Dialogue:
         self.current_text = "Greetings Player!" # Default text
         self.dialogue_position = (100, 100) # Default Position for Dialogue Box
         self.dialogues = {} # Dictionary to store different dialogue
+
     def draw(self):
         self.draw_dialogue_box(self.current_text, self.dialogue_position)
 
