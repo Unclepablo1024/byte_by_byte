@@ -28,7 +28,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def load_images(self, action):
         images = []
-        image_path = os.path.join(self.folder_path, self.enemy_type, action)
+        image_path = os.path.join('..',self.folder_path, self.enemy_type, action)
         image = pygame.image.load(image_path).convert_alpha()
         width, height = image.get_size()
         frame_height = height
@@ -97,4 +97,4 @@ class Enemy(pygame.sprite.Sprite):
         self.is_dead = True
         self.current_frame = 0
         self.image = self.dead_images[self.current_frame]
-        self.rect.bottom = self.ground_level  # 確保敵人死亡時仍在地面上
+        self.rect.bottom = self.ground_level  

@@ -15,6 +15,9 @@ class Game:
     def __init__(self):
         pygame.init()
         self.surface = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
+        # load icon
+        icon = pygame.image.load('../icon.png')
+        pygame.display.set_icon(icon)
         pygame.display.set_caption("Byte by Byte")
         self.clock = pygame.time.Clock()
         self.running = True
@@ -62,7 +65,7 @@ class Game:
             if self.check_answer(response):
                 print("Correct answer") # debug print
                 self.correct_answers += 1
-                self.show_dialog(f"Good job! You've answered {self.correct_answers} out of {self.total_questions} questions correctly.", auto_hide_seconds=6)
+                self.show_dialog(f"Good job! You've answered {self.correct_answers} out of {self.total_questions} questions correctly.", auto_hide_seconds=7)
                 self.current_attempt = 0
                 self.current_question_index += 1
                 self.waiting_for_answer = False
@@ -100,7 +103,7 @@ class Game:
                 self.show_dialog("Congratulations! You've answered all 5 questions correctly. You've passed Level One!", auto_hide_seconds=5)
                 # Here you can add code to move to the next level or end the game
             else:
-                self.show_dialog(f"You've only answered {self.correct_answers} out of {self.total_questions} questions correctly. You need to answer all 5 questions correctly to pass. Try again!", auto_hide_seconds=5)
+                self.show_dialog(f"You've only answered {self.correct_answers} out of {self.total_questions} questions correctly. You need to answer all 5 questions correctly to pass. Try again!", auto_hide_seconds=6)
                 self.restart_level()
             self.waiting_for_answer = False
 
