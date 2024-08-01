@@ -28,7 +28,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def load_images(self, action):
         images = []
-        image_path = os.path.join('..',self.folder_path, self.enemy_type, action)
+        image_path = os.path.join(self.folder_path, self.enemy_type, action)
         image = pygame.image.load(image_path).convert_alpha()
         width, height = image.get_size()
         frame_height = height

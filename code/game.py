@@ -16,7 +16,7 @@ class Game:
         pygame.init()
         self.surface = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
         # load icon
-        icon = pygame.image.load('../icon.png')
+        icon = pygame.image.load('icon.png')
         pygame.display.set_icon(icon)
         pygame.display.set_caption("Byte by Byte")
         self.clock = pygame.time.Clock()
