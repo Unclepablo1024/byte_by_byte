@@ -56,7 +56,7 @@ class Game:
             elif response.lower() == 'n':
                 self.show_dialog(f"Austin!! {self.name} is not ready!!! Come here to help!", auto_hide_seconds=4)
             return
- 
+
         if self.waiting_for_answer:
             print(f"User response: {response}") # debug print
             if self.check_answer(response):
