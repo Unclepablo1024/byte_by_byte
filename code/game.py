@@ -15,12 +15,15 @@ class Game:
     def __init__(self):
         pygame.init()
         self.surface = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
-        # load icon
+        # load icon and sets caption for screen
         icon = pygame.image.load('icon.png')
         pygame.display.set_icon(icon)
         pygame.display.set_caption("Byte by Byte")
+
         self.clock = pygame.time.Clock()
         self.running = True
+        #Sets a variable for levels
+        self.current_level = 1 
         self.name = ""
         self.init_resources()
         self.restart_game()
@@ -187,6 +190,16 @@ class Game:
             icon_y = health_bar_y - health_bar_height - 20
             icon = LifeIcon(icon_x, icon_y, life_icon_size, life_icon_size, life_icon_path)
             self.life_icons.append(icon)
+
+    def set_level(self, level):
+        
+        print(f"Setting level: {level}")  # Debug output
+        level_settings = config.LEVELS.get(level)
+        if level_settings:
+            self.background = Background(str(level_settings["background"]), config.BACKGROUND_SIZE)
+        else:
+            print(f"Level {level} not found in configuration.") # Debug output
+            self.background = Background(str(config.LEVELS[1]["background"]), config.BACKGROUND_SIZE)
     
     def run(self):
         self.ask_for_name()
@@ -227,6 +240,7 @@ class Game:
                     self.handle_player_input(event)
                 else:
                     self.dialog_box.add_char(event.unicode)
+                    
 
         if not self.dialog_box.active:
             self.handle_continuous_input()
@@ -240,6 +254,11 @@ class Game:
             self.health_bar.update_health(-5)  # Decrease health by 5 units
             if self.health_bar.current_health <= 0:
                 self.handle_character_death()
+
+        #Handles the level change 
+        if event.key == pygame.K_5:
+            print("5 key pressed - attempting to move to next level")  # Debug output
+            self.next_level()
 
     def handle_continuous_input(self):
         keys = pygame.key.get_pressed()
@@ -263,6 +282,16 @@ class Game:
         self.character.set_running(running)
         self.character.set_walking(moving and not self.character.is_jumping and not running)
         self.character.move(dx, dy)
+
+    #Function handles the update of levels 
+    def next_level(self):
+        self.current_level += 1
+        if self.current_level > len(config.LEVELS):
+            print("You have completed all levels!")
+            self.running = False
+        else:
+            self.set_level(self.current_level)
+            self.restart_game()
 
     def revive_character(self):
         self.character.revive()
