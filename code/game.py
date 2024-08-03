@@ -190,12 +190,15 @@ class Game:
             icon_y = health_bar_y - health_bar_height - 20
             icon = LifeIcon(icon_x, icon_y, life_icon_size, life_icon_size, life_icon_path)
             self.life_icons.append(icon)
+            
+        self.set_level(self.current_level)  # Ensure the correct background is set
 
     def set_level(self, level):
         
         print(f"Setting level: {level}")  # Debug output
         level_settings = config.LEVELS.get(level)
         if level_settings:
+            print(f"Loading background for level {level}: {level_settings['background']}")  # Debugging
             self.background = Background(str(level_settings["background"]), config.BACKGROUND_SIZE)
         else:
             print(f"Level {level} not found in configuration.") # Debug output
@@ -205,11 +208,11 @@ class Game:
         self.ask_for_name()
         self.music_player.play_main_music()
         while self.running:
-            self.handle_events()
-            self.update()
-            self.draw()
-            pygame.display.flip()
-            self.clock.tick(60)
+            self.handle_events() #process input events
+            self.update() #updates game logic
+            self.draw() #draws everything on the screen
+            pygame.display.flip() #updates display
+            self.clock.tick(60) #Maintains 60 FPS
         self.music_player.stop_main_music()
         pygame.quit()
         sys.exit()
@@ -236,8 +239,13 @@ class Game:
                     self.handle_dialog_response(response)
                 elif event.key == pygame.K_BACKSPACE:
                     self.dialog_box.backspace()
+
+                #TEST CODE added key bindings to specific events
                 elif event.key == pygame.K_1:
-                    self.handle_player_input(event)
+                    self.handle_player_input(event) #Damage input
+                elif event.key == pygame.K_5:
+                    self.handle_player_input(event) #Change level key binding
+
                 else:
                     self.dialog_box.add_char(event.unicode)
                     
@@ -284,13 +292,15 @@ class Game:
         self.character.move(dx, dy)
 
     #Function handles the update of levels 
-    def next_level(self):
+    def next_level(self): 
         self.current_level += 1
+        print(f"Moving to level {self.current_level}")  # Debugging
         if self.current_level > len(config.LEVELS):
             print("You have completed all levels!")
             self.running = False
         else:
             self.set_level(self.current_level)
+            print(f"Level set to {self.current_level}")  # Debugging
             self.restart_game()
 
     def revive_character(self):
