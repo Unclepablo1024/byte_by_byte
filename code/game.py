@@ -16,7 +16,7 @@ class Game:
         pygame.init()
         self.surface = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
         # load icon
-        icon = pygame.image.load('../icon.png')
+        icon = pygame.image.load(config.LOGO)
         pygame.display.set_icon(icon)
         pygame.display.set_caption("Byte by Byte")
         self.clock = pygame.time.Clock()
@@ -61,9 +61,9 @@ class Game:
             return
 
         if self.waiting_for_answer:
-            print(f"User response: {response}") # debug print
+            print(f"User response: {response}") # Debug print
             if self.check_answer(response):
-                print("Correct answer") # debug print
+                print("Correct answer") # Debug print
                 self.correct_answers += 1
                 self.show_dialog(f"Good job! You've answered {self.correct_answers} out of {self.total_questions} questions correctly.", auto_hide_seconds=7)
                 self.current_attempt = 0
@@ -71,7 +71,7 @@ class Game:
                 self.waiting_for_answer = False
                 pygame.time.set_timer(pygame.USEREVENT + 2, 3000)
             else:
-                print("Incorrect answer") # debug print
+                print("Incorrect answer") # Debug print
                 self.current_attempt += 1
                 self.health_bar.update_health(-10)
                 
@@ -221,17 +221,22 @@ class Game:
                 else:
                     self.show_dialog("Congratulations! You've completed all questions for Level One.", auto_hide_seconds=5)
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    response = self.dialog_box.get_input()
-                    print(f"Dialog response received: {response}")  # Debug print
-                    self.handle_dialog_response(response)
-                elif event.key == pygame.K_BACKSPACE:
-                    self.dialog_box.backspace()
-                elif event.key == pygame.K_1:
+            # Pass event to dialogue box
+            if self.dialog_box.active:
+                self.dialog_box.handle_events(event)
+            else:
+                if event.type == pygame.KEYDOWN:  # Checks if the event is a keydown event
                     self.handle_player_input(event)
-                else:
-                    self.dialog_box.add_char(event.unicode)
+                    if event.key == pygame.K_RETURN:
+                        response = self.dialog_box.get_input()
+                        print(f"Dialog response received: {response}")  # Debug print
+                        self.handle_dialog_response(response)
+                    elif event.key == pygame.K_BACKSPACE:
+                        self.dialog_box.backspace()
+                    elif event.key == pygame.K_1:
+                        self.handle_player_input(event)
+                    else:
+                        self.dialog_box.add_char(event.unicode)
 
         if not self.dialog_box.active:
             self.handle_continuous_input()
@@ -286,7 +291,7 @@ class Game:
                 self.death_timer = pygame.time.get_ticks() + 1000  # Additional time to show death animation
 
     def update(self):
-        self.dialog_box.update()
+        self.dialog_box.update() # Update Dialogue Box
         if not self.dialog_box.active:
             keys = pygame.key.get_pressed()
             dx = 0

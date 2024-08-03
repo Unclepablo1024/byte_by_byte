@@ -107,4 +107,4 @@ class DialogBox:
     def show_dialog(self, message, auto_hide_seconds=None):
         self.show(message, auto_hide_seconds)
         if "Here is Level 1" in message:
-            self.set_style((173, 216, 230), os.path.join('..','sprites','s4.png'))
+            self.set_style((173, 216, 230), os.path.join('sprites','s4.png'))

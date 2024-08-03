@@ -62,6 +62,15 @@ class NewDialogue:
     def add_char(self, char):
         self.user_input += char
 
+    def handle_events(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                self.backspace()
+            elif event.key == pygame.K_RETURN:
+                return self.get_input()
+            else:
+                self.add_char(event.unicode)
+
 
 
 
