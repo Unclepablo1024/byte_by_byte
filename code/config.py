@@ -20,6 +20,13 @@ RUN_SPEED_MULTIPLIER = 2
 BACKGROUND_IMAGE_PATH = os.path.join('sprites', 'backgrounds', 'City2_pale.png')
 BACKGROUND_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 
+# Background settings for levels
+LEVELS = {
+    1: {"background": os.path.join("sprites", "backgrounds", "City2_pale.png")},
+    2: {"background": os.path.join("sprites", "backgrounds", "City3.png")},
+    3: {"background": os.path.join("sprites", "backgrounds", "City4.png")}
+}
+
 # Character sprites
 IDLE_PICTURE_PATH = os.path.join('sprites','Gangsters_2', 'Idlefix.png')
 WALK_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Walk.png')
