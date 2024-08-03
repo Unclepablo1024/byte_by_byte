@@ -9,7 +9,7 @@ SCREEN_HEIGHT = 600
 CHARACTER_INITIAL_X = 50
 CHARACTER_GROUND_LEVEL = SCREEN_HEIGHT - 155  # Assuming character height is 128
 CHARACTER_GRAVITY = 1
-CHARACTER_JUMP_STRENGTH = -15
+CHARACTER_JUMP_STRENGTH = -20
 FRAME_RATE = 100  # Milliseconds per frame
 
 # Movement speed
@@ -21,11 +21,11 @@ BACKGROUND_IMAGE_PATH = os.path.join('sprites', 'backgrounds', 'City2_pale.png')
 BACKGROUND_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 
 # Character sprites
-IDLE_PICTURE_PATH = os.path.join('sprites','Gangsters_2', 'Idlefix.png')
+IDLE_PICTURE_PATH = os.path.join('sprites', 'Gangsters_2', 'Idlefix.png')
 WALK_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Walk.png')
 JUMP_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Jump.png')
-RUN_GIF_PATH = os.path.join('sprites', 'Gangsters_2','Run.png')
-HURT_GIF_PATH = os.path.join('sprites', 'Gangsters_2','Hurt.png')
+RUN_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Run.png')
+HURT_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Hurt.png')
 DIE_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Dead.png')
 
 # Health bar settings
@@ -36,8 +36,7 @@ HEALTH_BAR_X = 600 - 30
 HEALTH_BAR_Y = 30
 HEALTH_BAR_COLOR = (0, 255, 0)
 
-
-LIFE_ICON_PATH =   os.path.join('sprites', 'Life_icon.png')
+LIFE_ICON_PATH = os.path.join('sprites', 'Life_icon.png')
 LIFE_ICON_SIZE = 52
 LIFE_ICON_SPACING = 1
 INITIAL_LIVES = 3
@@ -52,19 +51,21 @@ DIALOG_COOLDOWN_TIME = 2000  # 2 seconds cooldown
 ENEMY_TYPES = ["Homeless_1", "Homeless_2", "Homeless_3"]
 ENEMY_SPRITES_PATH = os.path.join('sprites', 'enemies')
 
+# Attack animations paths
+ATTACK_1_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Attack_1.png')
+ATTACK_2_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Attack_2.png')
+ATTACK_3_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Attack_3.png')
 # Music and sound settings
-DEATH_SOUND_PATH = os.path.join('audio','pain-scream.wav')
-MAIN_SOUND_PATH = os.path.join('audio','western.mp3')
-
+DEATH_SOUND_PATH = os.path.join('audio', 'pain-scream.wav')
+MAIN_SOUND_PATH = os.path.join('audio', 'western.mp3')
 
 # Game over settings
-GAME_OVER_FONT_PATH = os.path.join('fonts','determinationsans.ttf')
+GAME_OVER_FONT_PATH = os.path.join('fonts', 'determinationsans.ttf')
 
 # Dialog settings
 DIALOG_FONT_PATH = os.path.join('fonts', 'determinationsans.ttf')
 DIALOGUE_FONT_SIZE = 24
 DIALOG_COOLDOWN_TIME = 2000  # 2 seconds in milliseconds
-
 
 # Level one question
 LEVEL_ONE_QUESTIONS = [
@@ -83,6 +84,7 @@ LEVEL_ONE_QUESTIONS = [
     {"question": "What command is used to clone a repository in Git?", "answer": "git clone"},
     {"question": "What file is used to specify which files Git should ignore?", "answer": ".gitignore"},
 ]
+
 
 def get_random_questions(n=5):
     return random.sample(LEVEL_ONE_QUESTIONS, min(n, len(LEVEL_ONE_QUESTIONS)))

@@ -11,6 +11,7 @@ from character import MainCharacter
 from dialog import DialogBox
 import config
 
+
 class Game:
     def __init__(self):
         pygame.init()
@@ -45,7 +46,9 @@ class Game:
         pygame.display.flip()
 
         self.name = self.get_user_input()
-        self.show_dialog(f" {self.name}!!\nThat's it! You're fired! Don't come back until\nyou've learned something!", auto_hide_seconds=5)
+        self.dialog_box.show(
+            f" {self.name}!!\nThat's it! You're fired! Don't come back until\nyou've learned something!",
+            auto_hide_seconds=7)
 
     def handle_dialog_response(self, response):
         if self.current_question_index == 0 and not self.waiting_for_answer:
@@ -53,13 +56,15 @@ class Game:
                 self.waiting_for_answer = True
                 self.ask_next_question()
             elif response.lower() == 'n':
-                self.show_dialog(f"Austin!! {self.name} is not ready!!! Come here to help!", auto_hide_seconds=4)
+                self.dialog_box.show(f"Austin!! {self.name} is not ready!!! Come here to help!", auto_hide_seconds=7)
             return
 
         if self.waiting_for_answer:
             if self.check_answer(response):
                 self.correct_answers += 1
-                self.show_dialog(f"Good job! You've answered {self.correct_answers} out of {self.total_questions} questions correctly.", auto_hide_seconds=6)
+                self.dialog_box.show(
+                    f"Good job! You've answered {self.correct_answers} out of {self.total_questions} questions correctly.",
+                    auto_hide_seconds=6)
                 self.current_attempt = 0
                 self.current_question_index += 1
                 self.waiting_for_answer = False
@@ -70,14 +75,15 @@ class Game:
 
                 if self.current_attempt >= self.max_attempts:
                     correct_answer = self.questions[self.current_question_index]["answer"]
-                    self.show_dialog(f"Oh no! The correct answer was: {correct_answer}", auto_hide_seconds=5)
+                    self.dialog_box.show(f"Oh no! The correct answer was: {correct_answer}", auto_hide_seconds=5)
                     self.current_attempt = 0
                     self.waiting_for_answer = False
                     self.current_question_index += 1
                     pygame.time.set_timer(pygame.USEREVENT + 2, 5000)
                 else:
                     attempts_left = self.max_attempts - self.current_attempt
-                    self.show_dialog(f"Wrong! Attempts left: {attempts_left}. Please try again!", auto_hide_seconds=3)
+                    self.dialog_box.show(f"Wrong! Attempts left: {attempts_left}. Please try again!",
+                                         auto_hide_seconds=3)
                     self.set_timer()
 
     def set_timer(self):
@@ -86,13 +92,17 @@ class Game:
     def ask_next_question(self):
         if self.current_question_index < self.total_questions:
             question = self.questions[self.current_question_index]["question"]
-            self.show_dialog(f"No# {self.current_question_index + 1}: {question}")
+            self.dialog_box.show(f"No# {self.current_question_index + 1}: {question}")
             self.waiting_for_answer = True
         else:
             if self.correct_answers == self.total_questions:
-                self.show_dialog("Congratulations! You've answered all 5 questions correctly. You've passed Level One!", auto_hide_seconds=5)
+                self.dialog_box.show(
+                    "Congratulations! You've answered all 5 questions correctly. You've passed Level One!",
+                    auto_hide_seconds=5)
             else:
-                self.show_dialog(f"You've only answered {self.correct_answers} out of {self.total_questions} questions correctly. You need to answer all 5 questions correctly to pass. Try again!", auto_hide_seconds=5)
+                self.dialog_box.show(
+                    f"You've only answered {self.correct_answers} out of {self.total_questions} questions correctly. You need to answer all 5 questions correctly to pass. Try again!",
+                    auto_hide_seconds=5)
                 self.restart_level()
             self.waiting_for_answer = False
 
@@ -106,7 +116,8 @@ class Game:
 
     def check_answer(self, response):
         correct_answer = self.questions[self.current_question_index]["answer"]
-        print(f"Checking answer: '{response.strip().lower()}' against correct answer: '{correct_answer.strip().lower()}'")
+        print(
+            f"Checking answer: '{response.strip().lower()}' against correct answer: '{correct_answer.strip().lower()}'")
         return response.strip().lower() == correct_answer.strip().lower()
 
     def get_user_input(self):
@@ -133,11 +144,13 @@ class Game:
 
                     prompt_text = 'Enter your name:'
                     prompt_surface = font.render(prompt_text, True, (255, 255, 255))
-                    prompt_rect = prompt_surface.get_rect(center=(self.surface.get_width() / 2, self.surface.get_height() / 2 - 50))
+                    prompt_rect = prompt_surface.get_rect(
+                        center=(self.surface.get_width() / 2, self.surface.get_height() / 2 - 50))
                     self.surface.blit(prompt_surface, prompt_rect)
 
                     input_surface = font.render(input_text, True, (255, 255, 255))
-                    input_rect = input_surface.get_rect(center=(self.surface.get_width() / 2, self.surface.get_height() / 2 + 50))
+                    input_rect = input_surface.get_rect(
+                        center=(self.surface.get_width() / 2, self.surface.get_height() / 2 + 50))
                     self.surface.blit(input_surface, input_rect)
 
                     pygame.display.flip()
@@ -157,7 +170,8 @@ class Game:
         self.all_sprites = pygame.sprite.Group(self.character)
         self.enemy_group = pygame.sprite.Group()
         self.ground_level = config.CHARACTER_GROUND_LEVEL
-        self.health_bar = HealthBar(config.HEALTH_BAR_MAX_HEALTH, config.HEALTH_BAR_WIDTH, config.HEALTH_BAR_HEIGHT, config.HEALTH_BAR_X, config.HEALTH_BAR_Y, config.HEALTH_BAR_COLOR)
+        self.health_bar = HealthBar(config.HEALTH_BAR_MAX_HEALTH, config.HEALTH_BAR_WIDTH, config.HEALTH_BAR_HEIGHT,
+                                    config.HEALTH_BAR_X, config.HEALTH_BAR_Y, config.HEALTH_BAR_COLOR)
         self.life_icons = []
         self.lives = config.INITIAL_LIVES
         self.scroll_speed = config.SCROLL_SPEED
@@ -207,7 +221,8 @@ class Game:
                 if self.current_question_index < len(self.questions):
                     self.ask_next_question()
                 else:
-                    self.show_dialog("Congratulations! You've completed all questions for Level One.", auto_hide_seconds=5)
+                    self.dialog_box.show("Congratulations! You've completed all questions for Level One.",
+                                         auto_hide_seconds=5)
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
@@ -247,6 +262,8 @@ class Game:
             moving = True
         if keys[K_UP] and not self.character.is_jumping:
             self.character.jump()
+
+
             moving = True
         if keys[K_LSHIFT] or keys[K_RSHIFT]:
             if keys[K_LEFT] or keys[K_RIGHT]:
@@ -280,43 +297,31 @@ class Game:
             dx = 0
             if keys[K_RIGHT] and not self.character.is_dead:
                 dx = self.scroll_speed
+            if keys[K_LEFT] and not self.character.is_dead:
+                dx = -self.scroll_speed
 
-            self.background.update(dx)
-            self.all_sprites.update()
+            self.character.move(dx, 0)  # Handle horizontal movement
 
             now = pygame.time.get_ticks()
             if now - self.enemy_spawn_timer > 3000:
                 self.spawn_enemy()
                 self.enemy_spawn_timer = now
 
-            if self.dialog_cooldown > 0:
-                self.dialog_cooldown -= self.clock.get_time()
-                if self.dialog_cooldown < 0:
-                    self.dialog_cooldown = 0
-
+            collided = False
             for enemy in self.enemy_group:
                 if pygame.sprite.collide_rect(self.character, enemy):
-                    if self.dialog_cooldown == 0:
-                        enemy.attack()
-                        self.character.hurt()
-                        self.health_bar.update_health(-10)
-                        if self.health_bar.current_health <= 0:
-                            self.handle_character_death()
-                        self.dialog_cooldown = self.dialog_cooldown_time
+                    if self.character.rect.centerx < enemy.rect.centerx:
+                        self.character.stop_movement('right')
+                    else:
+                        self.character.stop_movement('left')
+                    collided = True
+                    break
 
-            for enemy in self.enemy_group:
-                if enemy.rect.right < 0:
-                    enemy.kill()
+            if not collided:
+                self.character.resume_movement()
 
-            if self.health_bar.is_depleted() and not self.character.is_dead:
-                self.handle_character_death()
-
-            if self.character.is_dead:
-                current_time = pygame.time.get_ticks()
-                if self.lives > 0 and current_time - self.death_timer >= 1000:
-                    self.revive_character()
-                elif self.lives == 0 and current_time - self.death_timer >= 1000:
-                    self.game_over()
+            self.background.update(dx)
+            self.all_sprites.update()
 
     def spawn_enemy(self):
         available_types = ["Homeless_1", "Homeless_2", "Homeless_3"]
@@ -324,7 +329,8 @@ class Game:
 
         if available_types:
             enemy_type = random.choice(available_types)
-            new_enemy = Enemy(enemy_type, os.path.join('sprites','enemies'), self.surface.get_width(), 560, self.character)
+            new_enemy = Enemy(enemy_type, os.path.join('sprites', 'enemies'), self.surface.get_width(), 560,
+                              self.character)
             self.all_sprites.add(new_enemy)
             self.enemy_group.add(new_enemy)
             self.spawned_enemies.append(enemy_type)
@@ -334,6 +340,8 @@ class Game:
         self.background.draw(self.surface)
         self.all_sprites.draw(self.surface)
         self.health_bar.draw(self.surface)
+        for enemy in self.enemy_group:
+            enemy.draw_rectangle(self.surface)
         for i in range(self.lives):
             self.life_icons[i].draw(self.surface)
         self.dialog_box.draw()
@@ -370,6 +378,7 @@ class Game:
                         waiting_for_input = False
                         self.running = False
 
+
 def main():
     try:
         game = Game()
@@ -378,6 +387,7 @@ def main():
         print(f"An error occurred: {e}")
         import traceback
         traceback.print_exc()
+
 
 if __name__ == '__main__':
     main()

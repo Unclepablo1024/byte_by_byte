@@ -2,6 +2,7 @@ import pygame
 import random
 import os
 
+
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, enemy_type, folder_path, screen_width, ground_level, main_character):
         super().__init__()
@@ -12,8 +13,10 @@ class Enemy(pygame.sprite.Sprite):
         self.dead_images = self.load_images("Dead.png")
         self.image = self.walk_images[0]
         self.rect = self.image.get_rect()
+        self.hitbox = self.rect.inflate(-150, -150)  # Vertically smaller for jump over
+
         self.last_update = pygame.time.get_ticks()
-        self.frame_rate = 100  # milliseconds per frame
+        self.frame_rate = 100
         self.health = 100
         self.current_frame = 0
         self.state = "walking"
@@ -21,8 +24,9 @@ class Enemy(pygame.sprite.Sprite):
         self.screen_width = screen_width
         self.ground_level = ground_level
         self.main_character = main_character
-        self.direction = -1  # -1 for left, 1 for right
-        self.attack_distance = 50
+        self.direction = -1
+        self.attack_distance = 35
+        self.attack_damage = 20
         self.speed = 2
         self.reset_position()
 
@@ -38,13 +42,16 @@ class Enemy(pygame.sprite.Sprite):
             images.append(frame)
         return images
 
+    def draw_rectangle(self, screen):
+        pygame.draw.rect(screen, (255, 0, 0), self.hitbox, 2)
+
     def update(self):
         now = pygame.time.get_ticks()
         if self.main_character and not self.is_dead:
             player_x = self.main_character.rect.centerx
             enemy_x = self.rect.centerx
             distance = abs(player_x - enemy_x)
-            
+
             if distance < self.attack_distance:
                 self.attack()
                 self.direction = 1 if player_x > enemy_x else -1
@@ -65,15 +72,18 @@ class Enemy(pygame.sprite.Sprite):
                     self.image = self.walk_images[self.current_frame]
 
             self.image = pygame.transform.flip(self.image, self.direction == 1, False)
-            
+
             new_rect = self.image.get_rect()
             new_rect.bottom = self.ground_level
             new_rect.centerx = self.rect.centerx
+
             self.rect = new_rect
+            self.hitbox = self.rect.inflate(-150, -150)
+
 
     def move(self, dx, dy):
         self.rect.x += dx
-        self.rect.bottom = self.ground_level  # 確保敵人保持在地面上
+        self.rect.bottom = self.ground_level
 
     def reset_position(self):
         self.rect.bottom = self.ground_level
@@ -87,6 +97,7 @@ class Enemy(pygame.sprite.Sprite):
         if self.state != "attacking":
             self.state = "attacking"
             self.current_frame = 0
+            self.main_character.hurt(self.attack_damage)
 
     def stop_attack(self):
         if self.state != "walking":
@@ -97,4 +108,4 @@ class Enemy(pygame.sprite.Sprite):
         self.is_dead = True
         self.current_frame = 0
         self.image = self.dead_images[self.current_frame]
-        self.rect.bottom = self.ground_level  # 確保敵人死亡時仍在地面上
+        self.rect.bottom = self.ground_level

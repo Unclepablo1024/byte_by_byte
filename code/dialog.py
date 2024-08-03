@@ -1,6 +1,7 @@
 import pygame
 import os
 
+
 class DialogBox:
     def __init__(self, surface, width, height):
         self.surface = surface
@@ -9,10 +10,10 @@ class DialogBox:
         self.rect = pygame.Rect((surface.get_width() - width) // 2, (surface.get_height() - height) // 2, width, height)
         self.color = pygame.Color('white')
         self.text_color = pygame.Color('black')
-        self.font = pygame.font.Font(os.path.join('fonts','undertalesans.ttf'), 32)
+        self.font = pygame.font.Font(os.path.join('fonts', 'undertalesans.ttf'), 32)
         self.text = ""
         self.active = False
-        self.image = pygame.image.load(os.path.join('pic','s2.png'))
+        self.image = pygame.image.load(os.path.join('pic', 'boss.png'))
         self.image = pygame.transform.scale(self.image, (120, 100))
         self.image_rect = self.image.get_rect(topleft=(self.rect.right - 120, self.rect.top + 100))
         self.typing_speed = 50
@@ -21,14 +22,13 @@ class DialogBox:
         self.full_text = ""
         self.auto_hide_time = None
         self.user_input = ""
-        self.input_font = pygame.font.Font(os.path.join('fonts','undertalesans.ttf'), 32)
+        self.input_font = pygame.font.Font(os.path.join('fonts', 'undertalesans.ttf'), 32)
         self.input_color = (0, 0, 255)
         self.input_text = ""
-        self.max_attempts = 3  
-        self.attempts = 0      
+        self.max_attempts = 3
+        self.attempts = 0
         self.correct_answer = ""
-        self.is_question = False 
-        
+        self.is_question = False
 
     def show(self, text, auto_hide_seconds=None):
         self.full_text = text
@@ -69,7 +69,7 @@ class DialogBox:
         input_text = self.user_input
         self.user_input = ""
         return input_text
-    
+
     def draw(self):
         if not self.active:
             return
@@ -98,7 +98,7 @@ class DialogBox:
             input_surface = self.input_font.render(self.user_input, True, (0, 0, 0))
             input_rect = input_surface.get_rect(bottomleft=(self.rect.left + 10, self.rect.bottom - 10))
             self.surface.blit(input_surface, input_rect)
-    
+
     def set_style(self, background_color, image_path):
         self.background_color = background_color
         self.image = pygame.image.load(image_path)
@@ -107,4 +107,4 @@ class DialogBox:
     def show_dialog(self, message, auto_hide_seconds=None):
         self.show(message, auto_hide_seconds)
         if "Here is Level 1" in message:
-            self.set_style((173, 216, 230), os.path.join('sprites','s4.png'))
+            self.set_style((173, 216, 230), os.path.join('sprites', 's4.png'))
