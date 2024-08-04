@@ -43,7 +43,7 @@ HEALTH_BAR_X = 600 - 30
 HEALTH_BAR_Y = 30
 HEALTH_BAR_COLOR = (0, 255, 0)
 
-
+# Lives setup as well as total lives
 LIFE_ICON_PATH =   os.path.join('sprites', 'Life_icon.png')
 LIFE_ICON_SIZE = 52
 LIFE_ICON_SPACING = 1
