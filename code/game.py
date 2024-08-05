@@ -4,6 +4,7 @@ import sys
 import os
 import random
 from pygame.locals import *
+from boss1 import Boss
 from enemy import Enemy
 from background import Background
 from healthbar import HealthBar, LifeIcon
