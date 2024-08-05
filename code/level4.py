@@ -8,16 +8,15 @@ pygame.init()
 pygame.mixer.init()
 
 # Screen setup
-SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
 pygame.display.set_caption("Trivia Challenge")
 
 # Fonts
-font_path = "../fonts/determinationmono.ttf"  # Adjust this path as needed
-title_font = config.title_font
+font_path = config.FONT_PATH
 font = config.font
-large_font = config.large_font
 small_font = config.small_font
+large_font = config.large_font
+title_font = config.title_font
 
 # Sounds
 correct_sound = pygame.mixer.Sound(os.path.join("..", "audio", "get_point.wav"))
@@ -70,9 +69,9 @@ def show_question(surface, question):
     surface.fill(config.WHITE)
     
     title_surface = title_font.render("Trivia Challenge", True, config.BLUE)
-    surface.blit(title_surface, (SCREEN_WIDTH // 2 - title_surface.get_width() // 2, 20))
+    surface.blit(title_surface, (config.SCREEN_WIDTH // 2 - title_surface.get_width() // 2, 20))
     
-    wrapped_question = config.wrap_text(question["question"], font, SCREEN_WIDTH - 100)
+    wrapped_question = config.wrap_text(question["question"], font, config.SCREEN_WIDTH - 100)
     y_offset = 100
     for line in wrapped_question:
         question_surface = font.render(line, True, config.BLACK)
@@ -86,7 +85,7 @@ def show_question(surface, question):
     option_width = 350  
     option_height = 80  
     space_between = 50   
-    base_x = (SCREEN_WIDTH - 2 * option_width - space_between) // 2  
+    base_x = (config.SCREEN_WIDTH - 2 * option_width - space_between) // 2  
     base_y = 200  
 
     for i, option in enumerate(options):
@@ -97,7 +96,7 @@ def show_question(surface, question):
         draw_button(surface, option, rect, config.BLUE, config.LIGHT_BLUE)
 
     score_text = small_font.render(f"Score: {score}", True, config.BLACK)
-    surface.blit(score_text, (SCREEN_WIDTH - 100, 20))
+    surface.blit(score_text, (config.SCREEN_WIDTH - 100, 20))
 
     progress_text = small_font.render(f"Question {current_question + 1}/13", True, config.BLACK)
     surface.blit(progress_text, (20, 20))
@@ -109,28 +108,24 @@ def show_question(surface, question):
 def draw_revealed_text(surface):
     global revealed_text_indices
     for i, char in enumerate(FULL_TEXT):
-        color = config.GREEN if i not in revealed_text_indices else config.RED
-        char_surface = large_font.render(char, True, color)
+        color = config.LIGHT_BLUE if i not in revealed_text_indices else config.RED
+        char_surface = title_font.render(char, True, color)
         char_width = char_surface.get_width()
-        surface.blit(char_surface, (SCREEN_WIDTH // 2 - len(FULL_TEXT) * char_width // 2 + i * char_width, 550))
+        surface.blit(char_surface, (config.SCREEN_WIDTH // 2 - len(FULL_TEXT) * char_width // 2 + i * char_width, 450))
 
 def show_result(surface, correct):
     global revealed_text_indices
-    result_font = pygame.font.Font(font_path, 66)
+    result_font = config.large_font
     result_text = "Correct!" if correct else "Incorrect!"
     result_color = config.GREEN if correct else config.RED
     result_surface = result_font.render(result_text, True, result_color)
-    screen.blit(result_surface, (SCREEN_WIDTH // 2 - result_surface.get_width() // 2, 400))
+    screen.blit(result_surface, (config.SCREEN_WIDTH // 2 - result_surface.get_width() // 2, 400))
 
     if correct:
-        # score_text = small_font.render(f"Score: {score}", True, config.BLACK)
-        # surface.blit(score_text, (SCREEN_WIDTH // 2 - score_text.get_width() // 2, 250))
-
         next_index = next(i for i in range(len(FULL_TEXT)) if i not in revealed_text_indices)
         revealed_text_indices.add(next_index)
 
     draw_revealed_text(surface)
-
 
     pygame.display.flip()
     pygame.time.delay(1000)
@@ -140,7 +135,6 @@ def randomize_all_options(questions):
     for question in questions:
         random.shuffle(question["options"])
 
-# 在游戏开始前调用这个函数
 randomize_all_options(questions)
 clock = pygame.time.Clock()
 while True:
@@ -176,10 +170,10 @@ while True:
 
     else:
         screen.fill(config.WHITE)
-        game_over_text = large_font.render("Game Over!", True, config.RED)
+        game_over_text = title_font.render("Game Over!", True, config.RED)
         final_score_text = large_font.render(f"Final Score: {score}", True, config.BLACK)
-        screen.blit(game_over_text, (SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, 200))
-        screen.blit(final_score_text, (SCREEN_WIDTH // 2 - final_score_text.get_width() // 2, 300))
+        screen.blit(game_over_text, (config.SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, 200))
+        screen.blit(final_score_text, (config.SCREEN_WIDTH // 2 - final_score_text.get_width() // 2, 300))
 
         pygame.display.flip()
         pygame.time.delay(3000)
