@@ -12,7 +12,7 @@ from music import MusicPlayer
 from character import MainCharacter
 from dialog import DialogBox
 import config
-
+#
 # Initialize game and its components
 class Game:
     def __init__(self):
