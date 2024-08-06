@@ -1,20 +1,21 @@
 import pygame
 import os
-
+import config
 class DialogBox:
     def __init__(self, surface, width, height):
         self.surface = surface
         self.width = width
         self.height = height
         self.rect = pygame.Rect((surface.get_width() - width) // 2, (surface.get_height() - height) // 2, width, height)
-        self.color = pygame.Color('white')
-        self.text_color = pygame.Color('black')
-        self.font = pygame.font.Font(os.path.join('fonts','undertalesans.ttf'), 32)
+        self.dialog_image = pygame.image.load(config.DIALOGUE_BOX_IMAGE_PATH)
+        self.dialog_image = pygame.transform.scale(self.dialog_image, (width, height))
+        self.text_color = pygame.Color('white')
+        self.font = pygame.font.Font(config.DIALOG_FONT_PATH, 32)
         self.text = ""
         self.active = False
         self.image = pygame.image.load(os.path.join('pic','s2.png'))
         self.image = pygame.transform.scale(self.image, (120, 100))
-        self.image_rect = self.image.get_rect(topleft=(self.rect.right - 120, self.rect.top + 100))
+        self.image_rect = self.dialog_image.get_rect(topleft=(self.rect.right - 120, self.rect.top + 100))
         self.typing_speed = 50
         self.last_update_time = pygame.time.get_ticks()
         self.current_char_index = 0
@@ -74,11 +75,11 @@ class DialogBox:
         if not self.active:
             return
 
-        pygame.draw.rect(self.surface, self.color, self.rect)
-        pygame.draw.rect(self.surface, self.text_color, self.rect, 2)
+        self.surface.blit(self.dialog_image, self.rect.topleft)
         words = self.text.split()
         lines = []
         current_line = []
+
         for word in words:
             test_line = ' '.join(current_line + [word])
             if self.font.size(test_line)[0] < self.rect.width - 20:
@@ -108,3 +109,13 @@ class DialogBox:
         self.show(message, auto_hide_seconds)
         if "Here is Level 1" in message:
             self.set_style((173, 216, 230), os.path.join('sprites','s4.png'))
+
+    def handle_events(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                self.backspace()
+            elif event.key == pygame.K_RETURN:
+                return self.get_input()
+            else:
+                self.add_char(event.unicode)
+
