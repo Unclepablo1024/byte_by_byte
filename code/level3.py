@@ -1,29 +1,14 @@
 import pygame
 import random
 import time
+import config
 
 # Initialize Pygame
 pygame.init()
 
 # Set up the display
-WIDTH, HEIGHT = 1200, 800
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((1200, 900))
 pygame.display.set_caption("OOP Matching Game")
-
-# Colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-GRAY = (200, 200, 200)
-LIGHT_BLUE = (173, 216, 230)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
-
-# Font
-font = pygame.font.Font(None, 24)
-
-# Sound Effects
-match_sound = pygame.mixer.Sound("../audio/get_point.wav")
-no_match_sound = pygame.mixer.Sound("../audio/lost-sobbing.wav")
 
 class Block:
     def __init__(self, x, y, width, height, text, category, pair_id):
@@ -36,28 +21,19 @@ class Block:
 
     def draw(self, surface):
         if self.matched:
-            color = GREEN
+            color = config.GREEN
         elif self.selected:
-            color = LIGHT_BLUE
+            color = config.LIGHT_BLUE
         else:
-            color = WHITE
+            color = config.WHITE
         pygame.draw.rect(surface, color, self.rect)
-        pygame.draw.rect(surface, BLACK, self.rect, 2)
+        pygame.draw.rect(surface, config.GRAY, self.rect, 3)
         
-        words = self.text.split()
-        lines = []
-        current_line = words[0]
-        for word in words[1:]:
-            if font.size(current_line + " " + word)[0] <= self.rect.width - 10:
-                current_line += " " + word
-            else:
-                lines.append(current_line)
-                current_line = word
-        lines.append(current_line)
+        lines = config.wrap_text(self.text, config.font, self.rect.width - 10)
         
         y_offset = 10
         for line in lines:
-            text_surface = font.render(line, True, BLACK)
+            text_surface = config.small_font.render(line, True, config.BLACK)
             text_rect = text_surface.get_rect(midtop=(self.rect.centerx, self.rect.y + y_offset))
             surface.blit(text_surface, text_rect)
             y_offset += 30
@@ -69,7 +45,7 @@ class Game:
         self.score = 0
         self.create_blocks()
         self.feedback_text = ""
-        self.feedback_color = BLACK
+        self.feedback_color = config.BLACK
         self.feedback_time = 0
 
     def create_blocks(self):
@@ -86,9 +62,9 @@ class Game:
         pair_id = 0
         for i, (concept, description) in enumerate(concepts):
             x = (i % 4) * 300 + 10
-            y = (i // 4) * 200 + 10
-            self.blocks.append(Block(x, y, 280, 90, concept, "concept", pair_id))
-            self.blocks.append(Block(x, y + 100, 280, 90, description, "description", pair_id))
+            y = (i // 4) * 150 + 10
+            self.blocks.append(Block(x, y, 280, 120, concept, "concept", pair_id))
+            self.blocks.append(Block(x, y + 100, 280, 120, description, "description", pair_id))
             pair_id += 1
         random.shuffle(self.blocks)
 
@@ -119,30 +95,30 @@ class Game:
         block1, block2 = self.selected_blocks
         if block1.pair_id == block2.pair_id and block1.category != block2.category:
             self.feedback_text = "Match found!"
-            self.feedback_color = GREEN
+            self.feedback_color = config.GREEN
             self.score += 1
             block1.matched = True
             block2.matched = True
-            match_sound.play()
+            config.correct_sound.play()
         else:
             self.feedback_text = "No match."
-            self.feedback_color = RED
+            self.feedback_color = config.RED
             block1.selected = False
             block2.selected = False
-            no_match_sound.play()
+            config.wrong_sound.play()
         self.feedback_time = time.time()
         self.selected_blocks.clear()
 
     def draw(self):
-        screen.fill(WHITE)
+        screen.fill(config.WHITE)
         for block in self.blocks:
             block.draw(screen)
-        score_text = font.render(f"Score: {self.score}", True, BLACK)
+        score_text = config.font.render(f"Score: {self.score}", True, config.BLACK)
         screen.blit(score_text, (10, 760))
         
         if time.time() - self.feedback_time < 2:  # Show feedback for 2 seconds
-            feedback_surface = font.render(self.feedback_text, True, self.feedback_color)
-            screen.blit(feedback_surface, (WIDTH // 2 - feedback_surface.get_width() // 2, 730))
+            feedback_surface = config.font.render(self.feedback_text, True, self.feedback_color)
+            screen.blit(feedback_surface, (config.SCREEN_WIDTH // 2 - feedback_surface.get_width() // 2, 730))
         
         pygame.display.flip()
 
