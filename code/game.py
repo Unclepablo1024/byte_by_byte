@@ -19,7 +19,7 @@ class Game:
         pygame.init()
         self.surface = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
         # load icon and sets caption for screen
-        icon = pygame.image.load('icon.png')
+        icon = pygame.image.load('logo/icon.png')
         pygame.display.set_icon(icon)
         pygame.display.set_caption("Byte by Byte")
 
@@ -59,12 +59,15 @@ class Game:
         self.show_dialog(f"Hello {self.name}!\nLet's have fun in Byte by Byte world:)", auto_hide_seconds=4)
 
     def handle_dialog_response(self, response):
-        # Handle the player's responses during Dialogue
+        response = response.lower()
+        #Handle the player's responses during Dialogue
+        print(f"Recieved response: {response}") # Debug Print
         if self.current_question_index == 0 and not self.waiting_for_answer:
-            if response.lower() == 'y':
-                self.waiting_for_answer = True
-                self.ask_next_question()
-            elif response.lower() == 'n':
+            if response == 'y':
+               print("Starting Question Sequence.") # Debug Print
+               self.waiting_for_answer = True
+               self.ask_next_question()
+            elif response == 'n':
                 self.show_dialog(f"Austin!! {self.name} is not ready!!! Come here to help!", auto_hide_seconds=4)
             return
 
@@ -252,20 +255,22 @@ class Game:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     response = self.dialog_box.get_input()
-                    print(f"Dialog response received: {response}")  # Debug print
-                    self.handle_dialog_response(response)
+                    if response:
+                        print(f"Dialog response received: {response}")  # Debug print
+                        self.handle_dialog_response(response)
+
                 elif event.key == pygame.K_BACKSPACE:
                     self.dialog_box.backspace()
+                else:
+                   self.dialog_box.handle_events(event)
 
                 #TEST CODE added key bindings to specific events
-                elif event.key == pygame.K_1:
+                if event.key == pygame.K_1:
                     self.handle_player_input(event) #Damage input
                 elif event.key == pygame.K_5:
                     self.handle_player_input(event) #Change level key binding
-
                 else:
                     self.dialog_box.add_char(event.unicode)
-                    
 
         if not self.dialog_box.active:
             self.handle_continuous_input()
@@ -435,9 +440,11 @@ class Game:
                     self.running = False
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_y:
+                        print("Restarting game...") # Debug Print
                         waiting_for_input = False
                         self.restart_game()
                     elif event.key == pygame.K_n:
+                        print("Exiting Game...") # Debug Print
                         waiting_for_input = False
                         self.running = False
 
