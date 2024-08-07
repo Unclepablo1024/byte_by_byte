@@ -80,8 +80,8 @@ pygame.init()
 pygame.mixer.init()
 
 # Paths
-FONT_PATH = os.path.join("..", "fonts", "determinationmono.ttf")
-AUDIO_PATH = os.path.join("..", "audio")
+FONT_PATH = os.path.join("fonts", "determinationmono.ttf")
+AUDIO_PATH = os.path.join("audio")
 
 
 
