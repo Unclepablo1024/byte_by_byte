@@ -57,8 +57,10 @@ HEALTH_BAR_X = 600 - 30
 HEALTH_BAR_Y = 30
 HEALTH_BAR_COLOR = (0, 255, 0)
 
+
 # Lives setup as well as total lives
-LIFE_ICON_PATH =   os.path.join('../sprites', 'Life_icon.png')
+
+LIFE_ICON_PATH = os.path.join('sprites', 'life_icon.png')
 LIFE_ICON_SIZE = 52
 LIFE_ICON_SPACING = 1
 INITIAL_LIVES = 3
@@ -94,8 +96,9 @@ ENEMY_SPRITES_PATH = os.path.join('..', 'sprites', 'enemies')
 # Music and sound settings
 # BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DEATH_SOUND_PATH = os.path.join( '../audio','pain-scream.wav')
-MAIN_SOUND_PATH = os.path.join( '../audio','western.mp3')
+
+DEATH_SOUND_PATH = os.path.join('audio','pain-scream.wav')
+MAIN_SOUND_PATH = os.path.join('audio','western.mp3')
 
 
 # Game over settings
@@ -111,8 +114,8 @@ pygame.init()
 pygame.mixer.init()
 
 # Paths
-FONT_PATH = os.path.join("..", "fonts", "determinationmono.ttf")
-AUDIO_PATH = os.path.join("..", "audio")
+FONT_PATH = os.path.join("fonts", "determinationmono.ttf")
+AUDIO_PATH = os.path.join("audio")
 
 
 

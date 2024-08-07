@@ -18,7 +18,8 @@ class Game:
     def __init__(self):
         pygame.init()
         self.surface = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
-        icon = pygame.image.load('../icon.png')
+
+        icon = pygame.image.load('logo/icon.png')
         pygame.display.set_icon(icon)
         pygame.display.set_caption("Byte by Byte")
 
@@ -44,6 +45,10 @@ class Game:
         self.enemy_count = 0
 
 
+        #Dialogue setup for change level to level
+        self.boss_deaths = 1
+        self.boss_trigger = False
+
     def init_resources(self):
         # Loads resources like music and sounds
         self.music_player = MusicPlayer()
@@ -62,12 +67,15 @@ class Game:
         self.show_dialog(f"Hello {self.name}!\nLet's have fun in Byte by Byte world:)", auto_hide_seconds=4)
 
     def handle_dialog_response(self, response):
-        # Handle the player's responses during Dialogue
+        response = response.lower()
+        #Handle the player's responses during Dialogue
+        print(f"Recieved response: {response}") # Debug Print
         if self.current_question_index == 0 and not self.waiting_for_answer:
-            if response.lower() == 'y':
-                self.waiting_for_answer = True
-                self.ask_next_question()
-            elif response.lower() == 'n':
+            if response == 'y':
+               print("Starting Question Sequence.") # Debug Print
+               self.waiting_for_answer = True
+               self.ask_next_question()
+            elif response == 'n':
                 self.show_dialog(f"Austin!! {self.name} is not ready!!! Come here to help!", auto_hide_seconds=4)
             return
 
@@ -116,6 +124,18 @@ class Game:
                 self.show_dialog(f"You've only answered {self.correct_answers} out of {self.total_questions} questions correctly. You need to answer all 5 questions correctly to pass. Try again!", auto_hide_seconds=6)
                 self.restart_level()
             self.waiting_for_answer = False
+
+    def change_level_dialogue(self):
+    # Check if the boss has been defeated and trigger level change
+        if self.boss_deaths == 1:
+            self.show_dialog("You have completed Level 1, press 'x' to continue!", auto_hide_seconds=5)
+
+        if self.boss_deaths == 2:
+            self.show_dialog("You have completed Level 2, press 'x' to continue!", auto_hide_seconds=5)
+
+        if self.boss_deaths == 3:
+            self.show_dialog("You have completed Level 3, press 'x' to continue!", auto_hide_seconds=5)
+
 
     def restart_level(self):
         # The function restarts the current level and all relevant level variables
@@ -326,20 +346,26 @@ class Game:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     response = self.dialog_box.get_input()
-                    print(f"Dialog response received: {response}")  # Debug print
-                    self.handle_dialog_response(response)
+                    if response:
+                        print(f"Dialog response received: {response}")  # Debug print
+                        self.handle_dialog_response(response)
+
                 elif event.key == pygame.K_BACKSPACE:
                     self.dialog_box.backspace()
+                else:
+                   self.dialog_box.handle_events(event)
 
                 #TEST CODE added key bindings to specific events
-                elif event.key == pygame.K_1:
+                if event.key == pygame.K_1:
                     self.handle_player_input(event) #Damage input
-                elif event.key == pygame.K_5:
-                    self.handle_player_input(event) #Change level key binding
-
+                    
+                #Handles dialog prompt at the end of a level to move to the next one
+                elif self.boss_trigger and event.key == pygame.K_x:
+                    self.next_level()
+                    self.boss_deaths += 1
+                    self.boss_trigger = False
                 else:
                     self.dialog_box.add_char(event.unicode)
-                    
 
         if not self.dialog_box.active:
             self.handle_continuous_input()
@@ -458,6 +484,10 @@ class Game:
                     self.revive_character()
                 elif self.lives == 0 and current_time - self.death_timer >= 1000:  # 1 second delay before game over
                     self.game_over()
+            
+            # Check for boss defeat and trigger level change
+            if self.boss_trigger:
+                self.change_level_dialogue()
 
     def spawn_enemy(self):
         try:
@@ -509,9 +539,11 @@ class Game:
                     self.running = False
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_y:
+                        print("Restarting game...") # Debug Print
                         waiting_for_input = False
                         self.restart_game()
                     elif event.key == pygame.K_n:
+                        print("Exiting Game...") # Debug Print
                         waiting_for_input = False
     
                         self.running = False
