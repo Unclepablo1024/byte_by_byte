@@ -1,10 +1,11 @@
 import pygame
 import config
 from healthbar import HealthBar
-import time
+
 
 class MainCharacter(pygame.sprite.Sprite):
-    def __init__(self, idle_picture_path, walk_gif_path, jump_gif_path, run_gif_path, hurt_gif_path, die_gif_path):
+    def __init__(self, idle_picture_path, walk_gif_path, jump_gif_path, run_gif_path, hurt_gif_path, die_gif_path,
+                 attack_1_gif_path, attack_2_gif_path, attack_3_gif_path):
         super().__init__()
         self.idle_image = pygame.image.load(idle_picture_path).convert_alpha()
         self.walk_frames = self.load_gif_frames(walk_gif_path)
@@ -12,6 +13,11 @@ class MainCharacter(pygame.sprite.Sprite):
         self.run_frames = self.load_gif_frames(run_gif_path)
         self.hurt_frames = self.load_gif_frames(hurt_gif_path)
         self.die_frames = self.load_gif_frames(die_gif_path)
+        self.attack_animations = [
+            self.load_gif_frames(attack_1_gif_path),
+            self.load_gif_frames(attack_2_gif_path),
+            self.load_gif_frames(attack_3_gif_path)
+        ]
         self.image = self.idle_image
         self.rect = self.image.get_rect()
         self.hitbox = self.rect.inflate(-150, -150)
@@ -24,7 +30,9 @@ class MainCharacter(pygame.sprite.Sprite):
         self.is_running = False
         self.is_hurt = False
         self.is_dead = False
-        self.is_attacking = False  # Ensure this attribute is properly initialized
+        self.is_attacking = False
+        self.attack_index = 0
+        self.attack_damage = 10
         self.vertical_velocity = 0
         self.gravity = config.CHARACTER_GRAVITY
         self.jump_strength = config.CHARACTER_JUMP_STRENGTH
@@ -54,7 +62,6 @@ class MainCharacter(pygame.sprite.Sprite):
             return
 
         if self.is_hurt:
-
             if now - self.last_update > self.frame_rate:
                 self.last_update = now
                 self.current_frame = (self.current_frame + 1) % len(self.hurt_frames)
@@ -64,7 +71,6 @@ class MainCharacter(pygame.sprite.Sprite):
             return
 
         if self.is_jumping:
-
             self.vertical_velocity += self.gravity
             self.rect.y += self.vertical_velocity
             if self.rect.y >= self.ground_level:
@@ -123,19 +129,13 @@ class MainCharacter(pygame.sprite.Sprite):
             self.vertical_velocity = self.jump_strength
 
     def hurt(self, damage):
-
-        if self.is_jumping:
-
-            return
-
         if not self.is_dead:
-            self.health_bar.update_health(-damage)
             self.is_hurt = True
-
-
-
-
-
+            self.health_bar.update_health(-damage)
+            if self.health_bar.current_health <= 0:
+                self.die()
+            else:
+                self.image = self.hurt_frames[0]
 
     def stop_hurt(self):
         self.is_hurt = False
@@ -147,6 +147,7 @@ class MainCharacter(pygame.sprite.Sprite):
 
     def revive(self):
         self.is_dead = False
+        self.health_bar.reset()
         self.image = self.idle_image
         self.rect.topleft = (100, 430)  # Reset to starting position
         self.is_jumping = False  # Reset jumping state
@@ -162,3 +163,9 @@ class MainCharacter(pygame.sprite.Sprite):
 
     def set_walking(self, walking):
         self.is_walking = walking
+
+    def attack(self):
+        if not self.is_attacking and not self.is_dead and not self.is_hurt and not self.is_jumping:
+            self.is_attacking = True
+            self.attack_index = (self.attack_index + 1) % len(self.attack_animations)
+            self.current_frame = 0

@@ -29,7 +29,7 @@ HURT_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Hurt.png')
 DIE_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Dead.png')
 
 # Health bar settings
-HEALTH_BAR_MAX_HEALTH = 100
+HEALTH_BAR_MAX_HEALTH = 200
 HEALTH_BAR_WIDTH = 200
 HEALTH_BAR_HEIGHT = 20
 HEALTH_BAR_X = 600 - 30
@@ -55,6 +55,7 @@ ENEMY_SPRITES_PATH = os.path.join('sprites', 'enemies')
 ATTACK_1_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Attack_1.png')
 ATTACK_2_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Attack_2.png')
 ATTACK_3_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Attack_3.png')
+ATTACK_RANGE = 50
 # Music and sound settings
 DEATH_SOUND_PATH = os.path.join('audio', 'pain-scream.wav')
 MAIN_SOUND_PATH = os.path.join('audio', 'western.mp3')
