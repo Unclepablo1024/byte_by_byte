@@ -18,28 +18,31 @@ class Game:
     def __init__(self):
         pygame.init()
         self.surface = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
-        # load icon and sets caption for screen
-        icon = pygame.image.load('icon.png')
+        icon = pygame.image.load('../icon.png')
         pygame.display.set_icon(icon)
         pygame.display.set_caption("Byte by Byte")
 
         self.clock = pygame.time.Clock()
         self.running = True
-        self.current_level = 1   # identifies current level
-        self.name = ""           # Player Name
-        self.init_resources()    # Loads resources like music and sounds
-        self.restart_game()      # restarts the game in terms of character or enemies
+        self.current_level = 1
+        self.current_enemies = config.LEVELS[self.current_level]["enemies"]
+        self.spawned_enemies = []
+        self.name = ""
+        self.init_resources()
+        self.max_enemies = config.MAX_ENEMIES  # Ensure this line is here
+        self.restart_game()
 
-        #Dialog interaction setup
         self.dialog_box = DialogBox(self.surface, 600, 200)
         self.current_question_index = 0
         self.current_attempt = 0
-        self.attempts = 0  # Initialize attempts
+        self.attempts = 0
         self.max_attempts = 3
         self.questions = config.get_random_questions(5)
-        self.waiting_for_answer = False  # New flag to track if we're waiting for an answer
-        self.correct_answers = 0  # New variable to track correct answers
-        self.total_questions = 5  # Total number of questions to pass the level
+        self.waiting_for_answer = False
+        self.correct_answers = 0
+        self.total_questions = 5
+        self.enemy_count = 0
+
 
     def init_resources(self):
         # Loads resources like music and sounds
@@ -209,20 +212,91 @@ class Game:
         self.set_level(self.current_level)  # Ensure the correct background is set
 
     def set_level(self, level):
-    # The function handles the change of the level 
-        print(f"Setting level: {level}")  # Debug
+        print(f"Setting level: {level}")
         level_settings = config.LEVELS.get(level)
         if level_settings:
-            print(f"Loading background for level {level}: {level_settings['background']}")  # Debug
-            self.background = Background(str(level_settings["background"]), config.BACKGROUND_SIZE)
+            print(f"Loading background for level {level}: {level_settings['background']}")
+            try:
+                self.background = Background(str(level_settings["background"]), config.BACKGROUND_SIZE)
+            except Exception as e:
+                print(f"Error loading background: {str(e)}")
+            
+            self.current_enemies = level_settings["enemies"]
+            print(f"Enemies for level {level}: {self.current_enemies}")
+
+            # Stop the current music and play the new level's music
+            if self.music_player:
+                self.music_player.stop_main_music()
+            
+            if 'music' in level_settings:
+                music_path = level_settings["music"]
+                print(f"Attempting to play music for level {level}: {music_path}")
+                if os.path.exists(music_path):
+                    try:
+                        self.music_player.play_music(music_path)
+                        print(f"Music started for level {level}")
+                    except Exception as e:
+                        print(f"Error playing music: {str(e)}")
+                else:
+                    print(f"Music file not found: {music_path}")
+            else:
+                print(f"No music specified for level {level}")
         else:
-            print(f"Level {level} not found in configuration.") # Debug
-            self.background = Background(str(config.LEVELS[1]["background"]), config.BACKGROUND_SIZE)
+            print(f"Level {level} not found in configuration. Using default level 1 settings.")
+            try:
+                self.background = Background(str(config.LEVELS[1]["background"]), config.BACKGROUND_SIZE)
+            except Exception as e:
+                print(f"Error loading default background: {str(e)}")
+            
+            self.current_enemies = config.LEVELS[1]["enemies"]
+            if self.music_player:
+                self.music_player.stop_main_music()
+            if 'music' in config.LEVELS[1]:
+                try:
+                    self.music_player.play_music(config.LEVELS[1]["music"])
+                    print("Default music started")
+                except Exception as e:
+                    print(f"Error playing default music: {str(e)}")
+        
+        self.current_level = level
+        print(f"Level set to {self.current_level}")
+
+        # Reset game state for new level
+        self.enemy_count = 0
+        self.enemy_group.empty()
+        self.all_sprites.remove([sprite for sprite in self.all_sprites if isinstance(sprite, Enemy)])
+        
+        # Reset character position
+        self.character.rect.x = config.CHARACTER_INITIAL_X
+        self.character.rect.y = config.CHARACTER_GROUND_LEVEL
+        print(f"Character position reset to ({self.character.rect.x}, {self.character.rect.y})")
+        
+        # Spawn initial enemies for the new level
+        print(f"Spawning initial enemies for level {level}")
+        for i in range(min(5, self.max_enemies)):
+            enemy = self.spawn_enemy()
+            if enemy:
+                print(f"Enemy {i+1} spawned: {type(enemy).__name__}")
+            else:
+                print(f"Failed to spawn enemy {i+1}")
+
+        # Reset enemy spawn timer
+        self.enemy_spawn_timer = pygame.time.get_ticks()
+        
+        # Check if music is playing
+        if pygame.mixer.music.get_busy():
+            print("Music is currently playing")
+        else:
+            print("No music is playing")
+        
+        print(f"Level {level} setup complete")
+
+
+
     
     def run(self):
         # Main game loop, it processes inputs, updates game state.. etc
         self.ask_for_name()
-        self.music_player.play_main_music()
         while self.running:
             self.handle_events() #process input events
             self.update() #updates game logic
@@ -353,7 +427,8 @@ class Game:
             self.all_sprites.update()
 
             now = pygame.time.get_ticks()
-            if now - self.enemy_spawn_timer > 3000:
+            now = pygame.time.get_ticks()
+            if now - self.enemy_spawn_timer > 3000 and self.enemy_count < self.max_enemies:
                 self.spawn_enemy()
                 self.enemy_spawn_timer = now
 
@@ -385,16 +460,15 @@ class Game:
                     self.game_over()
 
     def spawn_enemy(self):
-    # Spawn enemies randomly from available types, ensuring no duplicates
-        available_types = ["Homeless_1", "Homeless_2", "Homeless_3"]
-        available_types = [type for type in available_types if type not in self.spawned_enemies]
-
-        if available_types:
-            enemy_type = random.choice(available_types)
-            new_enemy = Enemy(enemy_type, os.path.join('sprites','enemies'), self.surface.get_width(), 560, self.character)
-            self.all_sprites.add(new_enemy)
+        try:
+            enemy_type = random.choice(self.current_enemies)
+            print(f"Selected enemy type: {enemy_type}")
+            new_enemy = Enemy(enemy_type, os.path.join('../sprites', 'enemies'), self.surface.get_width(), 560, self.character)
             self.enemy_group.add(new_enemy)
-            self.spawned_enemies.append(enemy_type)
+            self.all_sprites.add(new_enemy)
+            self.enemy_count += 1
+        except FileNotFoundError as e:
+            print(f"Error spawning enemy: {e}")
 
     def draw(self):
     # Draw all game elements: background, sprites, health bar, dialog box. etc
@@ -439,8 +513,9 @@ class Game:
                         self.restart_game()
                     elif event.key == pygame.K_n:
                         waiting_for_input = False
+    
                         self.running = False
-
+    
 def main():
     try:
         game = Game()

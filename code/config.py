@@ -18,23 +18,36 @@ SCROLL_SPEED = 5
 RUN_SPEED_MULTIPLIER = 2
 
 # Background settings
-BACKGROUND_IMAGE_PATH = os.path.join('sprites', 'backgrounds', 'City2_pale.png')
+BACKGROUND_IMAGE_PATH = os.path.join('../sprites', 'backgrounds', 'City2_pale.png')
 BACKGROUND_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 
+MAX_ENEMIES = 30
 # Background settings for levels
 LEVELS = {
-    1: {"background": os.path.join("sprites", "backgrounds", "City2_pale.png")},
-    2: {"background": os.path.join("sprites", "backgrounds", "City3.png")},
-    3: {"background": os.path.join("sprites", "backgrounds", "City4.png")}
+    1: {
+        "background": os.path.join("../sprites", "backgrounds", "City2_pale.png"),
+        "enemies": ["Homeless_1", "Homeless_2", "Homeless_3"],
+        "music": os.path.join('../audio', 'western.mp3')
+    },
+    2: {
+        "background": os.path.join("../sprites", "backgrounds", "City3.png"),
+        "enemies": ["Homeless_1", "Homeless_2", "Homeless_3", "Robot_1", "Robot_2", "Robot_3"],
+        "music": os.path.join('../audio', 'cyberpunk.mp3')
+    },
+    3: {
+        "background": os.path.join("../sprites", "backgrounds", "City4.png"),
+        "enemies": ["Homeless_1", "Homeless_2", "Homeless_3", "Robot_1", "Robot_2", "Robot_3", "Vampire_1", "Vampire_2", "Vampire_3", "Cat", "Dog"],
+        "music": os.path.join('../audio', 'bleach.mp3')
+    }
 }
 
 # Character sprites
-IDLE_PICTURE_PATH = os.path.join('sprites','Gangsters_2', 'Idlefix.png')
-WALK_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Walk.png')
-JUMP_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Jump.png')
-RUN_GIF_PATH = os.path.join('sprites', 'Gangsters_2','Run.png')
-HURT_GIF_PATH = os.path.join('sprites', 'Gangsters_2','Hurt.png')
-DIE_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Dead.png')
+IDLE_PICTURE_PATH = os.path.join('../sprites','Gangsters_2', 'Idlefix.png')
+WALK_GIF_PATH = os.path.join('../sprites', 'Gangsters_2', 'Walk.png')
+JUMP_GIF_PATH = os.path.join('../sprites', 'Gangsters_2', 'Jump.png')
+RUN_GIF_PATH = os.path.join('../sprites', 'Gangsters_2','Run.png')
+HURT_GIF_PATH = os.path.join('../sprites', 'Gangsters_2','Hurt.png')
+DIE_GIF_PATH = os.path.join('../sprites', 'Gangsters_2', 'Dead.png')
 
 # Health bar settings
 HEALTH_BAR_MAX_HEALTH = 100
@@ -45,7 +58,7 @@ HEALTH_BAR_Y = 30
 HEALTH_BAR_COLOR = (0, 255, 0)
 
 # Lives setup as well as total lives
-LIFE_ICON_PATH =   os.path.join('sprites', 'Life_icon.png')
+LIFE_ICON_PATH =   os.path.join('../sprites', 'Life_icon.png')
 LIFE_ICON_SIZE = 52
 LIFE_ICON_SPACING = 1
 INITIAL_LIVES = 3
@@ -57,21 +70,39 @@ DIALOGUE_BOX_IMAGE_PATH = os.path.join('sprites', 'Dialouge', 'Dialouge boxes', 
 DIALOG_COOLDOWN_TIME = 2000  # 2 seconds cooldown
 
 # Enemy settings
-ENEMY_TYPES = ["Homeless_1", "Homeless_2", "Homeless_3"]
-ENEMY_SPRITES_PATH = os.path.join('sprites', 'enemies')
+LEVELS = {
+    1: {
+        "background": os.path.join("../sprites", "backgrounds", "City2_pale.png"),
+        "enemies": ["Homeless_1", "Homeless_2", "Homeless_3"],
+        "music": os.path.join('../audio', 'western.mp3')
+    },
+    2: {
+        "background": os.path.join("../sprites", "backgrounds", "City3.png"),
+        "enemies": ["Homeless_1", "Homeless_2", "Homeless_3", "Robot_1", "Robot_2", "Robot_3"],
+        "music": os.path.join('../audio', 'cyberpunk.mp3')
+    },
+    3: {
+        "background": os.path.join("../sprites", "backgrounds", "City4.png"),
+        "enemies": ["Homeless_1", "Homeless_2", "Homeless_3", "Robot_1", "Robot_2", "Robot_3", "Vampire_1", "Vampire_2", "Vampire_3", "Cat", "Dog"],
+        "music": os.path.join('../audio', 'bleach.mp3')
+    }
+}
+
+
+ENEMY_SPRITES_PATH = os.path.join('..', 'sprites', 'enemies')
 
 # Music and sound settings
 # BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DEATH_SOUND_PATH = os.path.join( 'audio','pain-scream.wav')
-MAIN_SOUND_PATH = os.path.join( 'audio','western.mp3')
+DEATH_SOUND_PATH = os.path.join( '../audio','pain-scream.wav')
+MAIN_SOUND_PATH = os.path.join( '../audio','western.mp3')
 
 
 # Game over settings
-GAME_OVER_FONT_PATH = os.path.join('fonts','determinationsans.ttf')
+GAME_OVER_FONT_PATH = os.path.join('../fonts','determinationsans.ttf')
 
 # Dialog settings
-DIALOG_FONT_PATH = os.path.join('fonts', 'determinationsans.ttf')
+DIALOG_FONT_PATH = os.path.join('../fonts', 'determinationsans.ttf')
 DIALOGUE_FONT_SIZE = 24
 DIALOG_COOLDOWN_TIME = 2000  # 2 seconds in milliseconds
 
@@ -110,6 +141,8 @@ DARK_GRAY = (50, 50, 50)
 HINT_BG_COLOR = (255, 255, 200)
 HINT_TEXT_COLOR = (0, 100, 0)
 
+
+
 # Level one question
 LEVEL_ONE_QUESTIONS = [
     {"question": "What is the command to create a new Git repository?", "answer": "git init"},
@@ -127,6 +160,8 @@ LEVEL_ONE_QUESTIONS = [
     {"question": "What command is used to clone a repository in Git?", "answer": "git clone"},
     {"question": "What file is used to specify which files Git should ignore?", "answer": ".gitignore"},
 ]
+
+
 
 def get_random_questions(n=5):
     return random.sample(LEVEL_ONE_QUESTIONS, min(n, len(LEVEL_ONE_QUESTIONS)))

@@ -9,10 +9,10 @@ class DialogBox:
         self.rect = pygame.Rect((surface.get_width() - width) // 2, (surface.get_height() - height) // 2, width, height)
         self.color = pygame.Color('white')
         self.text_color = pygame.Color('black')
-        self.font = pygame.font.Font(os.path.join('fonts','undertalesans.ttf'), 32)
+        self.font = pygame.font.Font(os.path.join('../fonts','undertalesans.ttf'), 32)
         self.text = ""
         self.active = False
-        self.image = pygame.image.load(os.path.join('pic','s2.png'))
+        self.image = pygame.image.load(os.path.join('../pic','s2.png'))
         self.image = pygame.transform.scale(self.image, (120, 100))
         self.image_rect = self.image.get_rect(topleft=(self.rect.right - 120, self.rect.top + 100))
         self.typing_speed = 50
@@ -21,7 +21,7 @@ class DialogBox:
         self.full_text = ""
         self.auto_hide_time = None
         self.user_input = ""
-        self.input_font = pygame.font.Font(os.path.join('fonts','undertalesans.ttf'), 32)
+        self.input_font = pygame.font.Font(os.path.join('../fonts','undertalesans.ttf'), 32)
         self.input_color = (0, 0, 255)
         self.input_text = ""
         self.max_attempts = 3  
