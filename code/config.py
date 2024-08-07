@@ -1,5 +1,6 @@
 import os
 import random
+import pygame
 
 # Screen settings
 SCREEN_WIDTH = 800
@@ -61,6 +62,8 @@ FONT_PATH = os.path.join("fonts", "determinationmono.ttf")
 AUDIO_PATH = os.path.join("audio")
 
 
+pygame.init()
+pygame.mixer.init()
 
 #Load common fonts
 font = pygame.font.Font(FONT_PATH, 24)
@@ -97,6 +100,12 @@ GAME_OVER_FONT_PATH = os.path.join('fonts','determinationsans.ttf')
 DIALOG_FONT_PATH = os.path.join('fonts', 'determinationsans.ttf')
 DIALOGUE_FONT_SIZE = 24
 DIALOG_COOLDOWN_TIME = 2000  # 2 seconds in milliseconds
+
+LEVELS = {
+    1: {"background": os.path.join("sprites", "backgrounds", "City2_pale.png")},
+    2: {"background": os.path.join("sprites", "backgrounds", "City3.png")},
+    3: {"background": os.path.join("sprites", "backgrounds", "City4.png")}
+}
 
 
 # Level one question
