@@ -3,14 +3,14 @@ import os
 
 def check_images():
     images = [
-        "../sprites/Gangsters_2/Idlefix.png",
-        "../sprites/Gangsters_2/Walk.png",
-        "../sprites/Gangsters_2/Jump.png",
-        "../sprites/Gangsters_2/Run.png",
-        "../sprites/Gangsters_2/Hurt.png",
-        "../sprites/Gangsters_2/Dead.png",
-        "../sprites/backgrounds/City2_pale.png",
-        "../sprites/life_icon.png",
+        "sprites/Gangsters_2/Idlefix.png",
+        "sprites/Gangsters_2/Walk.png",
+        "sprites/Gangsters_2/Jump.png",
+        "sprites/Gangsters_2/Run.png",
+        "sprites/Gangsters_2/Hurt.png",
+        "sprites/Gangsters_2/Dead.png",
+        "sprites/backgrounds/City2_pale.png",
+        "sprites/life_icon.png",
         # 其他圖像文件...
     ]
 
