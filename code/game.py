@@ -30,7 +30,7 @@ class Game:
         self.spawned_enemies = []
         self.name = ""
         self.init_resources()
-        self.max_enemies = config.MAX_ENEMIES  # Ensure this line is here
+        self.max_enemies = config.MAX_ENEMIES
         self.restart_game()
 
         self.dialog_box = DialogBox(self.surface, 600, 200)
@@ -52,6 +52,8 @@ class Game:
         #Dialogue setup for change level to level
         self.boss_deaths = 1
         self.boss_trigger = False
+
+        self.level_up_prompt_shown = False
 
     def init_resources(self):
         # Loads resources like music and sounds
@@ -88,7 +90,7 @@ class Game:
         if self.waiting_for_answer:
             if self.check_answer(response):
                 self.correct_answers += 1
-                self.show_dialog(f"Good job! You've answered {self.correct_answers} out of {self.total_questions} questions correctly.", auto_hide_seconds=7)
+                self.show_dialog(f"Good job! You've answered {self.correct_answers} questions correctly.", auto_hide_seconds=7)
                 self.current_attempt = 0
                 self.current_question_index += 1
                 self.waiting_for_answer = False
@@ -140,7 +142,9 @@ class Game:
             # ALL questions have been answered, we ca move to the next level or not
             if self.correct_answers == self.total_questions:
                 self.show_dialog("Congratulations! You've answered all 5 questions correctly. You've passed Level One!", auto_hide_seconds=5)
+                self.boss_trigger = True  # Set the boss_trigger flag to True
                 # Here you can add code to move to the next level or end the game
+                self.next_level()
             else:
                 self.show_dialog(f"You've only answered {self.correct_answers} out of {self.total_questions} questions correctly. You need to answer all 5 questions correctly to pass. Try again!", auto_hide_seconds=6)
                 self.restart_level()
@@ -362,7 +366,12 @@ class Game:
                 if self.current_question_index < len(self.questions):
                     self.ask_next_question()
                 else:
-                    self.show_dialog("Congratulations! You've completed all questions for Level One.", auto_hide_seconds=5)
+                    if self.correct_answers == self.total_questions:
+                        self.boss_trigger = True
+                        self.show_dialog("Congratulations! You've answered all 5 questions correctly. You've passed Level One!", auto_hide_seconds=5)
+                    else:
+                        self.show_dialog(f"You've only answered {self.correct_answers} out of {self.total_questions} questions correctly. You need to answer all 5 questions correctly to pass. Try again!", auto_hide_seconds=6)
+                        self.restart_level()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     response = self.dialog_box.get_input()
@@ -370,10 +379,8 @@ class Game:
                         print(f"Dialog response received: {response}")
                         self.handle_dialog_response(response)
                         pygame.event.clear()  # Clear the event queue after processing the response
-
                 elif event.key == pygame.K_BACKSPACE:
                     self.dialog_box.backspace()
-
                 else:
                     self.dialog_box.add_char(event.unicode)
 
