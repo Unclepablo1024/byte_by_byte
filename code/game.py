@@ -44,6 +44,10 @@ class Game:
         self.total_questions = 5
         self.enemy_count = 0
 
+        #Dialogue setup for change level to level
+        self.boss_deaths = 1
+        self.boss_trigger = False
+
 
         #Dialogue setup for change level to level
         self.boss_deaths = 1
@@ -109,6 +113,18 @@ class Game:
         #set a timer for dialog or question handling
         pygame.time.set_timer(pygame.USEREVENT + 2, 3000)
 
+    def change_level_dialogue(self):
+    # Check if the boss has been defeated and trigger level change
+        if self.boss_deaths == 1:
+            self.show_dialog("You have completed Level 1, press 'x' to continue!", auto_hide_seconds=5)
+
+        if self.boss_deaths == 2:
+            self.show_dialog("You have completed Level 2, press 'x' to continue!", auto_hide_seconds=5)
+
+        if self.boss_deaths == 3:
+            self.show_dialog("You have completed Level 3, press 'x' to continue!", auto_hide_seconds=5)
+
+    
     def ask_next_question(self):
         # presents the next question to player
         if self.current_question_index < self.total_questions:
@@ -197,8 +213,11 @@ class Game:
             config.JUMP_GIF_PATH,
             config.RUN_GIF_PATH,
             config.HURT_GIF_PATH,
-            config.DIE_GIF_PATH
-        )
+            config.DIE_GIF_PATH,
+            config.ATTACK_1_GIF_PATH,
+            config.ATTACK_2_GIF_PATH,
+            config.ATTACK_3_GIF_PATH
+    )
         self.background = Background(config.BACKGROUND_IMAGE_PATH, config.BACKGROUND_SIZE)
         self.all_sprites = pygame.sprite.Group(self.character)
         self.enemy_group = pygame.sprite.Group()
@@ -485,6 +504,10 @@ class Game:
                 elif self.lives == 0 and current_time - self.death_timer >= 1000:  # 1 second delay before game over
                     self.game_over()
             
+            # Check for boss defeat and trigger level change
+            if self.boss_trigger:
+                self.change_level_dialogue()
+
             # Check for boss defeat and trigger level change
             if self.boss_trigger:
                 self.change_level_dialogue()
