@@ -19,7 +19,7 @@ class Game:
         pygame.init()
         self.surface = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
 
-        icon = pygame.image.load('logo/icon.png')
+        icon = pygame.image.load('../logo/icon.png')
         pygame.display.set_icon(icon)
         pygame.display.set_caption("Byte by Byte")
 
@@ -71,16 +71,18 @@ class Game:
         self.show_dialog(f"Hello {self.name}!\nLet's have fun in Byte by Byte world:)", auto_hide_seconds=4)
 
     def handle_dialog_response(self, response):
+        pygame.event.clear()
         response = response.lower()
         #Handle the player's responses during Dialogue
         print(f"Recieved response: {response}") # Debug Print
         if self.current_question_index == 0 and not self.waiting_for_answer:
             if response == 'y':
-               print("Starting Question Sequence.") # Debug Print
-               self.waiting_for_answer = True
-               self.ask_next_question()
+                print("Starting Question Sequence.") # Debug Print
+                self.waiting_for_answer = True
+                self.ask_next_question()
             elif response == 'n':
                 self.show_dialog(f"Austin!! {self.name} is not ready!!! Come here to help!", auto_hide_seconds=4)
+            pygame.event.clear()
             return
 
         if self.waiting_for_answer:
@@ -103,11 +105,13 @@ class Game:
                     self.waiting_for_answer = False
                     self.current_question_index += 1
                     pygame.time.set_timer(pygame.USEREVENT + 2, 5000)  # Give more time to read the correct answer
+                
                 else:
                     # Inform the player of remaining attempts
                     attempts_left = self.max_attempts - self.current_attempt
                     self.show_dialog(f"Wrong! Attempts left: {attempts_left}. Please try again!", auto_hide_seconds=3)
                     self.set_timer()
+                pygame.event.clear()
 
     def set_timer(self):
         #set a timer for dialog or question handling
@@ -126,6 +130,7 @@ class Game:
 
     
     def ask_next_question(self):
+        pygame.event.clear()
         # presents the next question to player
         if self.current_question_index < self.total_questions:
             question = self.questions[self.current_question_index]["question"]
@@ -170,12 +175,12 @@ class Game:
 
     
     def get_user_input(self):
-        # The function captures the players input
         input_text = ""
         font = pygame.font.Font(config.GAME_OVER_FONT_PATH, 60)
-        
+
         while True:
-            for event in pygame.event.get():
+            events = pygame.event.get()
+            for event in events:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
@@ -187,23 +192,23 @@ class Game:
                     elif event.key == pygame.K_ESCAPE:
                         pygame.quit()
                         sys.exit()
-                    else:
+                    elif event.unicode.isprintable() and len(event.unicode) == 1:
                         input_text += event.unicode
-                    
-                    self.surface.fill((0, 0, 0))
-                    
-                    prompt_text = 'Enter your name:'
-                    prompt_surface = font.render(prompt_text, True, (255, 255, 255))
-                    prompt_rect = prompt_surface.get_rect(center=(self.surface.get_width() / 2, self.surface.get_height() / 2 - 50))
-                    self.surface.blit(prompt_surface, prompt_rect)
-                    
-                    input_surface = font.render(input_text, True, (255, 255, 255))
-                    input_rect = input_surface.get_rect(center=(self.surface.get_width() / 2, self.surface.get_height() / 2 + 50))
-                    self.surface.blit(input_surface, input_rect)
-                    
-                    pygame.display.flip() # updates the display
-        
-            self.clock.tick(30) # Limit input processing to 30 FPS
+
+            self.surface.fill((0, 0, 0))
+
+            prompt_text = 'Enter your name:'
+            prompt_surface = font.render(prompt_text, True, (255, 255, 255))
+            prompt_rect = prompt_surface.get_rect(center=(self.surface.get_width() / 2, self.surface.get_height() / 2 - 50))
+            self.surface.blit(prompt_surface, prompt_rect)
+
+            input_surface = font.render(input_text, True, (255, 255, 255))
+            input_rect = input_surface.get_rect(center=(self.surface.get_width() / 2, self.surface.get_height() / 2 + 50))
+            self.surface.blit(input_surface, input_rect)
+
+            pygame.display.flip()
+
+            self.clock.tick(60)
 
     def restart_game(self):
         # this function restarts the game, including character, Background ..etc
@@ -334,63 +339,60 @@ class Game:
 
     
     def run(self):
-        # Main game loop, it processes inputs, updates game state.. etc
         self.ask_for_name()
         while self.running:
-            self.handle_events() #process input events
-            self.update() #updates game logic
-            self.draw() #draws everything on the screen
-            pygame.display.flip() #updates display
-            self.clock.tick(60) #Maintains 60 FPS
+            pygame.event.pump()  # Pump the event queue
+            self.handle_events()  # Process input events
+            self.update()  # Update game logic
+            self.draw()  # Draw everything on the screen
+            pygame.display.flip()  # Update display
+            self.clock.tick(60)  # Maintain 60 FPS
         self.music_player.stop_main_music()
         pygame.quit()
         sys.exit()
 
     def handle_events(self):
-    #the function handles all game events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
-
-            if event.type == pygame.USEREVENT + 1:
+            elif event.type == pygame.USEREVENT + 1:
                 self.dialog_box.hide()
-
-            if event.type == pygame.USEREVENT + 2:
+            elif event.type == pygame.USEREVENT + 2:
                 pygame.time.set_timer(pygame.USEREVENT + 2, 0)
                 if self.current_question_index < len(self.questions):
                     self.ask_next_question()
                 else:
                     self.show_dialog("Congratulations! You've completed all questions for Level One.", auto_hide_seconds=5)
-
-            if event.type == pygame.KEYDOWN:
+            elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     response = self.dialog_box.get_input()
                     if response:
-                        print(f"Dialog response received: {response}")  # Debug print
+                        print(f"Dialog response received: {response}")
                         self.handle_dialog_response(response)
+                        pygame.event.clear()  # Clear the event queue after processing the response
 
                 elif event.key == pygame.K_BACKSPACE:
                     self.dialog_box.backspace()
-                else:
-                   self.dialog_box.handle_events(event)
 
-                #TEST CODE added key bindings to specific events
+                else:
+                    self.dialog_box.add_char(event.unicode)
+
+                # TEST CODE added key bindings to specific events
                 if event.key == pygame.K_1:
-                    self.handle_player_input(event) #Damage input
-                    
-                #Handles dialog prompt at the end of a level to move to the next one
+                    self.handle_player_input(event)
+
+                # Handles dialog prompt at the end of a level to move to the next one
                 elif self.boss_trigger and event.key == pygame.K_x:
                     self.next_level()
                     self.boss_deaths += 1
                     self.boss_trigger = False
-                else:
-                    self.dialog_box.add_char(event.unicode)
 
         if not self.dialog_box.active:
             self.handle_continuous_input()
 
     def show_dialog(self, message, auto_hide_seconds=None):
         self.dialog_box.show(message, auto_hide_seconds)
+        pygame.event.clear()
 
     def handle_player_input(self, event):
         # Handle specific player input for actions like hurting the character or changing levels

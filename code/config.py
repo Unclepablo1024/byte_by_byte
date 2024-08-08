@@ -69,7 +69,7 @@ HEALTH_BAR_COLOR = (0, 255, 0)
 
 # Lives setup as well as total lives
 
-LIFE_ICON_PATH = os.path.join('sprites', 'life_icon.png')
+LIFE_ICON_PATH = os.path.join('../sprites', 'life_icon.png')
 LIFE_ICON_SIZE = 52
 LIFE_ICON_SPACING = 1
 INITIAL_LIVES = 3
@@ -77,7 +77,7 @@ INITIAL_LIVES = 3
 # Dialogue settings
 DIALOGUE_FONT_SIZE = 32
 DIALOGUE_TEXT_COLOR = (255, 255, 255)
-DIALOGUE_BOX_IMAGE_PATH = os.path.join('sprites', 'Dialouge', 'Dialouge boxes', 'BetterDialouge1.png')
+DIALOGUE_BOX_IMAGE_PATH = os.path.join('../sprites', 'Dialouge', 'Dialouge boxes', 'BetterDialouge1.png')
 DIALOG_COOLDOWN_TIME = 2000  # 2 seconds cooldown
 
 
@@ -85,8 +85,8 @@ DIALOG_COOLDOWN_TIME = 2000  # 2 seconds cooldown
 # BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-DEATH_SOUND_PATH = os.path.join('audio','pain-scream.wav')
-MAIN_SOUND_PATH = os.path.join('audio','western.mp3')
+DEATH_SOUND_PATH = os.path.join('../audio','pain-scream.wav')
+MAIN_SOUND_PATH = os.path.join('../audio','western.mp3')
 
 
 # Game over settings
@@ -102,8 +102,8 @@ pygame.init()
 pygame.mixer.init()
 
 # Paths
-FONT_PATH = os.path.join("fonts", "determinationmono.ttf")
-AUDIO_PATH = os.path.join("audio")
+FONT_PATH = os.path.join("../fonts", "determinationmono.ttf")
+AUDIO_PATH = os.path.join("../audio")
 
 # Load common fonts
 font = pygame.font.Font(FONT_PATH, 24)
