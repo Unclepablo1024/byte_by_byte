@@ -73,29 +73,25 @@ class Game:
     def handle_dialog_response(self, response):
         pygame.event.clear()
         response = response.lower()
+        #Handle the player's responses during Dialogue
         print(f"Recieved response: {response}") # Debug Print
-
-        if self.current_question_index == 0:
+        if self.current_question_index == 0 and not self.waiting_for_answer:
             if response == 'y':
                 print("Starting Question Sequence.") # Debug Print
                 self.waiting_for_answer = True
                 self.ask_next_question()
             elif response == 'n':
                 self.show_dialog(f"Austin!! {self.name} is not ready!!! Come here to help!", auto_hide_seconds=4)
+            pygame.event.clear()
             return
 
         if self.waiting_for_answer:
-             correct =  self.check_answer(response) # Checks if correct
-             if correct:
-                self.current_question_index += 1
-
-             self.current_attempt += 1
-
-             if self.current_attempt >= self.max_attempts:
-                correct_answer = self.questions[self.current_question_index]["answer"]
+            if self.check_answer(response):
+                self.correct_answers += 1
                 self.show_dialog(f"Good job! You've answered {self.correct_answers} out of {self.total_questions} questions correctly.", auto_hide_seconds=7)
                 self.current_attempt = 0
                 self.current_question_index += 1
+                self.waiting_for_answer = False
                 pygame.time.set_timer(pygame.USEREVENT + 2, 3000)
             else:
                 self.current_attempt += 1
@@ -109,28 +105,46 @@ class Game:
                     self.waiting_for_answer = False
                     self.current_question_index += 1
                     pygame.time.set_timer(pygame.USEREVENT + 2, 5000)  # Give more time to read the correct answer
+                
                 else:
                     # Inform the player of remaining attempts
                     attempts_left = self.max_attempts - self.current_attempt
                     self.show_dialog(f"Wrong! Attempts left: {attempts_left}. Please try again!", auto_hide_seconds=3)
                     self.set_timer()
+                pygame.event.clear()
 
     def set_timer(self):
         #set a timer for dialog or question handling
         pygame.time.set_timer(pygame.USEREVENT + 2, 3000)
 
+    def change_level_dialogue(self):
+    # Check if the boss has been defeated and trigger level change
+        if self.boss_deaths == 1:
+            self.show_dialog("You have completed Level 1, press 'x' to continue!", auto_hide_seconds=5)
+
+        if self.boss_deaths == 2:
+            self.show_dialog("You have completed Level 2, press 'x' to continue!", auto_hide_seconds=5)
+
+        if self.boss_deaths == 3:
+            self.show_dialog("You have completed Level 3, press 'x' to continue!", auto_hide_seconds=5)
+
+    
     def ask_next_question(self):
         pygame.event.clear()
         # presents the next question to player
-        if self.current_question_index < len(self.questions):
+        if self.current_question_index < self.total_questions:
             question = self.questions[self.current_question_index]["question"]
             self.show_dialog(f"No# {self.current_question_index + 1}: {question}")
             self.waiting_for_answer = True
         else:
+            # ALL questions have been answered, we ca move to the next level or not
+            if self.correct_answers == self.total_questions:
+                self.show_dialog("Congratulations! You've answered all 5 questions correctly. You've passed Level One!", auto_hide_seconds=5)
+                # Here you can add code to move to the next level or end the game
+            else:
+                self.show_dialog(f"You've only answered {self.correct_answers} out of {self.total_questions} questions correctly. You need to answer all 5 questions correctly to pass. Try again!", auto_hide_seconds=6)
+                self.restart_level()
             self.waiting_for_answer = False
-    def set_timer(self):
-        #set a timer for dialog or question handling
-        pygame.time.set_timer(pygame.USEREVENT + 2, 3000)
 
     def change_level_dialogue(self):
     # Check if the boss has been defeated and trigger level change
