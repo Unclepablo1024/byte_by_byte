@@ -41,6 +41,10 @@ class Game:
         self.correct_answers = 0  # New variable to track correct answers
         self.total_questions = 5  # Total number of questions to pass the level
 
+        #Dialogue setup for change level to level
+        self.boss_deaths = 1
+        self.boss_trigger = False
+
     def init_resources(self):
         # Loads resources like music and sounds
         self.music_player = MusicPlayer()
@@ -120,6 +124,18 @@ class Game:
     def set_timer(self):
         #set a timer for dialog or question handling
         pygame.time.set_timer(pygame.USEREVENT + 2, 3000)
+
+    def change_level_dialogue(self):
+    # Check if the boss has been defeated and trigger level change
+        if self.boss_deaths == 1:
+            self.show_dialog("You have completed Level 1, press 'x' to continue!", auto_hide_seconds=5)
+
+        if self.boss_deaths == 2:
+            self.show_dialog("You have completed Level 2, press 'x' to continue!", auto_hide_seconds=5)
+
+        if self.boss_deaths == 3:
+            self.show_dialog("You have completed Level 3, press 'x' to continue!", auto_hide_seconds=5)
+
 
     def restart_level(self):
         # The function restarts the current level and all relevant level variables
@@ -283,10 +299,14 @@ class Game:
                 #TEST CODE added key bindings to specific events
                     if event.key == pygame.K_1:
                         self.handle_player_input(event) # Damage input
-                    elif event.key == pygame.K_5:
-                        self.handle_player_input(event) #Change level key binding
-                    else:
-                        self.dialog_box.add_char(event.unicode)
+
+                #Handles dialog prompt at the end of a level to move to the next one
+                elif self.boss_trigger and event.key == pygame.K_x:
+                    self.next_level()
+                    self.boss_deaths += 1
+                    self.boss_trigger = False
+                else:
+                    self.dialog_box.add_char(event.unicode)
 
         if not self.dialog_box.active:
             self.handle_continuous_input()
@@ -404,6 +424,10 @@ class Game:
                     self.revive_character()
                 elif self.lives == 0 and current_time - self.death_timer >= 1000:  # 1 second delay before game over
                     self.game_over()
+            
+            # Check for boss defeat and trigger level change
+            if self.boss_trigger:
+                self.change_level_dialogue()
 
     def spawn_enemy(self):
     # Spawn enemies randomly from available types, ensuring no duplicates

@@ -2,39 +2,16 @@ import pygame
 import sys
 import random
 import time
+import config
 
 # Initialize Pygame
 pygame.init()
 
 # Set screen dimensions and title
-SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
 pygame.display.set_caption("Fibonacci Coding Challenge")
 
-# Define colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
-BLUE = (0, 0, 255)
-LIGHT_BLUE = (173, 216, 230)
-YELLOW = (255, 255, 0)
-GRAY = (200, 200, 200)
-DARK_GRAY = (50, 50, 50)
-HINT_BG_COLOR = (255, 255, 200)
-HINT_TEXT_COLOR = (0, 100, 0)
-
-# Define fonts
-font_path = "../fonts/determinationmono.ttf"
-font = pygame.font.Font(font_path, 24)
-large_font = pygame.font.Font(font_path, 36)
-small_font = pygame.font.Font(font_path, 18)
-
 # Load sound effects
-correct_sound = pygame.mixer.Sound('../audio/get_point.wav')
-correct_sound.set_volume(0.1)
-wrong_sound = pygame.mixer.Sound('../audio/lost-sobbing.wav')
-wrong_sound.set_volume(0.1)
 background_music = pygame.mixer.Sound('../audio/teach.mp3')
 background_music.set_volume(0.02)
 background_music.play(-1)
@@ -46,31 +23,17 @@ image_width, image_height = 440, 300
 correct_image = pygame.transform.scale(correct_image, (image_width, image_height))
 wrong_image = pygame.transform.scale(wrong_image, (image_width, image_height))
 
-def wrap_text(text, font, max_width):
-    words = text.split(' ')
-    lines = []
-    current_line = []
-    for word in words:
-        test_line = ' '.join(current_line + [word])
-        if font.size(test_line)[0] <= max_width:
-            current_line.append(word)
-        else:
-            lines.append(' '.join(current_line))
-            current_line = [word]
-    lines.append(' '.join(current_line))
-    return lines
-
 def draw_dialog_box(screen, message):
     dialog_width, dialog_height = 600, 300
-    dialog_x = (SCREEN_WIDTH - dialog_width) // 2
-    dialog_y = (SCREEN_HEIGHT - dialog_height) // 2
+    dialog_x = (config.SCREEN_WIDTH - dialog_width) // 2
+    dialog_y = (config.SCREEN_HEIGHT - dialog_height) // 2
     
-    pygame.draw.rect(screen, WHITE, (dialog_x, dialog_y, dialog_width, dialog_height))
-    pygame.draw.rect(screen, BLACK, (dialog_x, dialog_y, dialog_width, dialog_height), 2)
+    pygame.draw.rect(screen, config.WHITE, (dialog_x, dialog_y, dialog_width, dialog_height))
+    pygame.draw.rect(screen, config.BLACK, (dialog_x, dialog_y, dialog_width, dialog_height), 2)
     
-    lines = wrap_text(message, font, dialog_width - 20)
+    lines = config.wrap_text(message, config.font, dialog_width - 20)
     for i, line in enumerate(lines):
-        text_surface = font.render(line, True, BLACK)
+        text_surface = config.font.render(line, True, config.BLACK)
         screen.blit(text_surface, (dialog_x + 10, dialog_y + 10 + i * 30))
     
     pygame.display.flip()
@@ -88,9 +51,9 @@ class CodeBlock(pygame.sprite.Sprite):
     def __init__(self, text, x, y):
         super().__init__()
         self.text = text
-        self.font = small_font
-        self.color = LIGHT_BLUE
-        self.text_color = BLACK
+        self.font = config.small_font
+        self.color = config.LIGHT_BLUE
+        self.text_color = config.BLACK
         self.padding = 5
         self.dragging = False
         self.rect = pygame.Rect(x, y, 0, 0)
@@ -131,11 +94,11 @@ class AnswerSlot:
         self.rect = pygame.Rect(x, y, width, height)
         self.number = number
         self.occupied_block = None
-        self.color = GRAY
+        self.color = config.GRAY
 
     def draw(self, surface):
         pygame.draw.rect(surface, self.color, self.rect, 2)
-        number_text = small_font.render(str(self.number), True, WHITE)
+        number_text = config.small_font.render(str(self.number), True, config.WHITE)
         surface.blit(number_text, (self.rect.x + 5, self.rect.y + 5))
 
 class Level:
@@ -179,7 +142,7 @@ class GameState:
         self.hint_start_time = 0
         self.hint_duration = 3
         self.hint_lines = []
-        self.show_congratulatory_dialog = False  # Renamed variable
+        self.show_congratulatory_dialog = False
         self.reset_level()
 
     def generate_levels(self):
@@ -231,6 +194,7 @@ class GameState:
                    " fib_sequence.append(fibonacci(i))"],
                   "Use a loop to generate the first 10 numbers of the Fibonacci sequence.")
         ]
+        
 
     def reset_level(self):
         current_level = self.levels[self.current_level - 1]
@@ -253,7 +217,7 @@ class GameState:
             self.feedback_image = correct_image
         else:
             self.game_completed = True
-            self.show_congratulatory_dialog = True  # Set to show congratulatory dialog
+            self.show_congratulatory_dialog = True
             self.feedback_image = None
 
     def get_current_level_description(self):
@@ -266,7 +230,7 @@ class GameState:
         self.hint_visible = True
         self.hint_start_time = time.time()
         hint_text = self.get_current_level_hint()
-        self.hint_lines = wrap_text(hint_text, small_font, SCREEN_WIDTH - 100)
+        self.hint_lines = config.wrap_text(hint_text, config.small_font, config.SCREEN_WIDTH - 100)
 
     def update_hint(self):
         if self.hint_visible:
@@ -279,39 +243,39 @@ def main():
     clock = pygame.time.Clock()
     dragging_block = None
     score = 0
-    hint_text = small_font.render("Press H for hint | Press Enter to submit code | Press Space to close feedback image", True, BLACK)
+    hint_text = config.small_font.render("Press H for hint | Press Enter to submit code | Press Space to close feedback image", True, config.BLACK)
 
     while True:
-        screen.fill(WHITE)
-        screen.blit(hint_text, (SCREEN_WIDTH - 790, SCREEN_HEIGHT - 30))
+        screen.fill(config.WHITE)
+        screen.blit(hint_text, (config.SCREEN_WIDTH - 700, config.SCREEN_HEIGHT - 50))
         
         game_state.update_hint()
 
         if game_state.feedback_image:
-            screen.blit(game_state.feedback_image, (SCREEN_WIDTH//2 - game_state.feedback_image.get_width()//2, SCREEN_HEIGHT//2 - game_state.feedback_image.get_height()//2))
+            screen.blit(game_state.feedback_image, (config.SCREEN_WIDTH//2 - game_state.feedback_image.get_width()//2, config.SCREEN_HEIGHT//2 - game_state.feedback_image.get_height()//2))
         else:
             for slot in game_state.answer_slots:
                 slot.draw(screen)
 
             game_state.code_blocks.draw(screen)
-            level_text = large_font.render(f"Level {game_state.current_level}", True, BLACK)
+            level_text = config.large_font.render(f"Level {game_state.current_level}", True, config.BLACK)
             screen.blit(level_text, (50, 30))
-            desc_text = small_font.render(game_state.get_current_level_description(), True, BLACK)
+            desc_text = config.small_font.render(game_state.get_current_level_description(), True, config.BLACK)
             screen.blit(desc_text, (50, 70))
-            score_text = small_font.render(f"Score: {game_state.score}", True, BLACK)
-            screen.blit(score_text, (SCREEN_WIDTH - 150, 30))
+            score_text = config.small_font.render(f"Score: {game_state.score}", True, config.BLACK)
+            screen.blit(score_text, (config.SCREEN_WIDTH - 150, 30))
 
             if game_state.hint_visible:
-                total_height = len(game_state.hint_lines) * small_font.get_linesize()
-                hint_rect = pygame.Rect(0, 0, SCREEN_WIDTH - 40, total_height + 20)
-                hint_rect.bottomleft = (20, SCREEN_HEIGHT - 300)
-                hint_rect.left = (SCREEN_WIDTH - hint_rect.width) // 2  
-                pygame.draw.rect(screen, HINT_BG_COLOR, hint_rect)
-                pygame.draw.rect(screen, HINT_TEXT_COLOR, hint_rect, 2)  
+                total_height = len(game_state.hint_lines) * config.small_font.get_linesize()
+                hint_rect = pygame.Rect(0, 0, config.SCREEN_WIDTH - 40, total_height + 20)
+                hint_rect.bottomleft = (20, config.SCREEN_HEIGHT - 300)
+                hint_rect.left = (config.SCREEN_WIDTH - hint_rect.width) // 2  
+                pygame.draw.rect(screen, config.HINT_BG_COLOR, hint_rect)
+                pygame.draw.rect(screen, config.HINT_TEXT_COLOR, hint_rect, 2)  
 
                 for i, line in enumerate(game_state.hint_lines):
-                    hint_surface = small_font.render(line, True, HINT_TEXT_COLOR)
-                    hint_pos = hint_rect.left + 10, hint_rect.top + 10 + i * small_font.get_linesize()
+                    hint_surface = config.small_font.render(line, True, config.HINT_TEXT_COLOR)
+                    hint_pos = hint_rect.left + 10, hint_rect.top + 10 + i * config.small_font.get_linesize()
                     screen.blit(hint_surface, hint_pos)
 
         if game_state.show_congratulatory_dialog:
@@ -325,11 +289,13 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN and not game_state.feedback_image:
                     if game_state.check_code():
-                        correct_sound.play()
+                        config.correct_sound.play()
+                        config.correct_sound.set_volume(0.02)
                         game_state.score += 1
                         game_state.next_level()
                     else:
-                        wrong_sound.play()
+                        config.wrong_sound.play()
+                        config.wrong_sound.set_volume(0.02)
                         game_state.feedback_image = wrong_image
                         game_state.score -= 1
                 elif event.key == pygame.K_SPACE and game_state.feedback_image:

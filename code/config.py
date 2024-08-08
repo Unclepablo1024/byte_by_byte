@@ -1,3 +1,4 @@
+import pygame
 import os
 import random
 
@@ -74,6 +75,40 @@ DIALOG_FONT_PATH = os.path.join('fonts', 'determinationsans.ttf')
 DIALOGUE_FONT_SIZE = 24
 DIALOG_COOLDOWN_TIME = 2000  # 2 seconds in milliseconds
 
+# Initialize Pygame and mixer
+pygame.init()
+pygame.mixer.init()
+
+# Paths
+FONT_PATH = os.path.join("fonts", "determinationmono.ttf")
+AUDIO_PATH = os.path.join("audio")
+
+
+
+# Load common fonts
+font = pygame.font.Font(FONT_PATH, 24)
+large_font = pygame.font.Font(FONT_PATH, 36)
+small_font = pygame.font.Font(FONT_PATH, 18)
+title_font = pygame.font.Font(FONT_PATH, 48)
+
+
+# Load common sounds
+correct_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "get_point.wav"))
+wrong_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "lost-sobbing.wav"))
+
+
+# Define colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+LIGHT_BLUE = (173, 216, 230)
+YELLOW = (255, 255, 0)
+GRAY = (200, 200, 200)
+DARK_GRAY = (50, 50, 50)
+HINT_BG_COLOR = (255, 255, 200)
+HINT_TEXT_COLOR = (0, 100, 0)
 
 # Level one question
 LEVEL_ONE_QUESTIONS = [
@@ -95,3 +130,16 @@ LEVEL_ONE_QUESTIONS = [
 
 def get_random_questions(n=5):
     return random.sample(LEVEL_ONE_QUESTIONS, min(n, len(LEVEL_ONE_QUESTIONS)))
+
+def wrap_text(text, font, max_width):
+    lines = []
+    words = text.split()
+    while words:
+        line_words = []
+        while words:
+            line_words.append(words.pop(0))
+            fw, fh = font.size(' '.join(line_words + words[:1]))
+            if fw > max_width:
+                break
+        lines.append(' '.join(line_words))
+    return lines
