@@ -62,64 +62,68 @@ class Game:
         self.name = self.get_user_input()
         self.show_dialog(f"Hello {self.name}!\nLet's have fun in Byte by Byte world:)", auto_hide_seconds=4)
 
-    def handle_dialog_response(self, response):
+    def handle_dialog_response(self, response):  # Handle the player's responses during Dialogue
+        if not self.waiting_for_answer:
+            return
         response = response.lower()
-        #Handle the player's responses during Dialogue
         print(f"Recieved response: {response}") # Debug Print
-        if self.current_question_index == 0 and not self.waiting_for_answer:
+
+        if self.current_question_index == 0:
             if response == 'y':
                print("Starting Question Sequence.") # Debug Print
                self.waiting_for_answer = True
                self.ask_next_question()
             elif response == 'n':
                 self.show_dialog(f"Austin!! {self.name} is not ready!!! Come here to help!", auto_hide_seconds=4)
+            self.waiting_for_answer = False
             return
 
         if self.waiting_for_answer:
-            if self.check_answer(response):
-                self.correct_answers += 1
+             correct =  self.check_answer(response) # Checks if correct
+             if correct:
+                self.current_question_index += 1
+
+             self.current_attempt += 1
+
+             if self.current_attempt >= self.max_attempts:
+                correct_answer = self.questions[self.current_question_index]["answer"]
                 self.show_dialog(f"Good job! You've answered {self.correct_answers} out of {self.total_questions} questions correctly.", auto_hide_seconds=7)
                 self.current_attempt = 0
                 self.current_question_index += 1
-                self.waiting_for_answer = False
                 pygame.time.set_timer(pygame.USEREVENT + 2, 3000)
-            else:
-                self.current_attempt += 1
-                self.health_bar.update_health(-10)
-                
-                if self.current_attempt >= self.max_attempts:
-                    # Provide the correct answer after three wrong attempts
-                    correct_answer = self.questions[self.current_question_index]["answer"]
-                    self.show_dialog(f"Oh no! The correct answer was: {correct_answer}", auto_hide_seconds=5)
-                    self.current_attempt = 0
-                    self.waiting_for_answer = False
-                    self.current_question_index += 1
-                    pygame.time.set_timer(pygame.USEREVENT + 2, 5000)  # Give more time to read the correct answer
-                else:
-                    # Inform the player of remaining attempts
-                    attempts_left = self.max_attempts - self.current_attempt
-                    self.show_dialog(f"Wrong! Attempts left: {attempts_left}. Please try again!", auto_hide_seconds=3)
-                    self.set_timer()
+             else:
+                # Inform the player of remaining attempts
+                attempts_left = self.max_attempts - self.current_attempt
+                self.show_dialog(f"Wrong! Attempts left: {attempts_left}. Please try again!", auto_hide_seconds=3)
+                self.set_timer()
 
-    def set_timer(self):
-        #set a timer for dialog or question handling
-        pygame.time.set_timer(pygame.USEREVENT + 2, 3000)
+             if self.current_question_index < len(self.questions):
+                 self.ask_next_question()
+             else:
+                 self.show_dialog(f"Good job! You've answered {self.correct_answers} out of {self.total_questions} questions correctly.", auto_hide_seconds=7)
+                 self.current_attempt = 0
+                 self.waiting_for_answer = False
+                 pygame.time.set_timer(pygame.USEREVENT + 2, 3000)
+
+                 # ALL questions have been answered, we can move to the next level or not
+                 if self.correct_answers >= self.total_questions:
+                    self.show_dialog("Congratulations! You've answered all 5 questions correctly. You've passed Level One!", auto_hide_seconds=5)
+                    # Here you can add code to move to the next level or end the game
+                 else:
+                    self.show_dialog(f"You've only answered {self.correct_answers} out of {self.total_questions} questions correctly. You need to answer all 5 questions correctly to pass. Try again!", auto_hide_seconds=6)
+                    self.restart_level()
 
     def ask_next_question(self):
         # presents the next question to player
-        if self.current_question_index < self.total_questions:
+        if self.current_question_index < len(self.questions):
             question = self.questions[self.current_question_index]["question"]
             self.show_dialog(f"No# {self.current_question_index + 1}: {question}")
             self.waiting_for_answer = True
         else:
-            # ALL questions have been answered, we ca move to the next level or not
-            if self.correct_answers == self.total_questions:
-                self.show_dialog("Congratulations! You've answered all 5 questions correctly. You've passed Level One!", auto_hide_seconds=5)
-                # Here you can add code to move to the next level or end the game
-            else:
-                self.show_dialog(f"You've only answered {self.correct_answers} out of {self.total_questions} questions correctly. You need to answer all 5 questions correctly to pass. Try again!", auto_hide_seconds=6)
-                self.restart_level()
             self.waiting_for_answer = False
+    def set_timer(self):
+        #set a timer for dialog or question handling
+        pygame.time.set_timer(pygame.USEREVENT + 2, 3000)
 
     def change_level_dialogue(self):
     # Check if the boss has been defeated and trigger level change
@@ -269,21 +273,33 @@ class Game:
                     self.show_dialog("Congratulations! You've completed all questions for Level One.", auto_hide_seconds=5)
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    response = self.dialog_box.get_input()
-                    if response:
-                        print(f"Dialog response received: {response}")  # Debug print
-                        self.handle_dialog_response(response)
+                if self.dialog_box.active:
+                    # Prevents double input
+                    if event.key in [pygame.K_RETURN, pygame.K_y, pygame.K_n]:
+                        if event.key == pygame.K_RETURN:
+                            response = self.dialog_box.get_input()
+                        elif event.key == pygame.K_y:
+                            response = 'y'
+                        elif event.key == pygame.K_n:
+                            response = 'n'
+                        if response:
+                            print(f"Dialog response received: {response}")  # Debug print
+                            self.handle_dialog_response(response)
 
-                elif event.key == pygame.K_BACKSPACE:
-                    self.dialog_box.backspace()
+                            self.dialog_box.active = False # Prevents multiple inputs, disables dialog box
+                        return
+
+                    elif event.key == pygame.K_BACKSPACE:
+                        self.dialog_box.backspace()
+                    else:
+                        self.dialog_box.handle_events(event)
                 else:
-                   self.dialog_box.handle_events(event)
+                   # Specific key handling outside of dialog
 
                 #TEST CODE added key bindings to specific events
-                if event.key == pygame.K_1:
-                    self.handle_player_input(event) #Damage input
-                    
+                    if event.key == pygame.K_1:
+                        self.handle_player_input(event) # Damage input
+
                 #Handles dialog prompt at the end of a level to move to the next one
                 elif self.boss_trigger and event.key == pygame.K_x:
                     self.next_level()
