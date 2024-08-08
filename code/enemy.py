@@ -23,8 +23,26 @@ class Enemy(pygame.sprite.Sprite):
         self.main_character = main_character
         self.direction = -1  # -1 for left, 1 for right
         self.attack_distance = 50
-        self.speed = 2
+        self.set_enemy_attributes()
         self.reset_position()
+
+    def set_enemy_attributes(self):
+        if "Robot" in self.enemy_type:
+            self.speed = 3
+            self.attack_power = 15
+            self.health = 120
+        elif "Vampire" in self.enemy_type:
+            self.speed = 4
+            self.attack_power = 20
+            self.health = 100
+        elif self.enemy_type in ["Cat", "Dog"]:
+            self.speed = 5
+            self.attack_power = 10
+            self.health = 80
+        else:  # Homeless
+            self.speed = 2
+            self.attack_power = 5
+            self.health = 100
 
     def load_images(self, action):
         images = []
@@ -50,7 +68,7 @@ class Enemy(pygame.sprite.Sprite):
                 self.direction = 1 if player_x > enemy_x else -1
             else:
                 self.stop_attack()
-                self.direction = -1
+                self.direction = -1 if player_x < enemy_x else 1
 
             if self.state == "walking":
                 self.move(self.speed * self.direction, 0)
@@ -82,19 +100,32 @@ class Enemy(pygame.sprite.Sprite):
         self.current_frame = 0
         self.image = self.walk_images[self.current_frame]
         self.direction = -1
+        self.is_dead = False
+        self.set_enemy_attributes()  # Reset health and other attributes
 
     def attack(self):
         if self.state != "attacking":
             self.state = "attacking"
             self.current_frame = 0
+            return self.attack_power
+        return 0
 
     def stop_attack(self):
         if self.state != "walking":
             self.state = "walking"
             self.current_frame = 0
 
+    def take_damage(self, damage):
+        self.health -= damage
+        if self.health <= 0:
+            self.die()
+
     def die(self):
-        self.is_dead = True
-        self.current_frame = 0
-        self.image = self.dead_images[self.current_frame]
-        self.rect.bottom = self.ground_level  
+        if not self.is_dead:
+            self.is_dead = True
+            self.current_frame = 0
+            self.image = self.dead_images[self.current_frame]
+            self.rect.bottom = self.ground_level
+
+    def is_off_screen(self):
+        return self.rect.right < 0 or self.rect.left > self.screen_width
