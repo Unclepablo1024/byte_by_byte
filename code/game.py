@@ -19,7 +19,7 @@ class Game:
         pygame.init()
         self.surface = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
 
-        icon = pygame.image.load('../logo/icon.png')
+        icon = pygame.image.load('logo/icon.png')
         pygame.display.set_icon(icon)
         pygame.display.set_caption("Byte by Byte")
 
@@ -518,7 +518,7 @@ class Game:
         try:
             enemy_type = random.choice(self.current_enemies)
             print(f"Selected enemy type: {enemy_type}")
-            new_enemy = Enemy(enemy_type, os.path.join('../sprites', 'enemies'), self.surface.get_width(), 560, self.character)
+            new_enemy = Enemy(enemy_type, os.path.join('sprites', 'enemies'), self.surface.get_width(), 560, self.character)
             self.enemy_group.add(new_enemy)
             self.all_sprites.add(new_enemy)
             self.enemy_count += 1
