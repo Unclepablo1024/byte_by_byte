@@ -10,7 +10,7 @@ SCREEN_HEIGHT = 600
 CHARACTER_INITIAL_X = 50
 CHARACTER_GROUND_LEVEL = SCREEN_HEIGHT - 155  # Assuming character height is 128
 CHARACTER_GRAVITY = 1
-CHARACTER_JUMP_STRENGTH = -15
+CHARACTER_JUMP_STRENGTH = -20
 FRAME_RATE = 100  # Milliseconds per frame
 
 # Movement speed
@@ -18,23 +18,45 @@ SCROLL_SPEED = 5
 RUN_SPEED_MULTIPLIER = 2
 
 # Background settings
-BACKGROUND_IMAGE_PATH = os.path.join('sprites', 'backgrounds', 'City2_pale.png')
+BACKGROUND_IMAGE_PATH = os.path.join('../sprites', 'backgrounds', 'City2_pale.png')
 BACKGROUND_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
+
+MAX_ENEMIES = 25
+
+ENEMY_SPRITES_PATH = os.path.join('..', 'sprites', 'enemies')
 
 # Background settings for levels
 LEVELS = {
-    1: {"background": os.path.join("sprites", "backgrounds", "City2_pale.png")},
-    2: {"background": os.path.join("sprites", "backgrounds", "City3.png")},
-    3: {"background": os.path.join("sprites", "backgrounds", "City4.png")}
+    1: {
+        "background": os.path.join("../sprites", "backgrounds", "City2_pale.png"),
+        "enemies": ["Homeless_1", "Homeless_2", "Homeless_3"],
+        "music": os.path.join('../audio', 'western.mp3')
+    },
+    2: {
+        "background": os.path.join("../sprites", "backgrounds", "City3.png"),
+        "enemies": ["Homeless_1", "Homeless_2", "Homeless_3", "Robot_1", "Robot_2", "Robot_3"],
+        "music": os.path.join('../audio', 'cyberpunk.mp3')
+    },
+    3: {
+        "background": os.path.join("../sprites", "backgrounds", "City4.png"),
+        "enemies": ["Cat", "Dog", "Homeless_1", "Homeless_2", "Homeless_3", "Robot_1", "Robot_2", "Robot_3"],
+        "music": os.path.join('../audio', 'bleach.mp3')
+    }
 }
 
 # Character sprites
-IDLE_PICTURE_PATH = os.path.join('sprites','Gangsters_2', 'Idlefix.png')
-WALK_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Walk.png')
-JUMP_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Jump.png')
-RUN_GIF_PATH = os.path.join('sprites', 'Gangsters_2','Run.png')
-HURT_GIF_PATH = os.path.join('sprites', 'Gangsters_2','Hurt.png')
-DIE_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Dead.png')
+IDLE_PICTURE_PATH = os.path.join('../sprites','Gangsters_2', 'Idlefix.png')
+WALK_GIF_PATH = os.path.join('../sprites', 'Gangsters_2', 'Walk.png')
+JUMP_GIF_PATH = os.path.join('../sprites', 'Gangsters_2', 'Jump.png')
+RUN_GIF_PATH = os.path.join('../sprites', 'Gangsters_2','Run.png')
+HURT_GIF_PATH = os.path.join('../sprites', 'Gangsters_2','Hurt.png')
+DIE_GIF_PATH = os.path.join('../sprites', 'Gangsters_2', 'Dead.png')
+
+# Attack animations paths
+ATTACK_1_GIF_PATH = os.path.join('../sprites', 'Gangsters_2', 'Attack_1.png')
+ATTACK_2_GIF_PATH = os.path.join('../sprites', 'Gangsters_2', 'Attack_2.png')
+ATTACK_3_GIF_PATH = os.path.join('../sprites', 'Gangsters_2', 'Attack_3.png')
+ATTACK_RANGE = 50
 
 # Health bar settings
 HEALTH_BAR_MAX_HEALTH = 100
@@ -45,7 +67,9 @@ HEALTH_BAR_Y = 30
 HEALTH_BAR_COLOR = (0, 255, 0)
 
 
-LIFE_ICON_PATH = os.path.join('sprites', 'life_icon.png')
+# Lives setup as well as total lives
+
+LIFE_ICON_PATH = os.path.join('../sprites', 'life_icon.png')
 LIFE_ICON_SIZE = 52
 LIFE_ICON_SPACING = 1
 INITIAL_LIVES = 3
@@ -53,25 +77,23 @@ INITIAL_LIVES = 3
 # Dialogue settings
 DIALOGUE_FONT_SIZE = 32
 DIALOGUE_TEXT_COLOR = (255, 255, 255)
-DIALOGUE_BOX_IMAGE_PATH = os.path.join('sprites', 'Dialouge', 'Dialouge boxes', 'BetterDialouge1.png')
+DIALOGUE_BOX_IMAGE_PATH = os.path.join('../sprites', 'Dialouge', 'Dialouge boxes', 'BetterDialouge1.png')
 DIALOG_COOLDOWN_TIME = 2000  # 2 seconds cooldown
 
-# Enemy settings
-ENEMY_TYPES = ["Homeless_1", "Homeless_2", "Homeless_3"]
-ENEMY_SPRITES_PATH = os.path.join('sprites', 'enemies')
 
 # Music and sound settings
 # BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DEATH_SOUND_PATH = os.path.join('audio','pain-scream.wav')
-MAIN_SOUND_PATH = os.path.join('audio','western.mp3')
+
+DEATH_SOUND_PATH = os.path.join('../audio','pain-scream.wav')
+MAIN_SOUND_PATH = os.path.join('../audio','western.mp3')
 
 
 # Game over settings
-GAME_OVER_FONT_PATH = os.path.join('fonts','determinationsans.ttf')
+GAME_OVER_FONT_PATH = os.path.join('../fonts','determinationsans.ttf')
 
 # Dialog settings
-DIALOG_FONT_PATH = os.path.join('fonts', 'determinationsans.ttf')
+DIALOG_FONT_PATH = os.path.join('../fonts', 'determinationsans.ttf')
 DIALOGUE_FONT_SIZE = 24
 DIALOG_COOLDOWN_TIME = 2000  # 2 seconds in milliseconds
 
@@ -80,17 +102,14 @@ pygame.init()
 pygame.mixer.init()
 
 # Paths
-FONT_PATH = os.path.join("fonts", "determinationmono.ttf")
-AUDIO_PATH = os.path.join("audio")
-
-
+FONT_PATH = os.path.join("../fonts", "determinationmono.ttf")
+AUDIO_PATH = os.path.join("../audio")
 
 # Load common fonts
 font = pygame.font.Font(FONT_PATH, 24)
 large_font = pygame.font.Font(FONT_PATH, 36)
 small_font = pygame.font.Font(FONT_PATH, 18)
 title_font = pygame.font.Font(FONT_PATH, 48)
-
 
 # Load common sounds
 correct_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "get_point.wav"))
@@ -109,6 +128,8 @@ GRAY = (200, 200, 200)
 DARK_GRAY = (50, 50, 50)
 HINT_BG_COLOR = (255, 255, 200)
 HINT_TEXT_COLOR = (0, 100, 0)
+
+
 
 # Level one question
 LEVEL_ONE_QUESTIONS = [

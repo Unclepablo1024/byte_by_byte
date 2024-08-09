@@ -18,8 +18,8 @@ class Game:
     def __init__(self):
         pygame.init()
         self.surface = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
-        # load icon and sets caption for screen
-        icon = pygame.image.load('logo/icon.png')
+
+        icon = pygame.image.load('../logo/icon.png')
         pygame.display.set_icon(icon)
         pygame.display.set_caption("Byte by Byte")
 
@@ -79,7 +79,7 @@ class Game:
             return
 
         if self.waiting_for_answer:
-             correct = self.check_answer(response) # Checks if correct
+             correct =  self.check_answer(response) # Checks if correct
              if correct:
                 self.current_question_index += 1
 
@@ -268,7 +268,7 @@ class Game:
             if event.type == pygame.USEREVENT + 2:
                 pygame.time.set_timer(pygame.USEREVENT + 2, 0)
                 if self.current_question_index < len(self.questions):
-                   self.ask_next_question()
+                    self.ask_next_question()
                 else:
                     self.show_dialog("Congratulations! You've completed all questions for Level One.", auto_hide_seconds=5)
 
@@ -291,14 +291,16 @@ class Game:
 
                 elif event.key == pygame.K_BACKSPACE:
                     self.dialog_box.backspace()
-                else:
-                    self.dialog_box.handle_events(event)
 
-                # Specific key handling outside of dialog
+                else:
+                    self.dialog_box.add_char(event.unicode)
 
                 #TEST CODE added key bindings to specific events
                 if event.key == pygame.K_1:
                     self.handle_player_input(event) # Damage input
+                # TEST CODE added key bindings to specific events
+                if event.key == pygame.K_1:
+                    self.handle_player_input(event)
 
                 #Handles dialog prompt at the end of a level to move to the next one
                 elif self.boss_trigger and event.key == pygame.K_x:
@@ -312,7 +314,7 @@ class Game:
             self.handle_continuous_input()
 
     def show_dialog(self, message, auto_hide_seconds=None):
-            self.dialog_box.show(message, auto_hide_seconds)
+        self.dialog_box.show(message, auto_hide_seconds)
 
     def handle_player_input(self, event):
         # Handle specific player input for actions like hurting the character or changing levels
@@ -322,10 +324,10 @@ class Game:
                 if self.health_bar.current_health <= 0:
                     self.handle_character_death()
 
-        #Handles the level change
-            if event.key == pygame.K_5:
-                print("5 key pressed - attempting to move to next level")  # Debug output
-                self.next_level()
+        #Handles the level change 
+        if event.key == pygame.K_5:
+            print("5 key pressed - attempting to move to next level")  # Debug output
+            self.next_level()
 
     def handle_continuous_input(self):
         # Handle continuous input (e.g., movement keys held down)
@@ -408,7 +410,7 @@ class Game:
                 if pygame.sprite.collide_rect(self.character, enemy):
                     if self.dialog_cooldown == 0:
                         enemy.attack()
-                        self.show_dialog(f"Spare Change? \t If you lose you give me your life Y/N")
+                        self.show_dialog(f"Here is Level 1....\nYou need to answer at least 5 questions correctly to pass..\nAre you ready?! Y/N")
                         self.dialog_cooldown = self.dialog_cooldown_time
 
             for enemy in self.enemy_group:
@@ -429,17 +431,20 @@ class Game:
             if self.boss_trigger:
                 self.change_level_dialogue()
 
-    def spawn_enemy(self):
-    # Spawn enemies randomly from available types, ensuring no duplicates
-        available_types = ["Homeless_1", "Homeless_2", "Homeless_3"]
-        available_types = [type for type in available_types if type not in self.spawned_enemies]
+            # Check for boss defeat and trigger level change
+            if self.boss_trigger:
+                self.change_level_dialogue()
 
-        if available_types:
-            enemy_type = random.choice(available_types)
-            new_enemy = Enemy(enemy_type, os.path.join('sprites','enemies'), self.surface.get_width(), 560, self.character)
-            self.all_sprites.add(new_enemy)
+    def spawn_enemy(self):
+        try:
+            enemy_type = random.choice(self.current_enemies)
+            print(f"Selected enemy type: {enemy_type}")
+            new_enemy = Enemy(enemy_type, os.path.join('../sprites', 'enemies'), self.surface.get_width(), 560, self.character)
             self.enemy_group.add(new_enemy)
-            self.spawned_enemies.append(enemy_type)
+            self.all_sprites.add(new_enemy)
+            self.enemy_count += 1
+        except FileNotFoundError as e:
+            print(f"Error spawning enemy: {e}")
 
     def draw(self):
     # Draw all game elements: background, sprites, health bar, dialog box. etc
@@ -487,7 +492,6 @@ class Game:
                         print("Exiting Game...") # Debug Print
                         waiting_for_input = False
                         self.running = False
-
 
 def main():
     try:
