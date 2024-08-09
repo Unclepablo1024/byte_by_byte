@@ -34,6 +34,24 @@ class Enemy(pygame.sprite.Sprite):
         self.damage_time = None
         self.reset_position()
 
+    def set_enemy_attributes(self):
+        if "Robot" in self.enemy_type:
+            self.speed = 3
+            self.attack_power = 15
+            self.health = 120
+        elif "Vampire" in self.enemy_type:
+            self.speed = 4
+            self.attack_power = 20
+            self.health = 100
+        elif self.enemy_type in ["Cat", "Dog"]:
+            self.speed = 5
+            self.attack_power = 10
+            self.health = 80
+        else:  # Homeless
+            self.speed = 2
+            self.attack_power = 5
+            self.health = 100
+
     def load_images(self, action):
         images = []
         image_path = os.path.join(self.folder_path, self.enemy_type, action)
@@ -70,7 +88,7 @@ class Enemy(pygame.sprite.Sprite):
                 self.direction = 1 if player_x > enemy_x else -1
             else:
                 self.stop_attack()
-                self.direction = -1
+                self.direction = -1 if player_x < enemy_x else 1
 
             if self.state == "walking":
                 self.move(self.speed * self.direction, 0)
@@ -111,6 +129,8 @@ class Enemy(pygame.sprite.Sprite):
         self.current_frame = 0
         self.image = self.walk_images[self.current_frame]
         self.direction = -1
+        self.is_dead = False
+        self.set_enemy_attributes()  # Reset health and other attributes
 
     def attack(self):
         if self.state != "attacking":
@@ -119,12 +139,16 @@ class Enemy(pygame.sprite.Sprite):
             if self.main_character and not self.main_character.is_dead:
                 self.main_character.hurt(self.attack_damage)
 
+            return self.attack_power
+        return 0
+
     def stop_attack(self):
         if self.state != "walking":
             self.state = "walking"
             self.current_frame = 0
 
     def take_damage(self, damage):
+
         if not self.is_dead:
             self.hits_received += 1
             if self.hits_received >= self.max_hits:
@@ -142,3 +166,6 @@ class Enemy(pygame.sprite.Sprite):
 
     def mark_for_damage(self, time):
         self.damage_time = time
+
+    def is_off_screen(self):
+        return self.rect.right < 0 or self.rect.left > self.screen_width
