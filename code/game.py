@@ -11,6 +11,7 @@ from character import MainCharacter
 from dialog import DialogBox
 import config
 
+
 class Game:
     def __init__(self):
         pygame.init()
@@ -174,6 +175,7 @@ class Game:
         self.ground_level = config.CHARACTER_GROUND_LEVEL
         self.health_bar = HealthBar(config.HEALTH_BAR_MAX_HEALTH, config.HEALTH_BAR_WIDTH, config.HEALTH_BAR_HEIGHT,
                                     config.HEALTH_BAR_X, config.HEALTH_BAR_Y, config.HEALTH_BAR_COLOR)
+        self.life_icons = []
         self.lives = config.INITIAL_LIVES
         self.scroll_speed = config.SCROLL_SPEED - 1  # Decrease player speed
         self.dialog_cooldown = 0
@@ -181,13 +183,11 @@ class Game:
         self.death_timer = None
         self.spawned_enemies = []
         self.enemy_spawn_timer = pygame.time.get_ticks()
-        self.update_life_icons()
 
-    def update_life_icons(self):
-        self.life_icons = []
         life_icon_path = config.LIFE_ICON_PATH
         life_icon_size = config.LIFE_ICON_SIZE
         life_icon_spacing = config.LIFE_ICON_SPACING
+
         health_bar_x = self.health_bar.x
         health_bar_y = self.health_bar.y
         health_bar_height = self.health_bar.height
@@ -228,6 +228,7 @@ class Game:
                                          auto_hide_seconds=5)
 
             if event.type == pygame.USEREVENT + 3:
+                print("USEREVENT + 3 triggered: Reviving character")
                 self.revive_character()
 
             if event.type == pygame.KEYDOWN:
@@ -256,7 +257,7 @@ class Game:
         if event.key == pygame.K_1:
             self.character.hurt()
             self.health_bar.update_health(-5)
-            if self.health_bar.is_depleted():
+            if self.health_bar.current_health <= 0:
                 self.handle_character_death()
 
     def handle_continuous_input(self):
@@ -283,32 +284,33 @@ class Game:
         self.character.move(dx, dy)
 
     def revive_character(self):
-        # Reset the character's state
-        self.character.is_dead = False
-        self.character.is_attacking = False
-        self.character.health = config.HEALTH_BAR_MAX_HEALTH
-        self.character.rect.topleft = (config.CHARACTER_INITIAL_X, config.CHARACTER_GROUND_LEVEL)
-        self.character.health_bar.reset()
-        # Update life icons and respawn if lives are remaining
-        self.update_life_icons()
         if self.lives > 0:
-            self.all_sprites.add(self.character)
+            print(f"Reviving character, lives remaining: {self.lives}")
+            self.character.revive()
+            self.update_life_icons()
+        else:
+            self.game_over()
+
+    # def die_gracefully(self):
+    #
+    #     while :
 
     def handle_character_death(self):
-        if not self.character.is_dead:
-            print("Character is dying")
-            self.lives -= 1
-            self.character.die()
-            self.death_sound.play()
-            self.update_life_icons()
-            if self.lives > 0:
-                pygame.time.set_timer(pygame.USEREVENT + 3, 2000)  # Set a timer to respawn character after 2 seconds
-            else:
-                self.game_over()
+
+        self.lives -= 1
+        self.character.die()
+        self.death_sound.play()
+
+        self.revive_character()
+
+    def update_life_icons(self):
+        print("Updating life icons")
+        self.life_icons = self.life_icons[:self.lives]
 
     def update(self):
         self.dialog_box.update()
         dx = 0
+
         if not self.dialog_box.active:
             keys = pygame.key.get_pressed()
             if keys[K_RIGHT] and not self.character.is_dead:
@@ -325,7 +327,7 @@ class Game:
 
             for enemy in self.enemy_group:
                 if self.character.is_attacking and self.is_in_attack_range(enemy):
-                    enemy.mark_for_damage(pygame.time.get_ticks() + 0.0001)
+                    enemy.mark_for_damage(pygame.time.get_ticks() + 10)
 
             collided = False
             for enemy in self.enemy_group:
@@ -343,11 +345,11 @@ class Game:
             self.background.update(dx)
             self.all_sprites.update()
 
-        if self.character.health_bar.is_depleted() and not self.character.is_dead:
-            self.handle_character_death()
+            if self.character.health_bar.is_depleted():
+                print("Character health depleted, calling handle_character_death")
+                self.handle_character_death()
 
-        # Ensure the health bar is drawn
-        self.character.health_bar.draw(self.surface)
+            self.health_bar.draw(self.surface)
 
     def is_in_attack_range(self, enemy):
         distance = abs(self.character.rect.centerx - enemy.rect.centerx)
@@ -369,8 +371,7 @@ class Game:
         for enemy in self.enemy_group:
             enemy.draw_rectangle(self.surface)
         for i in range(self.lives):
-            if i < len(self.life_icons):
-                self.life_icons[i].draw(self.surface)
+            self.life_icons[i].draw(self.surface)
         self.dialog_box.draw()
         pygame.display.flip()
 
