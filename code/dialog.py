@@ -15,8 +15,7 @@ class DialogBox:
         self.font = pygame.font.Font(config.DIALOG_FONT_PATH, 32)
         self.text = ""
         self.active = False
-        self.image = pygame.image.load(os.path.join('../pic','s2.png'))
-
+        self.image = pygame.image.load(os.path.join('pic','s2.png'))
         self.image = pygame.transform.scale(self.image, (120, 100))
         self.image_rect = self.dialog_image.get_rect(topleft=(self.rect.right - 120, self.rect.top + 100))
         self.typing_speed = 50
@@ -25,6 +24,7 @@ class DialogBox:
         self.full_text = ""
         self.auto_hide_time = None
         self.user_input = ""
+        self.input_font = pygame.font.Font(os.path.join('fonts','undertalesans.ttf'), 32)
 
         self.input_font = pygame.font.Font(os.path.join('fonts', 'undertalesans.ttf'), 32)
 
@@ -34,6 +34,8 @@ class DialogBox:
         self.attempts = 0
         self.correct_answer = ""
         self.is_question = False
+        self.dialogue_shown = False  # Flag to ensure the dialogue only shows once
+
 
     def show(self, text, auto_hide_seconds=None):
         self.full_text = text
@@ -111,10 +113,28 @@ class DialogBox:
 
     def show_dialog(self, message, auto_hide_seconds=None):
         self.show(message, auto_hide_seconds)
+       # Handle dialogue related to enemy attacking
+        if "The enemy is attacking" in message and self.dialogue_shown:
+            return  # Skip showing the dialogue if it has already been shown
+
+        # Show the dialogue and handle auto-hide if applicable
+        self.show(message, auto_hide_seconds)
+        pygame.event.clear()
+
+        # Apply styles based on specific dialogues
         if "Here is Level 1" in message:
+            self.set_style((173, 216, 230), os.path.join('sprites', 's4.png'))
+        elif "Spare Change!?!?" in message:
+            self.set_style(173, 216, 230)
+        elif "I just got fired I have no money" in message:
+            self.set_style(173, 216, 230)
+        elif "We will see about that" in message:
+            self.set_style(173, 216, 230)
 
-            self.set_style((173, 216, 230), os.path.join('sprites','s4.png'))
-
+        # Mark the dialogue as shown if it's the enemy attack warning
+        if "The enemy is attacking" in message:
+            self.dialogue_shown = True  # Set this flag to ensure it only shows once
+            
     def handle_events(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_BACKSPACE:

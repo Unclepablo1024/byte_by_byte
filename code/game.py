@@ -20,7 +20,7 @@ class Game:
         pygame.init()
         self.surface = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
 
-        icon = pygame.image.load('../logo/icon.png')
+        icon = pygame.image.load('logo/icon.png')
         pygame.display.set_icon(icon)
         pygame.display.set_caption("Byte by Byte")
 
@@ -43,13 +43,10 @@ class Game:
         self.waiting_for_answer = False
         self.correct_answers = 0
         self.total_questions = 5
-
         self.enemy_count = 0
 
-        #Dialogue setup for change level to level
-        self.boss_deaths = 1
-        self.boss_trigger = False
-
+        #Flag for dialogue trigger for levels
+        self.dialogue_shown = False
 
         #Dialogue setup for change level to level
         self.boss_deaths = 1
@@ -71,8 +68,8 @@ class Game:
         pygame.display.flip()
         self.name = self.get_user_input()
         self.dialog_box.show(
-            f" {self.name}!!\nThat's it! You're fired! Don't come back until\nyou've learned something!",
-            auto_hide_seconds=7)
+            f" {self.name}!! \n We are truly sorry, we cannot work with someone who doesnt know how to code! You're fired! Don't come back until \n you've learned something!",
+            auto_hide_seconds=15)
 
     def handle_dialog_response(self, response):
         pygame.event.clear()
@@ -157,18 +154,6 @@ class Game:
 
                 self.restart_level()
             self.waiting_for_answer = False
-
-    def change_level_dialogue(self):
-    # Check if the boss has been defeated and trigger level change
-        if self.boss_deaths == 1:
-            self.show_dialog("You have completed Level 1, press 'x' to continue!", auto_hide_seconds=5)
-
-        if self.boss_deaths == 2:
-            self.show_dialog("You have completed Level 2, press 'x' to continue!", auto_hide_seconds=5)
-
-        if self.boss_deaths == 3:
-            self.show_dialog("You have completed Level 3, press 'x' to continue!", auto_hide_seconds=5)
-
 
     def restart_level(self):
         # The function restarts the current level and all relevant level variables
@@ -349,9 +334,6 @@ class Game:
             print("No music is playing")
         
         print(f"Level {level} setup complete")
-
-
-
     
     def run(self):
         self.ask_for_name()
@@ -396,16 +378,12 @@ class Game:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:  # Left mouse button
                     self.character.attack()
-                # TEST CODE added key bindings to specific events
-                if event.key == pygame.K_1:
-                    self.handle_player_input(event)
-
+            
                 # Handles dialog prompt at the end of a level to move to the next one
                 elif self.boss_trigger and event.key == pygame.K_x:
                     self.next_level()
                     self.boss_deaths += 1
                     self.boss_trigger = False
-
 
         if not self.dialog_box.active:
             self.handle_continuous_input()
@@ -526,6 +504,15 @@ class Game:
                 self.enemy_spawn_timer = now
 
             for enemy in self.enemy_group:
+                # Trigger dialogue when any enemy attacks the character
+                if enemy.attack and not self.dialog_box.dialogue_shown:
+                    self.dialog_box.show_dialog("The enemy is attacking! Prepare yourself!", auto_hide_seconds=5)
+
+                if self.character.is_attacking and self.is_in_attack_range(enemy):
+                    enemy.mark_for_damage(pygame.time.get_ticks() + 10)
+        
+
+            for enemy in self.enemy_group:
                 if self.character.is_attacking and self.is_in_attack_range(enemy):
                     enemy.mark_for_damage(pygame.time.get_ticks() + 10)
 
@@ -582,7 +569,7 @@ class Game:
         try:
             enemy_type = random.choice(self.current_enemies)
             print(f"Selected enemy type: {enemy_type}")
-            new_enemy = Enemy(enemy_type, os.path.join('../sprites', 'enemies'), self.surface.get_width(), 560, self.character)
+            new_enemy = Enemy(enemy_type, os.path.join('sprites', 'enemies'), self.surface.get_width(), 560, self.character)
             self.enemy_group.add(new_enemy)
             self.all_sprites.add(new_enemy)
             self.enemy_count += 1
