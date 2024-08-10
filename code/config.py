@@ -29,7 +29,7 @@ HURT_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Hurt.png')
 DIE_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Dead.png')
 
 # Health bar settings
-HEALTH_BAR_MAX_HEALTH = 20
+HEALTH_BAR_MAX_HEALTH = 200
 HEALTH_BAR_WIDTH = 200
 HEALTH_BAR_HEIGHT = 20
 HEALTH_BAR_X = 600 - 30
@@ -50,7 +50,7 @@ DIALOG_COOLDOWN_TIME = 2000  # 2 seconds cooldown
 # Enemy settings
 ENEMY_TYPES = ["Homeless_1", "Homeless_2", "Homeless_3"]
 ENEMY_SPRITES_PATH = os.path.join('sprites', 'enemies')
-
+MAX_ENEMIES = 25
 # Attack animations paths
 ATTACK_1_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Attack_1.png')
 ATTACK_2_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Attack_2.png')
@@ -67,7 +67,23 @@ GAME_OVER_FONT_PATH = os.path.join('fonts', 'determinationsans.ttf')
 DIALOG_FONT_PATH = os.path.join('fonts', 'determinationsans.ttf')
 DIALOGUE_FONT_SIZE = 24
 DIALOG_COOLDOWN_TIME = 2000  # 2 seconds in milliseconds
-
+LEVELS = {
+    1: {
+        "background": os.path.join("sprites", "backgrounds", "City2_pale.png"),
+        "enemies": ["Homeless_1", "Homeless_2", "Homeless_3"],
+        "music": os.path.join('audio', 'western.mp3')
+    },
+    2: {
+        "background": os.path.join("sprites", "backgrounds", "City3.png"),
+        "enemies": ["Homeless_1", "Homeless_2", "Homeless_3", "Robot_1", "Robot_2", "Robot_3"],
+        "music": os.path.join('audio', 'cyberpunk.mp3')
+    },
+    3: {
+        "background": os.path.join("sprites", "backgrounds", "City4.png"),
+        "enemies": ["Cat", "Dog", "Homeless_1", "Homeless_2", "Homeless_3", "Robot_1", "Robot_2", "Robot_3"],
+        "music": os.path.join('audio', 'bleach.mp3')
+    }
+}
 # Level one question
 LEVEL_ONE_QUESTIONS = [
     {"question": "What is the command to create a new Git repository?", "answer": "git init"},
