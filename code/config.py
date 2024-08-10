@@ -29,12 +29,13 @@ LEVELS = {
 }
 
 # Character sprites
-IDLE_PICTURE_PATH = os.path.join('../sprites','Gangsters_2', 'Idlefix.png')
-WALK_GIF_PATH = os.path.join('../sprites', 'Gangsters_2', 'Walk.png')
-JUMP_GIF_PATH = os.path.join('../sprites', 'Gangsters_2', 'Jump.png')
-RUN_GIF_PATH = os.path.join('../sprites', 'Gangsters_2','Run.png')
-HURT_GIF_PATH = os.path.join('../sprites', 'Gangsters_2','Hurt.png')
-DIE_GIF_PATH = os.path.join('../sprites', 'Gangsters_2', 'Dead.png')
+
+IDLE_PICTURE_PATH = os.path.join('sprites', 'Gangsters_2', 'Idlefix.png')
+WALK_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Walk.png')
+JUMP_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Jump.png')
+RUN_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Run.png')
+HURT_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Hurt.png')
+DIE_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Dead.png')
 
 # Attack animations paths
 ATTACK_1_GIF_PATH = os.path.join('../sprites', 'Gangsters_2', 'Attack_1.png')
@@ -43,15 +44,17 @@ ATTACK_3_GIF_PATH = os.path.join('../sprites', 'Gangsters_2', 'Attack_3.png')
 ATTACK_RANGE = 50
 
 # Health bar settings
-HEALTH_BAR_MAX_HEALTH = 100
+HEALTH_BAR_MAX_HEALTH = 20
 HEALTH_BAR_WIDTH = 200
 HEALTH_BAR_HEIGHT = 20
 HEALTH_BAR_X = 600 - 30
 HEALTH_BAR_Y = 30
 HEALTH_BAR_COLOR = (0, 255, 0)
 
+LIFE_ICON_PATH = os.path.join('sprites', 'Life_icon.png')
 
-LIFE_ICON_PATH = os.path.join('sprites', 'life_icon.png')
+
+# Lives setup as well as total lives
 LIFE_ICON_SIZE = 52
 LIFE_ICON_SPACING = 1
 INITIAL_LIVES = 3
@@ -66,16 +69,20 @@ DIALOG_COOLDOWN_TIME = 2000  # 2 seconds cooldown
 ENEMY_TYPES = ["Homeless_1", "Homeless_2", "Homeless_3"]
 ENEMY_SPRITES_PATH = os.path.join('sprites', 'enemies')
 
+# Attack animations paths
+ATTACK_1_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Attack_1.png')
+ATTACK_2_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Attack_2.png')
+ATTACK_3_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Attack_3.png')
+ATTACK_RANGE = 80
+
 # Music and sound settings
-# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-
-DEATH_SOUND_PATH = os.path.join('../audio','pain-scream.wav')
-MAIN_SOUND_PATH = os.path.join('../audio','western.mp3')
-
+DEATH_SOUND_PATH = os.path.join('audio', 'pain-scream.wav')
+MAIN_SOUND_PATH = os.path.join('audio', 'western.mp3')
 
 # Game over settings
-GAME_OVER_FONT_PATH = os.path.join('../fonts','determinationsans.ttf')
+GAME_OVER_FONT_PATH = os.path.join('fonts', 'determinationsans.ttf')
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 
 # Dialog settings
 DIALOG_FONT_PATH = os.path.join('../fonts', 'determinationsans.ttf')
@@ -134,6 +141,7 @@ LEVEL_ONE_QUESTIONS = [
     {"question": "What command is used to clone a repository in Git?", "answer": "git clone"},
     {"question": "What file is used to specify which files Git should ignore?", "answer": ".gitignore"},
 ]
+
 
 def get_random_questions(n=5):
     return random.sample(LEVEL_ONE_QUESTIONS, min(n, len(LEVEL_ONE_QUESTIONS)))
