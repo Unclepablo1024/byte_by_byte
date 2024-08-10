@@ -138,6 +138,7 @@ class Enemy(pygame.sprite.Sprite):
         self.set_enemy_attributes()  # Reset health and other attributes
 
     def attack(self):
+        print("Enemy attacks")
         if self.state != "attacking":
             self.state = "attacking"
             self.current_frame = 0

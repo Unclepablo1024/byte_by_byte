@@ -124,12 +124,12 @@ class DialogBox:
         # Apply styles based on specific dialogues
         if "Here is Level 1" in message:
             self.set_style((173, 216, 230), os.path.join('sprites', 's4.png'))
-        elif "Spare Change!?!?" in message:
-            self.set_style(173, 216, 230)
-        elif "I just got fired I have no money" in message:
-            self.set_style(173, 216, 230)
-        elif "We will see about that" in message:
-            self.set_style(173, 216, 230)
+        # elif "Spare Change!?!?" in message:
+        #     self.set_style((173, 216, 230), os.path.join('sprites', 'enemies', 'Homeless_1', 'Idle.png'))
+        # elif "I just got fired I have no money" in message:
+        #     self.set_style((173, 216, 230), os.path.join('sprites', 'enemies','Homeless_1', 'Idle.png'))
+        # elif "We will see about that" in message:
+        #     self.set_style((173, 216, 230), os.path.join('sprites', 'enemies','Homeless_1', 'Idle.png'))
 
         # Mark the dialogue as shown if it's the enemy attack warning
         if "The enemy is attacking" in message:

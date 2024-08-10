@@ -456,6 +456,7 @@ class Game:
         self.health_bar.reset()
         self.death_timer = None
 
+
     def update(self):
         self.dialog_box.update()
         dx = 0
@@ -470,11 +471,31 @@ class Game:
             self.character.move(dx, 0)
 
             now = pygame.time.get_ticks()
+
+            #             if now - self.enemy_spawn_timer > 3000 and self.enemy_count < self.max_enemies:
             if now - self.enemy_spawn_timer > 3000 and len(self.enemy_group) < self.max_enemies:
+
                 self.spawn_enemy()
                 self.enemy_spawn_timer = now
 
             for enemy in self.enemy_group:
+
+        #                 # Skip collision handling if the enemy is dead
+#                 if enemy.is_dead:
+#                     continue
+
+
+#             for enemy in self.enemy_group:
+#             # Ensure the enemy is actually attacking and close enough
+#                 if enemy.state == "attacking":
+#                     distance_to_player = abs(self.character.rect.centerx - enemy.rect.centerx)
+#                     if distance_to_player < enemy.attack_distance and not self.dialog_box.dialogue_shown:
+#                         self.dialog_box.show_dialog("The enemy is attacking! Prepare yourself!", auto_hide_seconds=5)
+#                         self.dialog_box.show_dialog("Right click on your mouse to attack enemy", auto_hide_seconds=5)
+
+
+
+
                 if enemy.is_dead:
                     continue  # Skip processing for dead enemies
 
@@ -486,6 +507,9 @@ class Game:
 
             collided = False
             for enemy in self.enemy_group:
+
+                # Check if the enemy is dead; if so, skip collision
+
                 if not enemy.is_dead and pygame.sprite.collide_rect(self.character, enemy):
                     if self.character.rect.centerx < enemy.rect.centerx:
                         self.character.stop_movement('right')
@@ -511,6 +535,7 @@ class Game:
                 elif self.lives == 0 and current_time - self.death_timer >= 1000:  # 1 second delay before game over
                     self.game_over()
 
+
             # Remove enemies that have finished their death animation and increase the counter
             for enemy in list(self.enemy_group):
                 if enemy.is_dead and enemy.current_frame == len(enemy.dead_images) - 1:
@@ -524,6 +549,7 @@ class Game:
     def is_in_attack_range(self, enemy):
         distance = abs(self.character.rect.centerx - enemy.rect.centerx)
         return distance < config.ATTACK_RANGE  # Smaller range for attack detection
+
 
     def spawn_enemy(self):
         # Check if the dialog box is active
