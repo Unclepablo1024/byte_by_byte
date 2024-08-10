@@ -56,6 +56,8 @@ ATTACK_1_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Attack_1.png')
 ATTACK_2_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Attack_2.png')
 ATTACK_3_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Attack_3.png')
 ATTACK_RANGE = 80
+
+
 # Music and sound settings
 DEATH_SOUND_PATH = os.path.join('audio', 'pain-scream.wav')
 MAIN_SOUND_PATH = os.path.join('audio', 'western.mp3')

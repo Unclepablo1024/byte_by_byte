@@ -363,6 +363,7 @@ class Game:
                 if event.button == 1:  # Left mouse button
                     self.character.attack()
 
+
                 # Handles dialog prompt at the end of a level to move to the next one
                 elif self.boss_trigger and event.key == pygame.K_x:
                     self.next_level()
