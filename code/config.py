@@ -1,6 +1,6 @@
-import pygame
 import os
 import random
+import pygame
 
 # Screen settings
 SCREEN_WIDTH = 800
@@ -20,6 +20,7 @@ RUN_SPEED_MULTIPLIER = 2
 # Background settings
 BACKGROUND_IMAGE_PATH = os.path.join('sprites', 'backgrounds', 'City2_pale.png')
 BACKGROUND_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
+
 
 MAX_ENEMIES = 25
 
@@ -78,6 +79,9 @@ DIALOGUE_TEXT_COLOR = (255, 255, 255)
 DIALOGUE_BOX_IMAGE_PATH = os.path.join('sprites', 'Dialouge', 'Dialouge boxes', 'BetterDialouge1.png')
 DIALOG_COOLDOWN_TIME = 2000  # 2 seconds cooldown
 
+# Enemy settings
+ENEMY_TYPES = ["Homeless_1", "Homeless_2", "Homeless_3"]
+ENEMY_SPRITES_PATH = os.path.join('sprites', 'enemies')
 
 # Music and sound settings
 # BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -101,8 +105,6 @@ pygame.mixer.init()
 # Paths
 FONT_PATH = os.path.join("fonts", "determinationmono.ttf")
 AUDIO_PATH = os.path.join("audio")
-
-
 
 # Load common fonts
 font = pygame.font.Font(FONT_PATH, 24)

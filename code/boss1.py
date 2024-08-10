@@ -1,71 +1,122 @@
 import pygame
-import config
 import os
 
-
 class Boss(pygame.sprite.Sprite):
-    def __init__(self, folder_path, screen_width, ground_level, main_character):
-        super().__init__("Boss1", folder_path, screen_width, ground_level, main_character)
-        self.boss_walk_images = self.load_images("Walk.png")
-        self.boss_attack_images = self.load_images("Attack.png")
-        self.boss_dead_images = self.load_images("Dead.png")
-        self.image = self.boss_walk_images[0]
-        self.state = "walking"
-        self.attack_distance = 100  # Boss might have a different attack distance
-        self.special_ability_ready = True
+    def __init__(self):
+        super().__init__()
+
+        # Define the folder path and image file names
+        BOSSES_FOLDER_PATH = os.path.join('sprites', 'Bosses', 'Boss1')
+
+        self.images = {
+            "idle": pygame.image.load(os.path.join(BOSSES_FOLDER_PATH, 'Idlefix.png')).convert_alpha(),
+            "walk": pygame.image.load(os.path.join(BOSSES_FOLDER_PATH, 'Walk.png')).convert_alpha(),
+            "jump": pygame.image.load(os.path.join(BOSSES_FOLDER_PATH, 'Jump.png')).convert_alpha(),
+            "run": pygame.image.load(os.path.join(BOSSES_FOLDER_PATH, 'Run.png')).convert_alpha(),
+            "hurt": pygame.image.load(os.path.join(BOSSES_FOLDER_PATH, 'Hurt.png')).convert_alpha(),
+            "die": pygame.image.load(os.path.join(BOSSES_FOLDER_PATH, 'Dead.png')).convert_alpha()
+        }
+
+        # Initialize animation control variables
+        self.last_update = pygame.time.get_ticks()
+        self.frame_rate = 100  # Milliseconds per frame
+        self.current_frame = 0
+
+        # Movement and state variables
+        self.is_walking = False
+        self.is_jumping = False
+        self.is_running = False
+        self.is_hurt = False
+        self.is_dead = False
+
+        # Physics variables
+        self.vertical_velocity = 0
+        self.gravity = 0.5  # Example value for gravity
+        self.jump_strength = 10  # Example value for jump strength
+        self.ground_level = 400  # Example ground level
+        self.rect.topleft = (100, self.ground_level)  # Example initial position
+        self.screen_width = 800  # Example screen width
+        self.screen_height = 600  # Example screen height
+
+        # Initialize current animation
+        self.image = self.images["idle"]
+        self.rect = self.image.get_rect()
+
+    def load_gif_frames(self, gif_path):
+        gif = pygame.image.load(gif_path).convert_alpha()
+        gif_width, gif_height = gif.get_size()
+        frame_height = gif_height
+        frames = []
+
+        for i in range(gif_width // frame_height):
+            frame_rect = pygame.Rect(i * frame_height, 0, frame_height, frame_height)
+            frame = gif.subsurface(frame_rect)
+            frames.append(frame)
+
+        return frames
 
     def update(self):
         now = pygame.time.get_ticks()
-        if self.main_character and not self.is_dead:
-            player_x = self.main_character.rect.centerx
-            enemy_x = self.rect.centerx
-            distance = abs(player_x - enemy_x)
 
-            if distance < self.attack_distance:
-                self.attack()
-                self.direction = 1 if player_x > enemy_x else -1
-            else:
-                self.stop_attack()
-                self.direction = -1
-
-            if self.state == "walking":
-                self.move(self.speed * self.direction, 0)
-
+        # Handle death animation
+        if self.is_dead:
             if now - self.last_update > self.frame_rate:
                 self.last_update = now
-                if self.state == "attacking":
-                    self.current_frame = (self.current_frame + 1) % len(self.boss_attack_images)
-                    self.image = self.boss_attack_images[self.current_frame]
-                elif self.state == "walking":
-                    self.current_frame = (self.current_frame + 1) % len(self.boss_walk_images)
-                    self.image = self.boss_walk_images[self.current_frame]
+                self.current_frame = (self.current_frame + 1) % len(self.images["die_frames"])
+                self.image = self.images["die_frames"][self.current_frame]
+                if self.current_frame == 0:  # Optional: Stop the animation after one loop
+                    return
+            return
 
-            self.image = pygame.transform.flip(self.image, self.direction == 1, False)
+        # Handle hurt animation
+        if self.is_hurt:
+            if now - self.last_update > self.frame_rate:
+                self.last_update = now
+                self.current_frame = (self.current_frame + 1) % len(self.images["hurt_frames"])
+                if self.current_frame == 0:
+                    self.is_hurt = False
+                self.image = self.images["hurt_frames"][self.current_frame]
+            return
 
-            new_rect = self.image.get_rect()
-            new_rect.bottom = self.ground_level
-            new_rect.centerx = self.rect.centerx
-            self.rect = new_rect
+        # Handle jumping animation
+        if self.is_jumping:
+            if now - self.last_update > self.frame_rate:
+                self.last_update = now
+                self.current_frame = (self.current_frame + 1) % len(self.images["jump_frames"])
+                if self.current_frame == 0:
+                    self.is_jumping = False
+                self.image = self.images["jump_frames"][self.current_frame]
+            return
 
-    def attack(self):
-        if self.state != "attacking":
-            self.state = "attacking"
-            self.current_frame = 0
+        # Handle running animation
+        if self.is_running:
+            if now - self.last_update > self.frame_rate:
+                self.last_update = now
+                self.current_frame = (self.current_frame + 1) % len(self.images["run_frames"])
+                self.image = self.images["run_frames"][self.current_frame]
+            return
 
-    def stop_attack(self):
-        if self.state != "walking":
-            self.state = "walking"
-            self.current_frame = 0
+        # Default to idle animation
+        if now - self.last_update > self.frame_rate:
+            self.last_update = now
+            self.current_frame = (self.current_frame + 1) % len(self.images["idle_frames"])
+            self.image = self.images["idle_frames"][self.current_frame]
 
-    def die(self):
-        self.is_dead = True
-        self.current_frame = 0
-        self.image = self.boss_dead_images[self.current_frame]
-        self.rect.bottom = self.ground_level
+    def set_walking(self, walking):
+        self.is_walking = walking
+        if walking:
+            self.image = self.images["walk"]
+        else:
+            self.image = self.images["idle"]
 
-    # Add any special abilities or behaviors here
-    def special_ability(self):
-        if self.special_ability_ready:
-            # Implement the special ability logic
-            self.special_ability_ready = False
-            # Cooldown or special effect here
+    def set_jumping(self, jumping):
+        self.is_jumping = jumping
+
+    def set_running(self, running):
+        self.is_running = running
+
+    def set_hurt(self, hurt):
+        self.is_hurt = hurt
+
+    def set_dead(self, dead):
+        self.is_dead = dead
