@@ -211,7 +211,11 @@ class GameState:
         return self.levels[self.current_level - 1].check_code(self)
 
     def next_level(self):
-        if self.current_level < len(self.levels):
+        if self.current_level == 1:
+            self.music_player.stop_main_music()
+            import level2
+            level2.main()
+        elif self.current_level < len(self.levels):
             self.current_level += 1
             self.reset_level()
             self.feedback_image = correct_image

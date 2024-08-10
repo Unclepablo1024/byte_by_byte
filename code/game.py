@@ -12,6 +12,7 @@ from music import MusicPlayer
 from character import MainCharacter
 from dialog import DialogBox
 import config
+import level2
 
 # Initialize game and its components
 class Game:
@@ -54,6 +55,7 @@ class Game:
         self.boss_trigger = False
 
         self.level_up_prompt_shown = False
+        self
 
     def init_resources(self):
         # Loads resources like music and sounds
@@ -393,9 +395,11 @@ class Game:
                     self.next_level()
                     self.boss_deaths += 1
                     self.boss_trigger = False
+            
+            if not self.dialog_box.active:
+                self.handle_continuous_input()
 
-        if not self.dialog_box.active:
-            self.handle_continuous_input()
+
 
     def show_dialog(self, message, auto_hide_seconds=None):
         self.dialog_box.show(message, auto_hide_seconds)
