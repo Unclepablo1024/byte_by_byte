@@ -291,16 +291,18 @@ class Game:
         else:
             self.game_over()
 
-    # def die_gracefully(self):
-    #
-    #     while :
+    def die_gracefully(self):
+        print("Graceful death initiated")
+        while not self.character.is_dead:
+            pass  # Wait until the character is dead
+
+        pygame.time.wait(1500)  # Wait for 1.5 seconds
 
     def handle_character_death(self):
-
         self.lives -= 1
         self.character.die()
         self.death_sound.play()
-
+        self.die_gracefully()  # Wait for death animation to complete
         self.revive_character()
 
     def update_life_icons(self):
