@@ -566,10 +566,19 @@ class Game:
 #             self.enemy_group.add(new_enemy)
 
     def spawn_enemy(self):
+        # Check if the dialog box is active
+        if self.dialog_box.active:
+            print("Dialog box is active, delaying enemy spawn.")
+            return  # Exit the function without spawning an enemy
+
+        if self.enemy_count >= self.max_enemies:
+            return  # Stop spawning if max enemies are reached
+
         try:
             enemy_type = random.choice(self.current_enemies)
             print(f"Selected enemy type: {enemy_type}")
-            new_enemy = Enemy(enemy_type, os.path.join('sprites', 'enemies'), self.surface.get_width(), 560, self.character)
+            new_enemy = Enemy(enemy_type, os.path.join('sprites', 'enemies'), self.surface.get_width(), 560,
+                              self.character)
             self.enemy_group.add(new_enemy)
             self.all_sprites.add(new_enemy)
             self.enemy_count += 1

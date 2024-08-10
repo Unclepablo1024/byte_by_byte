@@ -102,6 +102,15 @@ DIALOG_COOLDOWN_TIME = 2000  # 2 seconds in milliseconds
 pygame.init()
 pygame.mixer.init()
 
+BASE_SPRITES_PATH = 'sprites'
+BOSSES_FOLDER_PATH = os.path.join(BASE_SPRITES_PATH, 'Bosses', 'Boss1')
+IDLE_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Idlefix.png')
+WALK_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Walk.png')
+JUMP_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Jump.png')
+RUN_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Run.png')
+HURT_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Hurt.png')
+DIE_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Dead.png')
+
 # Paths
 FONT_PATH = os.path.join("fonts", "determinationmono.ttf")
 AUDIO_PATH = os.path.join("audio")
