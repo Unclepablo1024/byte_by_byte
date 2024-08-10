@@ -69,6 +69,8 @@ class Enemy(pygame.sprite.Sprite):
 
     def update(self):
         now = pygame.time.get_ticks()
+
+        #Handle death state
         if self.is_dead:
             if self.death_start_time and now - self.death_start_time > 2000:
                 self.kill()
@@ -77,12 +79,14 @@ class Enemy(pygame.sprite.Sprite):
                 self.current_frame = min(self.current_frame + 1, len(self.dead_images) - 1)
                 self.image = self.dead_images[self.current_frame]
             return
-
+        
+        # Handle movement and attack logic if the character is not dead
         if self.main_character and not self.is_dead:
             player_x = self.main_character.rect.centerx
             enemy_x = self.rect.centerx
             distance = abs(player_x - enemy_x)
 
+            #Determines Direction and attack state
             if distance < self.attack_distance:
                 self.attack()
                 self.direction = 1 if player_x > enemy_x else -1

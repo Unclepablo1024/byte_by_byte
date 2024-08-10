@@ -10,7 +10,7 @@ SCREEN_HEIGHT = 600
 CHARACTER_INITIAL_X = 50
 CHARACTER_GROUND_LEVEL = SCREEN_HEIGHT - 155  # Assuming character height is 128
 CHARACTER_GRAVITY = 1
-CHARACTER_JUMP_STRENGTH = -15
+CHARACTER_JUMP_STRENGTH = -20
 FRAME_RATE = 100  # Milliseconds per frame
 
 # Movement speed
@@ -162,3 +162,14 @@ def wrap_text(text, font, max_width):
                 break
         lines.append(' '.join(line_words))
     return lines
+
+#Random Level one Dialog
+
+LEVEL_ONE_DIALOGUES = [
+    {'id': 1, 'text':"Spare Change!?!?"},
+    {'id': 2, 'text':"I just got fired I have no money"},
+    {'id': 3, 'text':"We will see about that"}    
+]
+
+def get_level_one_dialogue(dialogue_id):
+    return next((dialogue for dialogue in LEVEL_ONE_DIALOGUES if dialogue["id"] == dialogue_id), None)

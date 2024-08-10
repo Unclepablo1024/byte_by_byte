@@ -43,13 +43,10 @@ class Game:
         self.waiting_for_answer = False
         self.correct_answers = 0
         self.total_questions = 5
-
         self.enemy_count = 0
 
-        #Dialogue setup for change level to level
-        self.boss_deaths = 1
-        self.boss_trigger = False
-
+        #Flag for dialogue trigger for levels
+        self.dialogue_shown = False
 
         #Dialogue setup for change level to level
         self.boss_deaths = 1
@@ -71,8 +68,8 @@ class Game:
         pygame.display.flip()
         self.name = self.get_user_input()
         self.dialog_box.show(
-            f" {self.name}!!\nThat's it! You're fired! Don't come back until\nyou've learned something!",
-            auto_hide_seconds=7)
+            f" {self.name}!! \n We are truly sorry, we cannot work with someone who doesnt know how to code! You're fired! Don't come back until \n you've learned something!",
+            auto_hide_seconds=15)
 
     def handle_dialog_response(self, response):
         pygame.event.clear()
@@ -337,9 +334,6 @@ class Game:
             print("No music is playing")
         
         print(f"Level {level} setup complete")
-
-
-
     
     def run(self):
         self.ask_for_name()
@@ -384,13 +378,12 @@ class Game:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:  # Left mouse button
                     self.character.attack()
-
+            
                 # Handles dialog prompt at the end of a level to move to the next one
                 elif self.boss_trigger and event.key == pygame.K_x:
                     self.next_level()
                     self.boss_deaths += 1
                     self.boss_trigger = False
-
 
         if not self.dialog_box.active:
             self.handle_continuous_input()
@@ -509,6 +502,15 @@ class Game:
             if now - self.enemy_spawn_timer > 3000 and self.enemy_count < self.max_enemies:
                 self.spawn_enemy()
                 self.enemy_spawn_timer = now
+
+            for enemy in self.enemy_group:
+                # Trigger dialogue when any enemy attacks the character
+                if enemy.attack and not self.dialog_box.dialogue_shown:
+                    self.dialog_box.show_dialog("The enemy is attacking! Prepare yourself!", auto_hide_seconds=5)
+
+                if self.character.is_attacking and self.is_in_attack_range(enemy):
+                    enemy.mark_for_damage(pygame.time.get_ticks() + 10)
+        
 
             for enemy in self.enemy_group:
                 if self.character.is_attacking and self.is_in_attack_range(enemy):
