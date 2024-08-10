@@ -470,21 +470,8 @@ class Game:
         self.health_bar.reset()
         self.death_timer = None
         
-#     def handle_character_death(self):
-#         # creates changes to character when receiving damage until death
-#         if not self.character.is_dead:
-#             print("Character is dying")  # Debug print
-#             self.lives -= 1
-#             self.character.die()
-#             self.death_sound.play()  # Play death sound here
-#             if self.lives > 0:
-#                 self.death_timer = pygame.time.get_ticks()
-#             else:
-#                 self.death_timer = pygame.time.get_ticks() + 1000  # Additional time to show death animation
-
 
     def update(self):
-        # Update game state: manage dialog box, check input, spawn enemies, etc.
         self.dialog_box.update()
         dx = 0
 
@@ -498,27 +485,34 @@ class Game:
             self.character.move(dx, 0)
 
             now = pygame.time.get_ticks()
-            now = pygame.time.get_ticks()
             if now - self.enemy_spawn_timer > 3000 and self.enemy_count < self.max_enemies:
                 self.spawn_enemy()
                 self.enemy_spawn_timer = now
 
             for enemy in self.enemy_group:
-                # Trigger dialogue when any enemy attacks the character
-                if enemy.attack and not self.dialog_box.dialogue_shown:
-                    self.dialog_box.show_dialog("The enemy is attacking! Prepare yourself!", auto_hide_seconds=5)
+                # Skip collision handling if the enemy is dead
+                if enemy.is_dead:
+                    continue
 
-                if self.character.is_attacking and self.is_in_attack_range(enemy):
-                    enemy.mark_for_damage(pygame.time.get_ticks() + 10)
-        
 
             for enemy in self.enemy_group:
+            # Ensure the enemy is actually attacking and close enough
+                if enemy.state == "attacking":
+                    distance_to_player = abs(self.character.rect.centerx - enemy.rect.centerx)
+                    if distance_to_player < enemy.attack_distance and not self.dialog_box.dialogue_shown:
+                        self.dialog_box.show_dialog("The enemy is attacking! Prepare yourself!", auto_hide_seconds=5)
+                        self.dialog_box.show_dialog("Right click on your mouse to attack enemy", auto_hide_seconds=5)
+
+
+
+
                 if self.character.is_attacking and self.is_in_attack_range(enemy):
                     enemy.mark_for_damage(pygame.time.get_ticks() + 10)
 
             collided = False
             for enemy in self.enemy_group:
-                if pygame.sprite.collide_rect(self.character, enemy):
+                # Check if the enemy is dead; if so, skip collision
+                if not enemy.is_dead and pygame.sprite.collide_rect(self.character, enemy):
                     if self.character.rect.centerx < enemy.rect.centerx:
                         self.character.stop_movement('right')
                     else:
@@ -535,35 +529,22 @@ class Game:
             if self.character.health_bar.is_depleted():
                 print("Character health depleted, calling handle_character_death")
                 self.handle_character_death()
-                        
+
             if self.character.is_dead:
                 current_time = pygame.time.get_ticks()
                 if self.lives > 0 and current_time - self.death_timer >= 1000:  # 1000 milliseconds = 1 second
                     self.revive_character()
                 elif self.lives == 0 and current_time - self.death_timer >= 1000:  # 1 second delay before game over
                     self.game_over()
-            
-            # Check for boss defeat and trigger level change
-            if self.boss_trigger:
-                self.change_level_dialogue()
 
             # Check for boss defeat and trigger level change
             if self.boss_trigger:
                 self.change_level_dialogue()
-
-#             self.health_bar.draw(self.surface)
 
     def is_in_attack_range(self, enemy):
         distance = abs(self.character.rect.centerx - enemy.rect.centerx)
         return distance < config.ATTACK_RANGE  # Smaller range for attack detection
 
-#     def spawn_enemy(self):
-#         if len(self.enemy_group) < 10:  # Limit total number of enemies to 10
-#             enemy_type = random.choice(config.ENEMY_TYPES)
-#             new_enemy = Enemy(enemy_type, os.path.join('sprites', 'enemies'), self.surface.get_width(), 560,
-#                               self.character)
-#             self.all_sprites.add(new_enemy)
-#             self.enemy_group.add(new_enemy)
 
     def spawn_enemy(self):
         try:
