@@ -69,6 +69,7 @@ GAME_OVER_FONT_PATH = os.path.join('fonts', 'determinationsans.ttf')
 DIALOG_FONT_PATH = os.path.join('fonts', 'determinationsans.ttf')
 DIALOGUE_FONT_SIZE = 24
 DIALOG_COOLDOWN_TIME = 2000  # 2 seconds in milliseconds
+
 LEVELS = {
     1: {
         "background": os.path.join("sprites", "backgrounds", "City2_pale.png"),
@@ -86,6 +87,49 @@ LEVELS = {
         "music": os.path.join('audio', 'bleach.mp3')
     }
 }
+
+# Initialize Pygame and mixer
+pygame.init()
+pygame.mixer.init()
+
+BASE_SPRITES_PATH = 'sprites'
+BOSSES_FOLDER_PATH = os.path.join(BASE_SPRITES_PATH, 'Bosses', 'Boss1')
+IDLE_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Idlefix.png')
+WALK_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Walk.png')
+JUMP_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Jump.png')
+RUN_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Run.png')
+HURT_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Hurt.png')
+DIE_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Dead.png')
+
+# Paths
+FONT_PATH = os.path.join("fonts", "determinationmono.ttf")
+AUDIO_PATH = os.path.join("audio")
+
+# Load common fonts
+font = pygame.font.Font(FONT_PATH, 24)
+large_font = pygame.font.Font(FONT_PATH, 36)
+small_font = pygame.font.Font(FONT_PATH, 18)
+title_font = pygame.font.Font(FONT_PATH, 48)
+
+
+# Load common sounds
+correct_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "get_point.wav"))
+wrong_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "lost-sobbing.wav"))
+
+
+# Define colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+LIGHT_BLUE = (173, 216, 230)
+YELLOW = (255, 255, 0)
+GRAY = (200, 200, 200)
+DARK_GRAY = (50, 50, 50)
+HINT_BG_COLOR = (255, 255, 200)
+HINT_TEXT_COLOR = (0, 100, 0)
+
 # Level one question
 LEVEL_ONE_QUESTIONS = [
     {"question": "What is the command to create a new Git repository?", "answer": "git init"},
