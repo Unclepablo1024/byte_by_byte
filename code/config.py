@@ -10,7 +10,7 @@ SCREEN_HEIGHT = 600
 CHARACTER_INITIAL_X = 50
 CHARACTER_GROUND_LEVEL = SCREEN_HEIGHT - 155  # Assuming character height is 128
 CHARACTER_GRAVITY = 1
-CHARACTER_JUMP_STRENGTH = -15
+CHARACTER_JUMP_STRENGTH = -20
 FRAME_RATE = 100  # Milliseconds per frame
 
 # Movement speed
@@ -18,16 +18,29 @@ SCROLL_SPEED = 5
 RUN_SPEED_MULTIPLIER = 2
 
 # Background settings
-BACKGROUND_IMAGE_PATH = os.path.join('sprites', 'Backgrounds', 'City2_pale.png')
+BACKGROUND_IMAGE_PATH = os.path.join('sprites', 'backgrounds', 'City2_pale.png')
 BACKGROUND_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 
+# Background settings for levels
+LEVELS = {
+    1: {"background": os.path.join("sprites", "backgrounds", "City2_pale.png")},
+    2: {"background": os.path.join("sprites", "backgrounds", "City3.png")},
+    3: {"background": os.path.join("sprites", "backgrounds", "City4.png")}
+}
+
 # Character sprites
-IDLE_PICTURE_PATH = os.path.join('sprites','Gangsters_2', 'Idlefix.png')
-WALK_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Walk.png')
-JUMP_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Jump.png')
-RUN_GIF_PATH = os.path.join('sprites', 'Gangsters_2','Run.png')
-HURT_GIF_PATH = os.path.join('sprites', 'Gangsters_2','Hurt.png')
-DIE_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Dead.png')
+IDLE_PICTURE_PATH = os.path.join('../sprites','Gangsters_2', 'Idlefix.png')
+WALK_GIF_PATH = os.path.join('../sprites', 'Gangsters_2', 'Walk.png')
+JUMP_GIF_PATH = os.path.join('../sprites', 'Gangsters_2', 'Jump.png')
+RUN_GIF_PATH = os.path.join('../sprites', 'Gangsters_2','Run.png')
+HURT_GIF_PATH = os.path.join('../sprites', 'Gangsters_2','Hurt.png')
+DIE_GIF_PATH = os.path.join('../sprites', 'Gangsters_2', 'Dead.png')
+
+# Attack animations paths
+ATTACK_1_GIF_PATH = os.path.join('../sprites', 'Gangsters_2', 'Attack_1.png')
+ATTACK_2_GIF_PATH = os.path.join('../sprites', 'Gangsters_2', 'Attack_2.png')
+ATTACK_3_GIF_PATH = os.path.join('../sprites', 'Gangsters_2', 'Attack_3.png')
+ATTACK_RANGE = 50
 
 # Health bar settings
 HEALTH_BAR_MAX_HEALTH = 100
@@ -38,7 +51,7 @@ HEALTH_BAR_Y = 30
 HEALTH_BAR_COLOR = (0, 255, 0)
 
 
-LIFE_ICON_PATH =   os.path.join('sprites', 'Life_icon.png')
+LIFE_ICON_PATH = os.path.join('sprites', 'life_icon.png')
 LIFE_ICON_SIZE = 52
 LIFE_ICON_SPACING = 1
 INITIAL_LIVES = 3
@@ -46,67 +59,63 @@ INITIAL_LIVES = 3
 # Dialogue settings
 DIALOGUE_FONT_SIZE = 32
 DIALOGUE_TEXT_COLOR = (255, 255, 255)
-DIALOGUE_BOX_IMAGE_PATH = os.path.join('sprites', 'Dialouge', 'Dialouge boxes', 'BetterDialouge1.png')
+DIALOGUE_BOX_IMAGE_PATH = os.path.join('../sprites', 'Dialouge', 'Dialouge boxes', 'BetterDialouge1.png')
 DIALOG_COOLDOWN_TIME = 2000  # 2 seconds cooldown
 
 # Enemy settings
 ENEMY_TYPES = ["Homeless_1", "Homeless_2", "Homeless_3"]
 ENEMY_SPRITES_PATH = os.path.join('sprites', 'enemies')
 
-#Initialize Pygame and mixer
-#pygame.init()
-#pygame.mixer.init()
-
-#Paths
-FONT_PATH = os.path.join("fonts", "determinationmono.ttf")
-AUDIO_PATH = os.path.join("audio")
+# Music and sound settings
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+DEATH_SOUND_PATH = os.path.join('../audio','pain-scream.wav')
+MAIN_SOUND_PATH = os.path.join('../audio','western.mp3')
+
+
+# Game over settings
+GAME_OVER_FONT_PATH = os.path.join('../fonts','determinationsans.ttf')
+
+# Dialog settings
+DIALOG_FONT_PATH = os.path.join('../fonts', 'determinationsans.ttf')
+DIALOGUE_FONT_SIZE = 24
+DIALOG_COOLDOWN_TIME = 2000  # 2 seconds in milliseconds
+
+# Initialize Pygame and mixer
 pygame.init()
 pygame.mixer.init()
 
-#Load common fonts
+# Paths
+FONT_PATH = os.path.join("..", "fonts", "determinationmono.ttf")
+AUDIO_PATH = os.path.join("..", "audio")
+
+
+
+# Load common fonts
 font = pygame.font.Font(FONT_PATH, 24)
 large_font = pygame.font.Font(FONT_PATH, 36)
 small_font = pygame.font.Font(FONT_PATH, 18)
 title_font = pygame.font.Font(FONT_PATH, 48)
 
 
-#Load common sounds
+# Load common sounds
 correct_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "get_point.wav"))
 wrong_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "lost-sobbing.wav"))
 
-BASE_SPRITES_PATH = 'sprites'
-BOSSES_FOLDER_PATH = os.path.join(BASE_SPRITES_PATH, 'Bosses', 'Boss1')
-IDLE_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Idlefix.png')
-WALK_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Walk.png')
-JUMP_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Jump.png')
-RUN_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Run.png')
-HURT_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Hurt.png')
-DIE_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Dead.png')
 
-
-# Music and sound settings
-# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-DEATH_SOUND_PATH = os.path.join('audio','pain-scream.wav')
-MAIN_SOUND_PATH = os.path.join('audio','western.mp3')
-
-
-# Game over settings
-GAME_OVER_FONT_PATH = os.path.join('fonts','determinationsans.ttf')
-
-# Dialog settings
-DIALOG_FONT_PATH = os.path.join('fonts', 'determinationsans.ttf')
-DIALOGUE_FONT_SIZE = 24
-DIALOG_COOLDOWN_TIME = 2000  # 2 seconds in milliseconds
-
-LEVELS = {
-    1: {"background": os.path.join("sprites", "backgrounds", "City2_pale.png")},
-    2: {"background": os.path.join("sprites", "backgrounds", "City3.png")},
-    3: {"background": os.path.join("sprites", "backgrounds", "City4.png")}
-}
-
+# Define colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+LIGHT_BLUE = (173, 216, 230)
+YELLOW = (255, 255, 0)
+GRAY = (200, 200, 200)
+DARK_GRAY = (50, 50, 50)
+HINT_BG_COLOR = (255, 255, 200)
+HINT_TEXT_COLOR = (0, 100, 0)
 
 # Level one question
 LEVEL_ONE_QUESTIONS = [
