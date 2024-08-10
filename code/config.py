@@ -29,7 +29,7 @@ HURT_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Hurt.png')
 DIE_GIF_PATH = os.path.join('sprites', 'Gangsters_2', 'Dead.png')
 
 # Health bar settings
-HEALTH_BAR_MAX_HEALTH = 200
+HEALTH_BAR_MAX_HEALTH = 20
 HEALTH_BAR_WIDTH = 200
 HEALTH_BAR_HEIGHT = 20
 HEALTH_BAR_X = 600 - 30
