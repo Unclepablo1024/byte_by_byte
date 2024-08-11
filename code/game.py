@@ -13,14 +13,13 @@ from character import MainCharacter
 from dialog import DialogBox
 import config
 
-
 # Initialize game and its components
 class Game:
     def __init__(self):
         pygame.init()
         self.surface = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
 
-        icon = pygame.image.load('logo/icon.png')
+        icon = pygame.image.load('../logo/icon.png')
         pygame.display.set_icon(icon)
         pygame.display.set_caption("Byte by Byte")
 
@@ -45,11 +44,12 @@ class Game:
         self.total_questions = 5
         self.enemy_count = 0
 
-        # Dialogue setup for change level to level
+        #Dialogue setup for change level to level
         self.boss_deaths = 1
         self.boss_trigger = False
 
-        # Dialogue setup for change level to level
+
+        #Dialogue setup for change level to level
         self.boss_deaths = 1
         self.boss_trigger = False
 
@@ -57,7 +57,7 @@ class Game:
         # Loads resources like music and sounds
         self.music_player = MusicPlayer()
         self.death_sound = pygame.mixer.Sound(config.DEATH_SOUND_PATH)
-
+    
     def ask_for_name(self):
         # Function that asks the player for their name
         self.surface.fill((0, 0, 0))
@@ -73,11 +73,11 @@ class Game:
     def handle_dialog_response(self, response):
         pygame.event.clear()
         response = response.lower()
-        # Handle the player's responses during Dialogue
-        print(f"Recieved response: {response}")  # Debug Print
+        #Handle the player's responses during Dialogue
+        print(f"Recieved response: {response}") # Debug Print
         if self.current_question_index == 0 and not self.waiting_for_answer:
             if response == 'y':
-                print("Starting Question Sequence.")  # Debug Print
+                print("Starting Question Sequence.") # Debug Print
                 self.waiting_for_answer = True
                 self.ask_next_question()
             elif response == 'n':
@@ -88,9 +88,7 @@ class Game:
         if self.waiting_for_answer:
             if self.check_answer(response):
                 self.correct_answers += 1
-                self.show_dialog(
-                    f"Good job! You've answered {self.correct_answers} out of {self.total_questions} questions correctly.",
-                    auto_hide_seconds=7)
+                self.show_dialog(f"Good job! You've answered {self.correct_answers} out of {self.total_questions} questions correctly.", auto_hide_seconds=7)
                 self.current_attempt = 0
                 self.current_question_index += 1
                 self.waiting_for_answer = False
@@ -98,7 +96,7 @@ class Game:
             else:
                 self.current_attempt += 1
                 self.health_bar.update_health(-10)
-
+                
                 if self.current_attempt >= self.max_attempts:
                     # Provide the correct answer after three wrong attempts
                     correct_answer = self.questions[self.current_question_index]["answer"]
@@ -107,7 +105,7 @@ class Game:
                     self.waiting_for_answer = False
                     self.current_question_index += 1
                     pygame.time.set_timer(pygame.USEREVENT + 2, 5000)  # Give more time to read the correct answer
-
+                
                 else:
                     # Inform the player of remaining attempts
                     attempts_left = self.max_attempts - self.current_attempt
@@ -116,11 +114,11 @@ class Game:
                 pygame.event.clear()
 
     def set_timer(self):
-        # set a timer for dialog or question handling
+        #set a timer for dialog or question handling
         pygame.time.set_timer(pygame.USEREVENT + 2, 3000)
 
     def change_level_dialogue(self):
-        # Check if the boss has been defeated and trigger level change
+    # Check if the boss has been defeated and trigger level change
         if self.boss_deaths == 1:
             self.show_dialog("You have completed Level 1, press 'x' to continue!", auto_hide_seconds=5)
 
@@ -130,6 +128,7 @@ class Game:
         if self.boss_deaths == 3:
             self.show_dialog("You have completed Level 3, press 'x' to continue!", auto_hide_seconds=5)
 
+    
     def ask_next_question(self):
         pygame.event.clear()
         # presents the next question to player
@@ -140,18 +139,15 @@ class Game:
         else:
             # ALL questions have been answered, we ca move to the next level or not
             if self.correct_answers == self.total_questions:
-                self.show_dialog("Congratulations! You've answered all 5 questions correctly. You've passed Level One!",
-                                 auto_hide_seconds=5)
+                self.show_dialog("Congratulations! You've answered all 5 questions correctly. You've passed Level One!", auto_hide_seconds=5)
                 # Here you can add code to move to the next level or end the game
             else:
-                self.show_dialog(
-                    f"You've only answered {self.correct_answers} out of {self.total_questions} questions correctly. You need to answer all 5 questions correctly to pass. Try again!",
-                    auto_hide_seconds=6)
+                self.show_dialog(f"You've only answered {self.correct_answers} out of {self.total_questions} questions correctly. You need to answer all 5 questions correctly to pass. Try again!", auto_hide_seconds=6)
                 self.restart_level()
             self.waiting_for_answer = False
 
     def change_level_dialogue(self):
-        # Check if the boss has been defeated and trigger level change
+    # Check if the boss has been defeated and trigger level change
         if self.boss_deaths == 1:
             self.show_dialog("You have completed Level 1, press 'x' to continue!", auto_hide_seconds=5)
 
@@ -160,6 +156,7 @@ class Game:
 
         if self.boss_deaths == 3:
             self.show_dialog("You have completed Level 3, press 'x' to continue!", auto_hide_seconds=5)
+
 
     def restart_level(self):
         # The function restarts the current level and all relevant level variables
@@ -173,10 +170,10 @@ class Game:
     def check_answer(self, response):
         # It validates the users answers to be correct or not
         correct_answer = self.questions[self.current_question_index]["answer"]
-        print(
-            f"Checking answer: '{response.strip().lower()}' against correct answer: '{correct_answer.strip().lower()}'")  # Debug print
+        print(f"Checking answer: '{response.strip().lower()}' against correct answer: '{correct_answer.strip().lower()}'")  # Debug print
         return response.strip().lower() == correct_answer.strip().lower()
 
+    
     def get_user_input(self):
         input_text = ""
         font = pygame.font.Font(config.GAME_OVER_FONT_PATH, 60)
@@ -202,13 +199,11 @@ class Game:
 
             prompt_text = 'Enter your name:'
             prompt_surface = font.render(prompt_text, True, (255, 255, 255))
-            prompt_rect = prompt_surface.get_rect(
-                center=(self.surface.get_width() / 2, self.surface.get_height() / 2 - 50))
+            prompt_rect = prompt_surface.get_rect(center=(self.surface.get_width() / 2, self.surface.get_height() / 2 - 50))
             self.surface.blit(prompt_surface, prompt_rect)
 
             input_surface = font.render(input_text, True, (255, 255, 255))
-            input_rect = input_surface.get_rect(
-                center=(self.surface.get_width() / 2, self.surface.get_height() / 2 + 50))
+            input_rect = input_surface.get_rect(center=(self.surface.get_width() / 2, self.surface.get_height() / 2 + 50))
             self.surface.blit(input_surface, input_rect)
 
             pygame.display.flip()
@@ -227,13 +222,12 @@ class Game:
             config.ATTACK_1_GIF_PATH,
             config.ATTACK_2_GIF_PATH,
             config.ATTACK_3_GIF_PATH
-        )
+    )
         self.background = Background(config.BACKGROUND_IMAGE_PATH, config.BACKGROUND_SIZE)
         self.all_sprites = pygame.sprite.Group(self.character)
         self.enemy_group = pygame.sprite.Group()
         self.ground_level = config.CHARACTER_GROUND_LEVEL
-        self.health_bar = HealthBar(config.HEALTH_BAR_MAX_HEALTH, config.HEALTH_BAR_WIDTH, config.HEALTH_BAR_HEIGHT,
-                                    config.HEALTH_BAR_X, config.HEALTH_BAR_Y, config.HEALTH_BAR_COLOR)
+        self.health_bar = HealthBar(config.HEALTH_BAR_MAX_HEALTH, config.HEALTH_BAR_WIDTH, config.HEALTH_BAR_HEIGHT, config.HEALTH_BAR_X, config.HEALTH_BAR_Y, config.HEALTH_BAR_COLOR)
         self.life_icons = []
         self.lives = config.INITIAL_LIVES
         self.scroll_speed = config.SCROLL_SPEED
@@ -243,12 +237,12 @@ class Game:
         self.spawned_enemies = []
         self.enemy_spawn_timer = pygame.time.get_ticks()
 
-        # Sets life icons when restarting
+        #Sets life icons when restarting
         life_icon_path = config.LIFE_ICON_PATH
         life_icon_size = config.LIFE_ICON_SIZE
         life_icon_spacing = config.LIFE_ICON_SPACING
 
-        # Sets the healthbar when restarting
+        #Sets the healthbar when restarting
         health_bar_x = self.health_bar.x
         health_bar_y = self.health_bar.y
         health_bar_height = self.health_bar.height
@@ -258,7 +252,7 @@ class Game:
             icon_y = health_bar_y - health_bar_height - 20
             icon = LifeIcon(icon_x, icon_y, life_icon_size, life_icon_size, life_icon_path)
             self.life_icons.append(icon)
-
+            
         self.set_level(self.current_level)  # Ensure the correct background is set
 
     def set_level(self, level):
@@ -270,14 +264,14 @@ class Game:
                 self.background = Background(str(level_settings["background"]), config.BACKGROUND_SIZE)
             except Exception as e:
                 print(f"Error loading background: {str(e)}")
-
+            
             self.current_enemies = level_settings["enemies"]
             print(f"Enemies for level {level}: {self.current_enemies}")
 
             # Stop the current music and play the new level's music
             if self.music_player:
                 self.music_player.stop_main_music()
-
+            
             if 'music' in level_settings:
                 music_path = level_settings["music"]
                 print(f"Attempting to play music for level {level}: {music_path}")
@@ -297,7 +291,7 @@ class Game:
                 self.background = Background(str(config.LEVELS[1]["background"]), config.BACKGROUND_SIZE)
             except Exception as e:
                 print(f"Error loading default background: {str(e)}")
-
+            
             self.current_enemies = config.LEVELS[1]["enemies"]
             if self.music_player:
                 self.music_player.stop_main_music()
@@ -307,7 +301,7 @@ class Game:
                     print("Default music started")
                 except Exception as e:
                     print(f"Error playing default music: {str(e)}")
-
+        
         self.current_level = level
         print(f"Level set to {self.current_level}")
 
@@ -315,32 +309,35 @@ class Game:
         self.enemy_count = 0
         self.enemy_group.empty()
         self.all_sprites.remove([sprite for sprite in self.all_sprites if isinstance(sprite, Enemy)])
-
+        
         # Reset character position
         self.character.rect.x = config.CHARACTER_INITIAL_X
         self.character.rect.y = config.CHARACTER_GROUND_LEVEL
         print(f"Character position reset to ({self.character.rect.x}, {self.character.rect.y})")
-
+        
         # Spawn initial enemies for the new level
         print(f"Spawning initial enemies for level {level}")
         for i in range(min(5, self.max_enemies)):
             enemy = self.spawn_enemy()
             if enemy:
-                print(f"Enemy {i + 1} spawned: {type(enemy).__name__}")
+                print(f"Enemy {i+1} spawned: {type(enemy).__name__}")
             else:
-                print(f"Failed to spawn enemy {i + 1}")
+                print(f"Failed to spawn enemy {i+1}")
 
         # Reset enemy spawn timer
         self.enemy_spawn_timer = pygame.time.get_ticks()
-
+        
         # Check if music is playing
         if pygame.mixer.music.get_busy():
             print("Music is currently playing")
         else:
             print("No music is playing")
-
+        
         print(f"Level {level} setup complete")
 
+
+
+    
     def run(self):
         self.ask_for_name()
         while self.running:
@@ -365,8 +362,7 @@ class Game:
                 if self.current_question_index < len(self.questions):
                     self.ask_next_question()
                 else:
-                    self.show_dialog("Congratulations! You've completed all questions for Level One.",
-                                     auto_hide_seconds=5)
+                    self.show_dialog("Congratulations! You've completed all questions for Level One.", auto_hide_seconds=5)
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     response = self.dialog_box.get_input()
@@ -406,7 +402,7 @@ class Game:
             if self.health_bar.current_health <= 0:
                 self.handle_character_death()
 
-        # Handles the level change
+        #Handles the level change 
         if event.key == pygame.K_5:
             print("5 key pressed - attempting to move to next level")  # Debug output
             self.next_level()
@@ -429,14 +425,14 @@ class Game:
         if keys[K_LSHIFT] or keys[K_RSHIFT]:
             if keys[K_LEFT] or keys[K_RIGHT]:
                 running = True
-                dx *= config.RUN_SPEED_MULTIPLIER  # Increase the speed while sprinting
+                dx *= config.RUN_SPEED_MULTIPLIER # Increase the speed while sprinting
 
         self.character.set_running(running)
         self.character.set_walking(moving and not self.character.is_jumping and not running)
         self.character.move(dx, dy)
 
-    def next_level(self):
-        # Function handles the update of levels
+    def next_level(self): 
+        #Function handles the update of levels 
         self.current_level += 1
         print(f"Moving to level {self.current_level}")  # Debugging
         if self.current_level > len(config.LEVELS):
@@ -452,7 +448,7 @@ class Game:
         self.character.revive()
         self.health_bar.reset()
         self.death_timer = None
-
+        
     def handle_character_death(self):
         # creates changes to character when receiving damage until death
         if not self.character.is_dead:
@@ -493,8 +489,7 @@ class Game:
                 if pygame.sprite.collide_rect(self.character, enemy):
                     if self.dialog_cooldown == 0:
                         enemy.attack()
-                        self.show_dialog(
-                            f"Here is Level 1....\nYou need to answer at least 5 questions correctly to pass..\nAre you ready?! Y/N")
+                        self.show_dialog(f"Here is Level 1....\nYou need to answer at least 5 questions correctly to pass..\nAre you ready?! Y/N")
                         self.dialog_cooldown = self.dialog_cooldown_time
 
             for enemy in self.enemy_group:
@@ -510,7 +505,7 @@ class Game:
                     self.revive_character()
                 elif self.lives == 0 and current_time - self.death_timer >= 1000:  # 1 second delay before game over
                     self.game_over()
-
+            
             # Check for boss defeat and trigger level change
             if self.boss_trigger:
                 self.change_level_dialogue()
@@ -523,8 +518,7 @@ class Game:
         try:
             enemy_type = random.choice(self.current_enemies)
             print(f"Selected enemy type: {enemy_type}")
-            new_enemy = Enemy(enemy_type, os.path.join('sprites', 'enemies'), self.surface.get_width(), 560,
-                              self.character)
+            new_enemy = Enemy(enemy_type, os.path.join('../sprites', 'enemies'), self.surface.get_width(), 560, self.character)
             self.enemy_group.add(new_enemy)
             self.all_sprites.add(new_enemy)
             self.enemy_count += 1
@@ -532,7 +526,7 @@ class Game:
             print(f"Error spawning enemy: {e}")
 
     def draw(self):
-        # Draw all game elements: background, sprites, health bar, dialog box. etc
+    # Draw all game elements: background, sprites, health bar, dialog box. etc
         self.surface.fill((0, 0, 0))
         self.background.draw(self.surface)
         self.all_sprites.draw(self.surface)
@@ -541,7 +535,7 @@ class Game:
             self.life_icons[i].draw(self.surface)
         self.dialog_box.draw()
         pygame.display.flip()
-
+        
     def game_over(self):
         # Displays the game over screen once all lives have been used
         print("Game Over")  # Debug print
@@ -570,16 +564,15 @@ class Game:
                     self.running = False
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_y:
-                        print("Restarting game...")  # Debug Print
+                        print("Restarting game...") # Debug Print
                         waiting_for_input = False
                         self.restart_game()
                     elif event.key == pygame.K_n:
-                        print("Exiting Game...")  # Debug Print
+                        print("Exiting Game...") # Debug Print
                         waiting_for_input = False
-
+    
                         self.running = False
-
-
+    
 def main():
     try:
         game = Game()
@@ -588,7 +581,6 @@ def main():
         print(f"An error occurred: {e}")
         import traceback
         traceback.print_exc()
-
 
 if __name__ == '__main__':
     main()
