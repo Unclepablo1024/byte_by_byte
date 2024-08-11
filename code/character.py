@@ -2,7 +2,6 @@ import pygame
 import config
 from healthbar import HealthBar
 
-
 class MainCharacter(pygame.sprite.Sprite):
     def __init__(self, idle_picture_path, walk_gif_path, jump_gif_path, run_gif_path, hurt_gif_path, die_gif_path,
                  attack_1_gif_path, attack_2_gif_path, attack_3_gif_path):
@@ -37,16 +36,28 @@ class MainCharacter(pygame.sprite.Sprite):
         self.gravity = config.CHARACTER_GRAVITY
         self.jump_strength = config.CHARACTER_JUMP_STRENGTH
         self.ground_level = config.CHARACTER_GROUND_LEVEL
-        self.rect.topleft = (config.CHARACTER_INITIAL_X, self.ground_level)
+        self.rect.topleft = config.CHARACTER_INITIAL_X, self.ground_level
         self.screen_width = config.SCREEN_WIDTH
         self.screen_height = config.SCREEN_HEIGHT
         self.blocked_direction = None
-        self.attack1_sound = pygame.mixer.Sound('../audio/attack1.mp3')
-        self.attack2_sound = pygame.mixer.Sound('../audio/attack2.mp3')
-        self.attack3_sound = pygame.mixer.Sound('../audio/attack3.wav')
+        self.attack1_sound = pygame.mixer.Sound(config.ATTACK_1_SOUNDS_PATH)
+        self.attack2_sound = pygame.mixer.Sound(config.ATTACK_2_SOUNDS_PATH)
+        self.attack3_sound = pygame.mixer.Sound(config.ATTACK_3_SOUNDS_PATH)
         self.attack1_sound.set_volume(0.5)
         self.attack2_sound.set_volume(0.2)
         self.attack3_sound.set_volume(0.5)
+
+        # Initialize prev_x to the starting x position
+        self.prev_x = self.rect.x
+
+    def revive(self):
+        self.is_dead = False
+        self.health_bar.reset()
+        self.image = self.idle_image
+        self.rect.topleft = (config.CHARACTER_INITIAL_X, self.ground_level)  # Reset to starting position
+        self.is_jumping = False  # Reset jumping state
+        self.prev_x = self.rect.x  # Reset prev_x
+
     def load_gif_frames(self, gif_path):
         gif = pygame.image.load(gif_path).convert_alpha()
         gif_width, gif_height = gif.get_size()
@@ -59,6 +70,10 @@ class MainCharacter(pygame.sprite.Sprite):
 
     def update(self):
         now = pygame.time.get_ticks()
+        
+        # Store the previous x position before updating
+        self.prev_x = self.rect.x
+
         if self.is_dead:
             if now - self.last_update > self.frame_rate:
                 self.last_update = now
@@ -149,13 +164,6 @@ class MainCharacter(pygame.sprite.Sprite):
         self.is_dead = True
         self.current_frame = 0
         self.image = self.die_frames[self.current_frame]
-
-    def revive(self):
-        self.is_dead = False
-        self.health_bar.reset()
-        self.image = self.idle_image
-        self.rect.topleft = (100, 430)  # Reset to starting position
-        self.is_jumping = False  # Reset jumping state
 
     def stop_movement(self, direction):
         self.blocked_direction = direction
