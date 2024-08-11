@@ -15,7 +15,7 @@ class DialogBox:
         self.font = pygame.font.Font(config.DIALOG_FONT_PATH, 32)
         self.text = ""
         self.active = False
-        self.image = pygame.image.load(os.path.join('pic','s2.png'))
+        self.image = pygame.image.load(os.path.join('../pic','s4.png'))
         self.image = pygame.transform.scale(self.image, (120, 100))
         self.image_rect = self.dialog_image.get_rect(topleft=(self.rect.right - 120, self.rect.top + 100))
         self.typing_speed = 50
@@ -24,9 +24,9 @@ class DialogBox:
         self.full_text = ""
         self.auto_hide_time = None
         self.user_input = ""
-        self.input_font = pygame.font.Font(os.path.join('fonts','undertalesans.ttf'), 32)
+        self.input_font = pygame.font.Font(os.path.join('../fonts','undertalesans.ttf'), 32)
 
-        self.input_font = pygame.font.Font(os.path.join('fonts', 'undertalesans.ttf'), 32)
+        self.input_font = pygame.font.Font(os.path.join('../fonts', 'undertalesans.ttf'), 32)
 
         self.input_color = (0, 0, 255)
         self.input_text = ""
@@ -123,7 +123,7 @@ class DialogBox:
 
         # Apply styles based on specific dialogues
         if "Here is Level 1" in message:
-            self.set_style((173, 216, 230), os.path.join('sprites', 's4.png'))
+            self.set_style((173, 216, 230), os.path.join('../sprites', 's2.png'))
         # elif "Spare Change!?!?" in message:
         #     self.set_style((173, 216, 230), os.path.join('sprites', 'enemies', 'Homeless_1', 'Idle.png'))
         # elif "I just got fired I have no money" in message:
@@ -143,4 +143,3 @@ class DialogBox:
                 return self.get_input()
             else:
                 self.add_char(event.unicode)
-

@@ -1,7 +1,5 @@
 import pygame
-
 import config
-
 
 class HealthBar:
     def __init__(self, max_health=config.HEALTH_BAR_MAX_HEALTH, width=config.HEALTH_BAR_WIDTH,
@@ -18,8 +16,6 @@ class HealthBar:
     def update_health(self, amount):
         self.current_health = max(0, min(self.max_health, self.current_health + amount))
         print(f"Updated health: {self.current_health}")
-
-
 
     def reset(self):
         self.current_health = self.max_health
