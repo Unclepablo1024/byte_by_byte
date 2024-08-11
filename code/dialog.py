@@ -1,6 +1,9 @@
 import pygame
 import os
 import config
+import character
+import enemy
+
 
 class DialogBox:
     def __init__(self, surface, width, height):
@@ -15,7 +18,7 @@ class DialogBox:
         self.font = pygame.font.Font(config.DIALOG_FONT_PATH, 32)
         self.text = ""
         self.active = False
-        self.image = pygame.image.load(os.path.join(config.PIC_PATH,'s4.png'))
+        self.image = pygame.image.load(os.path.join(config.PIC_PATH, 's4.png'))
         self.image = pygame.transform.scale(self.image, (120, 100))
         self.image_rect = self.dialog_image.get_rect(topleft=(self.rect.right - 120, self.rect.top + 100))
         self.typing_speed = 50
@@ -26,8 +29,6 @@ class DialogBox:
         self.user_input = ""
         self.input_font = pygame.font.Font(os.path.join(config.FONT_PATH), 32)
 
-        self.input_font = pygame.font.Font(os.path.join(config.FONT_PATH), 32)
-
         self.input_color = (0, 0, 255)
         self.input_text = ""
         self.max_attempts = 3
@@ -35,7 +36,8 @@ class DialogBox:
         self.correct_answer = ""
         self.is_question = False
         self.dialogue_shown = False  # Flag to ensure the dialogue only shows once
-
+        self.dialog_queue = []  # Queue to handle multiple dialogues
+        self.is_showing = False  # Flag to check if a dialog is being shown
 
     def show(self, text, auto_hide_seconds=None):
         self.full_text = text
@@ -43,6 +45,7 @@ class DialogBox:
         self.current_char_index = 0
         self.active = True
         self.last_update_time = pygame.time.get_ticks()
+        self.is_showing = True
         if auto_hide_seconds is not None:
             self.auto_hide_time = pygame.time.get_ticks() + (auto_hide_seconds * 1000)
         else:
@@ -51,6 +54,8 @@ class DialogBox:
     def hide(self):
         self.active = False
         self.auto_hide_time = None
+        self.is_showing = False
+        self.process_queue()  # Check if there are more dialogues in the queue
         print("Dialog box hidden")
 
     def update(self):
@@ -66,6 +71,11 @@ class DialogBox:
             self.text += self.full_text[self.current_char_index]
             self.current_char_index += 1
 
+    def process_queue(self):
+        if self.dialog_queue and not self.is_showing:
+            next_message, auto_hide_seconds = self.dialog_queue.pop(0)
+            self.show(next_message, auto_hide_seconds)
+
     def add_char(self, char):
         self.user_input += char
 
@@ -76,6 +86,30 @@ class DialogBox:
         input_text = self.user_input
         self.user_input = ""
         return input_text
+
+    def show_dialog(self, message, auto_hide_seconds=None):
+        self.dialog_queue.append((message, auto_hide_seconds))
+        self.process_queue()
+
+        if "The enemy is attacking" in message and self.dialogue_shown:
+            return  # Skip showing the dialogue if it has already been shown
+
+        if "Here is Level 1" in message:
+            self.set_style((173, 216, 230), os.path.join('sprites', 'Bart.png'))
+        elif 'What do I do know!? I lost my job and know nothing about coding' in message:
+            self.set_style((173, 216, 230), os.path.join('sprites', 'enemies', 'Homeless_1', 'Idle.png'))
+
+        if "The enemy is attacking" in message:
+            self.dialogue_shown = True  # Set this flag to ensure it only shows once
+
+    def handle_events(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                self.backspace()
+            elif event.key == pygame.K_RETURN:
+                return self.get_input()
+            else:
+                self.add_char(event.unicode)
 
     def draw(self):
         if not self.active:
@@ -110,36 +144,3 @@ class DialogBox:
         self.background_color = background_color
         self.image = pygame.image.load(image_path)
         self.image = pygame.transform.scale(self.image, (100, 100))
-
-    def show_dialog(self, message, auto_hide_seconds=None):
-        self.show(message, auto_hide_seconds)
-       # Handle dialogue related to enemy attacking
-        if "The enemy is attacking" in message and self.dialogue_shown:
-            return  # Skip showing the dialogue if it has already been shown
-
-        # Show the dialogue and handle auto-hide if applicable
-        self.show(message, auto_hide_seconds)
-        pygame.event.clear()
-
-        # Apply styles based on specific dialogues
-        if "Here is Level 1" in message:
-            self.set_style((173, 216, 230), os.path.join('../sprites', 's2.png'))
-        # elif "Spare Change!?!?" in message:
-        #     self.set_style((173, 216, 230), os.path.join('sprites', 'enemies', 'Homeless_1', 'Idle.png'))
-        # elif "I just got fired I have no money" in message:
-        #     self.set_style((173, 216, 230), os.path.join('sprites', 'enemies','Homeless_1', 'Idle.png'))
-        # elif "We will see about that" in message:
-        #     self.set_style((173, 216, 230), os.path.join('sprites', 'enemies','Homeless_1', 'Idle.png'))
-
-        # Mark the dialogue as shown if it's the enemy attack warning
-        if "The enemy is attacking" in message:
-            self.dialogue_shown = True  # Set this flag to ensure it only shows once
-            
-    def handle_events(self, event):
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_BACKSPACE:
-                self.backspace()
-            elif event.key == pygame.K_RETURN:
-                return self.get_input()
-            else:
-                self.add_char(event.unicode)
