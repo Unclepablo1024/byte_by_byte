@@ -175,3 +175,5 @@ class Enemy(pygame.sprite.Sprite):
 
     def is_off_screen(self):
         return self.rect.right < 0 or self.rect.left > self.screen_width
+    
+    

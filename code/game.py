@@ -20,7 +20,7 @@ class Game:
         pygame.init()
         self.surface = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
 
-        icon = pygame.image.load('logo/icon.png')
+        icon = pygame.image.load('../logo/icon.png')
         pygame.display.set_icon(icon)
         pygame.display.set_caption("Byte by Byte")
 
@@ -70,7 +70,7 @@ class Game:
         self.dialog_box.show(
             f" {self.name}!! \n We are truly sorry, we cannot work with someone who doesn't know how to code! You're "
             f"fired! Don't come back until \n you've learned something!",
-            auto_hide_seconds=15)
+            auto_hide_seconds=11)
 
     def handle_dialog_response(self, response):
         pygame.event.clear()
@@ -563,7 +563,7 @@ class Game:
         try:
             enemy_type = random.choice(self.current_enemies)
             print(f"Selected enemy type: {enemy_type}")
-            new_enemy = Enemy(enemy_type, os.path.join('sprites', 'enemies'), self.surface.get_width(), 560,
+            new_enemy = Enemy(enemy_type, os.path.join('../sprites', 'enemies'), self.surface.get_width(), 560,
                               self.character)
             self.enemy_group.add(new_enemy)
             self.all_sprites.add(new_enemy)

@@ -41,9 +41,9 @@ class MainCharacter(pygame.sprite.Sprite):
         self.screen_width = config.SCREEN_WIDTH
         self.screen_height = config.SCREEN_HEIGHT
         self.blocked_direction = None
-        self.attack1_sound = pygame.mixer.Sound('audio/attack1.mp3')
-        self.attack2_sound = pygame.mixer.Sound('audio/attack2.mp3')
-        self.attack3_sound = pygame.mixer.Sound('audio/attack3.wav')
+        self.attack1_sound = pygame.mixer.Sound('../audio/attack1.mp3')
+        self.attack2_sound = pygame.mixer.Sound('../audio/attack2.mp3')
+        self.attack3_sound = pygame.mixer.Sound('../audio/attack3.wav')
         self.attack1_sound.set_volume(0.5)
         self.attack2_sound.set_volume(0.2)
         self.attack3_sound.set_volume(0.5)
