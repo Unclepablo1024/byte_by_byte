@@ -18,11 +18,11 @@ SCROLL_SPEED = 5
 RUN_SPEED_MULTIPLIER = 2
 
 # Paths
-FONT_PATH = os.path.join("../fonts", "determinationmono.ttf")
-AUDIO_PATH = os.path.join("../audio")
-BASE_SPRITES_PATH = '../sprites'
-LOGO_PATH ='../logo/icon.png'
-PIC_PATH ='../pic'
+FONT_PATH = os.path.join("fonts", "determinationmono.ttf")
+AUDIO_PATH = os.path.join("audio")
+BASE_SPRITES_PATH = 'sprites'
+LOGO_PATH ='logo/icon.png'
+PIC_PATH ='pic'
 
 # Background settings
 BACKGROUND_IMAGE_PATH = os.path.join(BASE_SPRITES_PATH, 'backgrounds', 'City2_pale.png')
@@ -160,3 +160,11 @@ LEVEL_ONE_QUESTIONS = [
 
 def get_random_questions(n=5):
     return random.sample(LEVEL_ONE_QUESTIONS, min(n, len(LEVEL_ONE_QUESTIONS)))
+
+
+#level 1 dialog
+
+LEVEL_ONE_DIALOGUE =  {1:"What do I do know!? I lost my job and know nothing about coding", 2: "Spare Change",
+    3:"Sorry man I dont have any", 4:"We will see about that, guys!! take his money",
+    5:"Click your right mouse button to atack enemies", 6:"Our leader will show you who is boss"}
+

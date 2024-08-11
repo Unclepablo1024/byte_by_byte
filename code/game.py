@@ -49,13 +49,14 @@ class Game:
         self.correct_answers = 0
         self.total_questions = 5
         self.enemy_count = 0
+        self.first_encounter = 0
 
         # Flag for dialogue trigger for levels
         self.dialogue_shown = False
 
         # Dialogue setup for change level to level
         self.boss_deaths = 1
-        self.boss_trigger = True
+        self.boss_trigger = False
 
     def init_resources(self):
         # Loads resources like music and sounds
@@ -158,12 +159,9 @@ class Game:
                 dx = self.scroll_speed
             if keys[K_LEFT] and not self.character.is_dead:
                 dx = -self.scroll_speed
-
             self.character.move(dx, 0)
-
             now = pygame.time.get_ticks()
 
-            #             if now - self.enemy_spawn_timer > 3000 and self.enemy_count < self.max_enemies:
             if now - self.enemy_spawn_timer > 3000 and len(self.enemy_group) < self.max_enemies:
 
                 spawn_enemy(self)
@@ -172,25 +170,8 @@ class Game:
 
             for enemy in self.enemy_group:
 
-        #                 # Skip collision handling if the enemy is dead
-#                 if enemy.is_dead:
-#                     continue
-
-
-#             for enemy in self.enemy_group:
-#             # Ensure the enemy is actually attacking and close enough
-#                 if enemy.state == "attacking":
-#                     distance_to_player = abs(self.character.rect.centerx - enemy.rect.centerx)
-#                     if distance_to_player < enemy.attack_distance and not self.dialog_box.dialogue_shown:
-#                         self.dialog_box.show_dialog("The enemy is attacking! Prepare yourself!", auto_hide_seconds=5)
-#                         self.dialog_box.show_dialog("Right click on your mouse to attack enemy", auto_hide_seconds=5)
-
-
                 if enemy.is_dead:
                     continue  # Skip processing for dead enemies
-
-                # if enemy.attack and not self.dialog_box.dialogue_shown:
-                #     self.dialog_box.show_dialog("The enemy is attacking! Prepare yourself!", auto_hide_seconds=5)
 
                 if self.character.is_attacking and self.is_in_attack_range(enemy):
                     enemy.mark_for_damage(pygame.time.get_ticks() + 10)
@@ -207,6 +188,24 @@ class Game:
                         self.character.stop_movement('left')
                     collided = True
                     break
+                
+                #Check for first encounter and plays dialogue
+                if self.character.is_attacking and self.is_in_attack_range(enemy):          ##ASK AUSTIN
+                    if self.first_encounter == 0:
+                        self.first_encounter += 1
+
+                        # Only run the following block once
+                        if not hasattr(self, 'dialogue_shown'):
+                        # Set an attribute to track if the dialogue has been shown
+                            self.dialogue_shown = True
+
+                        self.dialog_box.show_dialog("You've encountered an enemy for the first time!",auto_hide_seconds=5)
+                        
+                # Add the remaining dialogues to the queue
+                    for counter in range(1, 5):
+                        self.dialog_box.show_dialog(f"{config.LEVEL_ONE_DIALOGUE[counter]}", auto_hide_seconds=5)
+
+                    enemy.mark_for_damage(pygame.time.get_ticks() + 10)
 
             if not collided:
                 self.character.resume_movement()
