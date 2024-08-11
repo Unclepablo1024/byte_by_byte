@@ -1,0 +1,18 @@
+import pygame
+from boss1 import Boss 
+
+class GameManager:
+    def __init__(self):
+        self.enemies_defeated = 0
+        self.boss = None
+
+    def add_boss(self, boss):
+        self.boss = boss
+
+    def defeat_enemy(self):
+        self.enemies_defeated += 1
+        if self.enemies_defeated >= 25 and self.boss:
+            self.boss.set_walking(True)  #walks
+    def update(self):
+        if self.boss:
+            self.boss.update()

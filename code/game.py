@@ -19,6 +19,7 @@ from dialog_response import handle_dialog_response, ask_next_question, check_ans
 from enemy_spawner import spawn_enemy, draw_enemy_counter
 
 
+
 # Initialize game and its components
 class Game:
     def __init__(self):
