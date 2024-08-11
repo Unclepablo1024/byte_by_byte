@@ -15,7 +15,7 @@ class DialogBox:
         self.font = pygame.font.Font(config.DIALOG_FONT_PATH, 32)
         self.text = ""
         self.active = False
-        self.image = pygame.image.load(os.path.join('../pic','s4.png'))
+        self.image = pygame.image.load(os.path.join(config.PIC_PATH,'s4.png'))
         self.image = pygame.transform.scale(self.image, (120, 100))
         self.image_rect = self.dialog_image.get_rect(topleft=(self.rect.right - 120, self.rect.top + 100))
         self.typing_speed = 50
@@ -24,9 +24,9 @@ class DialogBox:
         self.full_text = ""
         self.auto_hide_time = None
         self.user_input = ""
-        self.input_font = pygame.font.Font(os.path.join('../fonts','undertalesans.ttf'), 32)
+        self.input_font = pygame.font.Font(os.path.join(config.FONT_PATH), 32)
 
-        self.input_font = pygame.font.Font(os.path.join('../fonts', 'undertalesans.ttf'), 32)
+        self.input_font = pygame.font.Font(os.path.join(config.FONT_PATH), 32)
 
         self.input_color = (0, 0, 255)
         self.input_text = ""

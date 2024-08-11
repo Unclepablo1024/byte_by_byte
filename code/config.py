@@ -22,6 +22,7 @@ FONT_PATH = os.path.join("../fonts", "determinationmono.ttf")
 AUDIO_PATH = os.path.join("../audio")
 BASE_SPRITES_PATH = '../sprites'
 LOGO_PATH ='../logo/icon.png'
+PIC_PATH ='../pic'
 
 # Background settings
 BACKGROUND_IMAGE_PATH = os.path.join(BASE_SPRITES_PATH, 'backgrounds', 'City2_pale.png')

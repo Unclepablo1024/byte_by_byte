@@ -55,7 +55,7 @@ class Game:
 
         # Dialogue setup for change level to level
         self.boss_deaths = 1
-        self.boss_trigger = False
+        self.boss_trigger = True
 
     def init_resources(self):
         # Loads resources like music and sounds
