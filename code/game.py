@@ -57,6 +57,7 @@ class Game:
         # Dialogue setup for change level to level
         self.boss_deaths = 1
         self.boss_trigger = False
+        self.boss_trigger = False
 
     def init_resources(self):
         # Loads resources like music and sounds
@@ -202,8 +203,8 @@ class Game:
                         self.dialog_box.show_dialog("You've encountered an enemy for the first time!",auto_hide_seconds=5)
                         
                 # Add the remaining dialogues to the queue
-                    for counter in range(1, 5):
-                        self.dialog_box.show_dialog(f"{config.LEVEL_ONE_DIALOGUE[counter]}", auto_hide_seconds=5)
+                        for counter in range(1, 5):
+                            self.dialog_box.show_dialog(f"{config.LEVEL_ONE_DIALOGUE[counter]}", auto_hide_seconds=5)
 
                     enemy.mark_for_damage(pygame.time.get_ticks() + 10)
 
