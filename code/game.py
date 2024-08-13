@@ -1,6 +1,8 @@
 import pygame
 import sys
-from boss_mana import GameManager
+import os
+from pygame.locals import *
+import boss_mana
 from boss1 import Boss
 from enemy import Enemy
 from background import Background
@@ -175,7 +177,8 @@ class Game:
                 # Check for the first encounter with an enemy
                 if not hasattr(self, 'first_encounter_triggered') and self.is_in_attack_range(enemy):
                     self.first_encounter_triggered = True
-                    self.dialog_box.show_dialog("(Use the left mouse button to attack!)", auto_hide_seconds=5)
+                    self.dialog_box.show_dialog("TIP -- (Use the left mouse button to attack!)", auto_hide_seconds=5)
+                    self.dialog_box.set_style((3,3,3), os.path.join("pic", "s2.png"))
 
                     # Add the remaining dialogues to the queue
                     for counter in range(1, 5):
@@ -217,12 +220,15 @@ class Game:
 
             # Check for boss defeat and trigger level change
             # if self.boss_trigger:
-            if self.enemy_count == config.MAX_ENEMIES:  #line changed to trigger when all enemies die, change to this line to be based on the boss if self.boss_trigger:
+            # if self.enemy_count == config.MAX_ENEMIES:  #line changed to trigger when all enemies die, change to this line to be based on the boss if self.boss_trigger:
             # if self.enemy_count == config.MAX_ENEMIES:
-                self.change_level_dialogue()
+                # self.change_level_dialogue()
                 
-            if boss_mana.Boss_Healthbar == HealthBar.is_depleted:
+            if boss_mana.Boss_HealthBar == HealthBar.is_depleted:
+
                 self.boss_trigger = True
+                self.change_level_dialogue()
+
 
     def is_in_attack_range(self, enemy):
         distance = abs(self.character.rect.centerx - enemy.rect.centerx)

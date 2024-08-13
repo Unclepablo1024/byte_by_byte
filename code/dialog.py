@@ -95,9 +95,9 @@ class DialogBox:
             return  # Skip showing the dialogue if it has already been shown
 
         if "Here is Level 1" in message:
-            self.set_style((173, 216, 230), os.path.join("sprites", "s2.png"))
+            self.set_style((173, 216, 230), os.path.join('sprites', 's2.png'))
         elif 'What do I do know!? I lost my job and know nothing about coding' in message:
-            self.set_style((173, 216, 230), os.path.join("sprites", "enemies", "Homeless_1", "Idle.png"))
+            self.set_style((173, 216, 230), os.path.join('sprites', 'enemies', 'Homeless_1', 'Idle.png'))
 
         if "The enemy is attacking" in message:
             self.dialogue_shown = True  # Set this flag to ensure it only shows once
