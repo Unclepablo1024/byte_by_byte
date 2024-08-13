@@ -149,7 +149,6 @@ class Game:
         self.health_bar.reset()
         self.death_timer = None
 
-
     def update(self):
         self.dialog_box.update()
         dx = 0
@@ -163,25 +162,29 @@ class Game:
             self.character.move(dx, 0)
             now = pygame.time.get_ticks()
 
-            if now - self.enemy_spawn_timer > 3000 and len(self.enemy_group) < self.max_enemies:
-
+            if now - self.enemy_spawn_timer > 3000 and len(self.enemy_group) != self.max_enemies:
                 spawn_enemy(self)
                 self.enemy_spawn_timer = now
 
-
             for enemy in self.enemy_group:
-
                 if enemy.is_dead:
                     continue  # Skip processing for dead enemies
 
                 if self.character.is_attacking and self.is_in_attack_range(enemy):
                     enemy.mark_for_damage(pygame.time.get_ticks() + 10)
 
+                # Check for the first encounter with an enemy
+                if not hasattr(self, 'first_encounter_triggered') and self.is_in_attack_range(enemy):
+                    self.first_encounter_triggered = True
+                    self.dialog_box.show_dialog("(Use the left mouse button to attack!)", auto_hide_seconds=5)
+
+                    # Add the remaining dialogues to the queue
+                    for counter in range(1, 5):
+                        self.dialog_box.show_dialog(f"{config.LEVEL_ONE_DIALOGUE[counter]}", auto_hide_seconds=5)
+                    break  # Exit the loop after showing the dialog for the first encounter
+
             collided = False
             for enemy in self.enemy_group:
-
-                # Check if the enemy is dead; if so, skip collision
-
                 if not enemy.is_dead and pygame.sprite.collide_rect(self.character, enemy):
                     if self.character.rect.centerx < enemy.rect.centerx:
                         self.character.stop_movement('right')
@@ -189,24 +192,6 @@ class Game:
                         self.character.stop_movement('left')
                     collided = True
                     break
-                
-                #Check for first encounter and plays dialogue
-                if self.character.is_attacking and self.is_in_attack_range(enemy):          ##ASK AUSTIN
-                    if self.first_encounter == 0:
-                        self.first_encounter += 1
-
-                        # Only run the following block once
-                        if not hasattr(self, 'dialogue_shown'):
-                        # Set an attribute to track if the dialogue has been shown
-                            self.dialogue_shown = True
-
-                        self.dialog_box.show_dialog("You've encountered an enemy for the first time!",auto_hide_seconds=5)
-                        
-                # Add the remaining dialogues to the queue
-                        for counter in range(1, 5):
-                            self.dialog_box.show_dialog(f"{config.LEVEL_ONE_DIALOGUE[counter]}", auto_hide_seconds=5)
-
-                    enemy.mark_for_damage(pygame.time.get_ticks() + 10)
 
             if not collided:
                 self.character.resume_movement()
@@ -225,7 +210,6 @@ class Game:
                 elif self.lives == 0 and current_time - self.death_timer >= 1000:  # 1 second delay before game over
                     self.game_over()
 
-
             # Remove enemies that have finished their death animation and increase the counter
             for enemy in list(self.enemy_group):
                 if enemy.is_dead and enemy.current_frame == len(enemy.dead_images) - 1:
@@ -233,8 +217,13 @@ class Game:
                     self.enemy_count += 1
 
             # Check for boss defeat and trigger level change
-            if self.boss_trigger:
+            # if self.boss_trigger:
+            if self.enemy_count == config.MAX_ENEMIES:  #line changed to trigger when all enemies die, change to this line to be based on the boss if self.boss_trigger:
+            # if self.enemy_count == config.MAX_ENEMIES:
                 self.change_level_dialogue()
+                
+            if Boss.Boss_Healthbar == HealthBar.is_depleted:
+                self.boss_trigger = True
 
     def is_in_attack_range(self, enemy):
         distance = abs(self.character.rect.centerx - enemy.rect.centerx)

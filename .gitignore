@@ -6,6 +6,7 @@ node_modules/
 *.iml
 *.pem
 *.zip
+.venv/
 
 
 #intellij
