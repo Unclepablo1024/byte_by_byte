@@ -225,6 +225,7 @@ class Game:
                 # self.change_level_dialogue()
                 
             if boss_mana.Boss_HealthBar == HealthBar.is_depleted:
+
                 self.boss_trigger = True
                 self.change_level_dialogue()
 
