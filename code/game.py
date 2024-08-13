@@ -1,7 +1,6 @@
 import pygame
 import sys
-from pygame.locals import *
-
+from boss_mana import GameManager
 from boss1 import Boss
 from enemy import Enemy
 from background import Background
@@ -222,7 +221,7 @@ class Game:
             # if self.enemy_count == config.MAX_ENEMIES:
                 self.change_level_dialogue()
                 
-            if Boss.Boss_Healthbar == HealthBar.is_depleted:
+            if boss_mana.Boss_Healthbar == HealthBar.is_depleted:
                 self.boss_trigger = True
 
     def is_in_attack_range(self, enemy):

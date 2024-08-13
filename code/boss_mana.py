@@ -21,9 +21,9 @@ class GameManager:
 
 
 class Boss_HealthBar:
-    def __init__(self, max_health=config.BHEALTH_BAR_MAX_HEALTH, width=config.BHEALTH_BAR_WIDTH,
-                 height=config.BHEALTH_BAR_HEIGHT,
-                 x=config.BHEALTH_BAR_X, y=config.BHEALTH_BAR_Y, color=config.BHEALTH_BAR_COLOR):
+    def __init__(self, max_health=config.HEALTH_BAR_MAX_HEALTH, width=config.HEALTH_BAR_WIDTH,
+                 height=config.HEALTH_BAR_HEIGHT,
+                 x=config.HEALTH_BAR_X, y=config.HEALTH_BAR_Y, color=config.HEALTH_BAR_COLOR):
         self.max_health = max_health
         self.current_health = max_health
         self.width = width
