@@ -164,7 +164,7 @@ def get_random_questions(n=5):
 
 #level 1 dialog
 
-LEVEL_ONE_DIALOGUE =  {1:"What do I do know!? I lost my job and know nothing about coding", 2: "Spare Change",
-    3:"Sorry man I dont have any", 4:"We will see about that, guys!! take his money",
-    5:"Click your right mouse button to atack enemies", 6:"Our leader will show you who is boss"}
+LEVEL_ONE_DIALOGUE =  {1:"You: What do I do know!? I lost my job and know nothing about coding", 2: "Enemy: Spare Change",
+    3:"You: Sorry man I dont have any", 4:"Enemy: We will see about that, guys!! take his money",
+    5:"Tip: Click your right mouse button to atack enemies", 6:"Enemy: Our leader will show you who is boss"}
 

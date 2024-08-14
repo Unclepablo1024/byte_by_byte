@@ -52,12 +52,15 @@ class Game:
         self.enemy_count = 0
         self.first_encounter = 0
 
+        #trigger for boss spawn
+        self.boss_spawned = False
+
         # Flag for dialogue trigger for levels
         self.dialogue_shown = False
 
         # Dialogue setup for change level to level
         self.boss_deaths = 1
-        self.boss_trigger = False
+        self.boss_trigger = True
         
 
     def init_resources(self):
@@ -71,6 +74,7 @@ class Game:
     def change_level_dialogue(self):
         if self.boss_deaths in [1, 2, 3]:
             self.show_dialog(f"You have completed Level {self.boss_deaths}, press 'x' to continue!", auto_hide_seconds=5)
+
 
     def set_level(self, level):
         set_level(self, level)
@@ -163,6 +167,16 @@ class Game:
             self.character.move(dx, 0)
             now = pygame.time.get_ticks()
 
+            # Check if it's time to spawn a boss and ensure it only happens once
+            if self.enemy_count == self.max_enemies and not self.boss_spawned:
+                print("MAX_ENEMIES reached, spawning Boss!")
+                ground_level = self.ground_level  # Use the same ground level as regular enemies
+                boss = Boss(folder_path="sprites/Bosses/Boss1", screen_width=self.surface.get_width(), ground_level=ground_level, main_character=self.character)
+                self.all_sprites.add(boss)
+                self.enemy_group.add(boss)
+                self.boss_spawned = True  # Set the flag to True after spawning the boss
+
+            # Continue with normal enemy spawning until max is reached
             if now - self.enemy_spawn_timer > 3000 and len(self.enemy_group) != self.max_enemies:
                 spawn_enemy(self)
                 self.enemy_spawn_timer = now
@@ -177,8 +191,7 @@ class Game:
                 # Check for the first encounter with an enemy
                 if not hasattr(self, 'first_encounter_triggered') and self.is_in_attack_range(enemy):
                     self.first_encounter_triggered = True
-                    self.dialog_box.show_dialog("TIP -- (Use the left mouse button to attack!)", auto_hide_seconds=5)
-                    self.dialog_box.set_style((3,3,3), os.path.join("pic", "s2.png"))
+                    self.dialog_box.show_dialog("(Use the left mouse button to attack!)", auto_hide_seconds=5)
 
                     # Add the remaining dialogues to the queue
                     for counter in range(1, 5):
@@ -219,14 +232,13 @@ class Game:
                     self.enemy_count += 1
 
             # Check for boss defeat and trigger level change
-            # if self.boss_trigger:
-            # if self.enemy_count == config.MAX_ENEMIES:  #line changed to trigger when all enemies die, change to this line to be based on the boss if self.boss_trigger:
-            # if self.enemy_count == config.MAX_ENEMIES:
-                # self.change_level_dialogue()
-                
-            if boss_mana.Boss_HealthBar == HealthBar.is_depleted:
-                self.boss_trigger = True
+            if self.boss_trigger:
                 self.change_level_dialogue()
+
+                
+            # if boss_mana.Boss_HealthBar == HealthBar.is_depleted:
+            #     self.boss_trigger = True
+            #     self.change_level_dialogue()
 
 
     def is_in_attack_range(self, enemy):
