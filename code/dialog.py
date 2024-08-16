@@ -51,12 +51,12 @@ class DialogBox:
         else:
             self.auto_hide_time = None
 
-    def hide(self):
-        self.active = False
-        self.auto_hide_time = None
-        self.is_showing = False
-        self.process_queue()  # Check if there are more dialogues in the queue
-        print("Dialog box hidden")
+    # def hide(self):
+    #     self.active = False
+    #     self.auto_hide_time = None
+    #     self.is_showing = False
+    #     self.process_queue()  # Check if there are more dialogues in the queue
+    #     print("Dialog box hidden")
 
     def update(self):
         if not self.active:
@@ -89,18 +89,41 @@ class DialogBox:
 
     def show_dialog(self, message, auto_hide_seconds=None):
         self.dialog_queue.append((message, auto_hide_seconds))
-        self.process_queue()
+        
+        if not self.is_showing:
+            self._process_next_dialog()
 
-        if "The enemy is attacking" in message and self.dialogue_shown:
-            return  # Skip showing the dialogue if it has already been shown
+    def _process_next_dialog(self):
+        if self.dialog_queue:
+            message, auto_hide_seconds = self.dialog_queue.pop(0)
+            self._set_dialog_style(message)
+            self.show(message, auto_hide_seconds)
+            self.is_showing = True
 
+    def _set_dialog_style(self, message):
+        sprite_path = None
         if "Here is Level 1" in message:
-            self.set_style((173, 216, 230), os.path.join('sprites', 's2.png'))
-        elif 'What do I do know!? I lost my job and know nothing about coding' in message:
-            self.set_style((173, 216, 230), os.path.join('sprites', 'enemies', 'Homeless_1', 'Idle.png'))
+            sprite_path = os.path.join(config.PIC_PATH, 's2.png')
+        elif 'What do I do know!?' in message or 'Sorry man' in message:
+            sprite_path = os.path.join(config.BASE_SPRITES_PATH, 'man.png')
+        elif any(keyword in message for keyword in ['Spare', 'boss', 'guys']):
+            sprite_path = os.path.join(config.BASE_SPRITES_PATH, 'Enemies', 'homeless.png')
 
-        if "The enemy is attacking" in message:
-            self.dialogue_shown = True  # Set this flag to ensure it only shows once
+        if sprite_path:
+            try:
+                self.image = pygame.image.load(sprite_path)
+                self.image = pygame.transform.scale(self.image, (120, 100))
+                self.image_rect = self.image.get_rect(topleft=(self.rect.right - 120, self.rect.top + 100))
+            except pygame.error as e:
+                print(f"Error loading image {sprite_path}: {e}")
+
+    def hide(self):
+        self.active = False
+        self.auto_hide_time = None
+        self.is_showing = False
+        self._process_next_dialog()
+
+
 
     def handle_events(self, event):
         if event.type == pygame.KEYDOWN:

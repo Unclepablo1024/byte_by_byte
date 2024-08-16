@@ -17,7 +17,7 @@ def spawn_enemy(self):
     try:
         enemy_type = random.choice(self.current_enemies)
         print(f"Selected enemy type: {enemy_type}")
-        new_enemy = Enemy(enemy_type, os.path.join(config.BASE_SPRITES_PATH, 'enemies'), self.surface.get_width(), 560,
+        new_enemy = Enemy(enemy_type, os.path.join(config.BASE_SPRITES_PATH, 'enemies'), self.surface.get_width(), config.ENEMY_POSITION,
                             self.character)
         self.enemy_group.add(new_enemy)
         self.all_sprites.add(new_enemy)

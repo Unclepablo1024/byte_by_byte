@@ -8,7 +8,7 @@ SCREEN_HEIGHT = 600
 
 # Character settings
 CHARACTER_INITIAL_X = 50
-CHARACTER_GROUND_LEVEL = SCREEN_HEIGHT - 155  # Assuming character height is 128
+CHARACTER_GROUND_LEVEL = SCREEN_HEIGHT - 160  # Assuming character height is 128
 CHARACTER_GRAVITY = 1
 CHARACTER_JUMP_STRENGTH = -20
 FRAME_RATE = 100  # Milliseconds per frame
@@ -18,11 +18,11 @@ SCROLL_SPEED = 5
 RUN_SPEED_MULTIPLIER = 2
 
 # Paths
-FONT_PATH = os.path.join("fonts", "determinationmono.ttf")
-AUDIO_PATH = os.path.join("audio")
-BASE_SPRITES_PATH = os.path.join("sprites")
-LOGO_PATH = os.path.join("logo", "icon.png")
-PIC_PATH = os.path.join("pic")
+FONT_PATH = os.path.join("../fonts", "determinationmono.ttf")
+AUDIO_PATH = os.path.join("../audio")
+BASE_SPRITES_PATH = os.path.join("../sprites")
+LOGO_PATH = os.path.join("../logo", "icon.png")
+PIC_PATH = os.path.join("../pic")
 
 # Background settings
 BACKGROUND_IMAGE_PATH = os.path.join(BASE_SPRITES_PATH, 'backgrounds', 'City2_pale.png')
@@ -58,7 +58,8 @@ DIALOG_COOLDOWN_TIME = 2000  # 2 seconds cooldown
 # Enemy settings
 ENEMY_TYPES = ["Homeless_1", "Homeless_2", "Homeless_3"]
 ENEMY_SPRITES_PATH = os.path.join(BASE_SPRITES_PATH, 'enemies')
-MAX_ENEMIES = 5
+MAX_ENEMIES = 3
+ENEMY_POSITION = 565
 # Attack animations paths
 ATTACK_1_GIF_PATH = os.path.join(BASE_SPRITES_PATH, 'Gangsters_2', 'Attack_1.png')
 ATTACK_2_GIF_PATH = os.path.join(BASE_SPRITES_PATH, 'Gangsters_2', 'Attack_2.png')
@@ -124,7 +125,9 @@ title_font = pygame.font.Font(FONT_PATH, 48)
 # Load common sounds
 correct_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "get_point.wav"))
 wrong_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "lost-sobbing.wav"))
-
+hit_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "hit.wav"))
+duck_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "duck.wav"))
+congra_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "congra.mp3"))
 
 # Define colors
 WHITE = (255, 255, 255)
@@ -164,7 +167,20 @@ def get_random_questions(n=5):
 
 #level 1 dialog
 
-LEVEL_ONE_DIALOGUE =  {1:"What do I do know!? I lost my job and know nothing about coding", 2: "Spare Change",
-    3:"Sorry man I dont have any", 4:"We will see about that, guys!! take his money",
-    5:"Click your right mouse button to atack enemies", 6:"Our leader will show you who is boss"}
+LEVEL_ONE_DIALOGUE =  {1:"What do I do know!? I lost my job and know nothing about coding", 2: "Spare Change!",
+    3:"Sorry man I don't have any.", 4:"We will see about that, guys!! Take his money.",
+    5:"Click your right mouse button to atack enemies.", 6:"Our leader will show you who is boss."}
 
+
+def wrap_text(text, font, max_width):
+    lines = []
+    words = text.split()
+    while words:
+        line_words = []
+        while words:
+            line_words.append(words.pop(0))
+            fw, fh = font.size(' '.join(line_words + words[:1]))
+            if fw > max_width:
+                break
+        lines.append(' '.join(line_words))
+    return lines

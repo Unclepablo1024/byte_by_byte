@@ -1,115 +1,158 @@
 import pygame
 import config
+import os
 
 
 class Boss(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, folder_path, screen_width, ground_level, main_character):
         super().__init__()
+        self.folder_path = os.path.join(config.BASE_SPRITES_PATH, 'Bosses', 'Boss1')
+        self.walk_images = self.load_images("Walk.png")
+        self.attack_images = self.load_images("Attack_1.png")
+        self.hurt_images = self.load_images("Hurt.png")
+        self.dead_images = self.load_images("Dead.png")
+        self.image = self.walk_images[0]
+        self.rect = self.image.get_rect()
+        self.hitbox = self.rect.inflate(-150, -150)
 
-        # Load images from config paths
-        self.images = {
-            "idle": [pygame.image.load(config.IDLE_PATH).convert_alpha()],
-            "walk": [pygame.image.load(config.WALK_PATH).convert_alpha()],
-            "jump": [pygame.image.load(config.JUMP_PATH).convert_alpha()],
-            "run": [pygame.image.load(config.RUN_PATH).convert_alpha()],
-            "hurt": [pygame.image.load(config.HURT_PATH).convert_alpha()],
-            "die": [pygame.image.load(config.DIE_PATH).convert_alpha()]
-        }
-
-        # Initialize animation control variables
         self.last_update = pygame.time.get_ticks()
-        self.frame_rate = 100  # Milliseconds per frame
+        self.frame_rate = 100
+        self.health = 500  # Higher health for the boss
         self.current_frame = 0
-
-        # Movement and state variables
-        self.is_walking = False
-        self.is_jumping = False
-        self.is_running = False
-        self.is_hurt = False
+        self.state = "walking"
         self.is_dead = False
+        self.screen_width = screen_width
+        self.ground_level = config.ENEMY_POSITION  # Adjusted ground level for better positioning
+        self.main_character = main_character
+        self.direction = -1
+        self.attack_distance = 50  # Larger attack distance for the boss
+        self.attack_damage = 25  # Higher attack damage for the boss
+        self.speed = 1  # Slower speed for the boss
+        self.hits_received = 0
+        self.max_hits = 10  # More hits required to defeat the boss
+        self.death_start_time = None
+        self.damage_time = None
+        self.reset_position()
 
-        # Physics variables
-        self.vertical_velocity = 0
-        self.gravity = 0.5  # Example value for gravity
-        self.jump_strength = 10  # Example value for jump strength
-        self.ground_level = 400  # Example ground level
-        self.rect = pygame.Rect(100, self.ground_level, self.images["idle"][0].get_width(), self.images["idle"][0].get_height())  # Initialize rect
-        self.screen_width = 800  # Example screen width
-        self.screen_height = 600  # Example screen height
+    def load_images(self, action):
+        images = []
+        image_path = f"{self.folder_path}/{action}"
+        image = pygame.image.load(image_path).convert_alpha()
+        width, height = image.get_size()
+        frame_height = height
+        for i in range(width // frame_height):
+            frame_rect = pygame.Rect(i * frame_height, 0, frame_height, frame_height)
+            frame = image.subsurface(frame_rect)
+            images.append(frame)
+        return images
 
-        # Initialize current animation
-        self.image = self.images["idle"][0]
-
-        # Initialize big boss walking out state
-        self.walking_out = False
-
+    def draw_rectangle(self, screen):
+        pygame.draw.rect(screen, (255, 0, 0), self.hitbox, 2)
 
     def update(self):
         now = pygame.time.get_ticks()
 
-        if self.walking_out:
-            # Move boss out of the screen to the left
-            self.rect.x -= 5  # Adjust speed as needed
-            if self.rect.right < 0:  # If the boss is completely off-screen
-                self.kill()  # Remove boss from all groups
-            return
-
-        # Handle other animations
+        # Handle death state
         if self.is_dead:
-            if now - self.last_update > self.frame_rate:
+            if self.death_start_time and now - self.death_start_time > 2000:
+                self.kill()
+            elif now - self.last_update > self.frame_rate:
                 self.last_update = now
-                self.current_frame = (self.current_frame + 1) % len(self.images["die"])
-                self.image = self.images["die"][self.current_frame]
-                if self.current_frame == 0:  # Optional: Stop the animation after one loop
-                    return
+                self.current_frame = min(self.current_frame + 1, len(self.dead_images) - 1)
+                self.image = self.dead_images[self.current_frame]
             return
 
-        if self.is_hurt:
+        # Handle movement and attack logic if the character is not dead
+        if self.main_character and not self.is_dead:
+            player_x = self.main_character.rect.centerx
+            enemy_x = self.rect.centerx
+            distance = abs(player_x - enemy_x)
+
+            # Determines Direction and attack state
+            if distance < self.attack_distance:
+                self.attack()
+                self.direction = 1 if player_x > enemy_x else -1
+            else:
+                self.stop_attack()
+                self.direction = -1 if player_x < enemy_x else 1
+
+            if self.state == "walking":
+                self.move(self.speed * self.direction, 0)
+
             if now - self.last_update > self.frame_rate:
                 self.last_update = now
-                self.current_frame = (self.current_frame + 1) % len(self.images["hurt"])
-                if self.current_frame == 0:
-                    self.is_hurt = False
-                self.image = self.images["hurt"][self.current_frame]
-            return
+                if self.state == "attacking":
+                    self.current_frame = (self.current_frame + 1) % len(self.attack_images)
+                    self.image = self.attack_images[self.current_frame]
+                    if self.current_frame == 0 and not self.main_character.is_dead:
+                        self.main_character.hurt(self.attack_damage)
+                elif self.state == "walking":
+                    self.current_frame = (self.current_frame + 1) % len(self.walk_images)
+                    self.image = self.walk_images[self.current_frame]
 
-        if self.is_jumping:
-            if now - self.last_update > self.frame_rate:
-                self.last_update = now
-                self.current_frame = (self.current_frame + 1) % len(self.images["jump"])
-                if self.current_frame == 0:
-                    self.is_jumping = False
-                self.image = self.images["jump"][self.current_frame]
-            return
+            self.image = pygame.transform.flip(self.image, self.direction == 1, False)
 
-        if self.is_running:
-            if now - self.last_update > self.frame_rate:
-                self.last_update = now
-                self.current_frame = (self.current_frame + 1) % len(self.images["run"])
-                self.image = self.images["run"][self.current_frame]
-            return
+            new_rect = self.image.get_rect()
+            new_rect.bottom = self.ground_level  # Align the bottom of the boss with the ground level
+            new_rect.centerx = self.rect.centerx
 
-        if now - self.last_update > self.frame_rate:
-            self.last_update = now
-            self.current_frame = (self.current_frame + 1) % len(self.images["idle"])
-            self.image = self.images["idle"][self.current_frame]
+            self.rect = new_rect
+            self.hitbox = self.rect.inflate(-150, -150)
 
-    def set_walking(self, walking):
-        self.is_walking = walking
-        if walking:
-            self.image = self.images["walk"][0]
-            self.walking_out = True  # Start walking out
-        else:
-            self.image = self.images["idle"][0]
+        # Check if it's time to apply delayed damage
+        if self.damage_time and now >= self.damage_time:
+            self.take_damage(self.main_character.attack_damage)
+            self.damage_time = None
 
-    def set_jumping(self, jumping):
-        self.is_jumping = jumping
+    def move(self, dx, dy):
+        self.rect.x += dx
+        self.rect.bottom = self.ground_level  # Ensure the boss moves along the ground level
 
-    def set_running(self, running):
-        self.is_running = running
+    def reset_position(self):
+        self.rect.bottom = self.ground_level  # Align the bottom of the boss with the ground level
+        self.rect.left = self.screen_width + 100  # Fixed starting position for the boss
+        self.state = "walking"
+        self.current_frame = 0
+        self.image = self.walk_images[self.current_frame]
+        self.direction = -1
+        self.is_dead = False
 
-    def set_hurt(self, hurt):
-        self.is_hurt = hurt
+    def attack(self):
+        if self.state != "attacking":
+            self.state = "attacking"
+            self.current_frame = 0
+            if self.main_character and not self.main_character.is_dead:
+                self.main_character.hurt(self.attack_damage)
+        return 0
 
-    def set_dead(self, dead):
-        self.is_dead = dead
+    def stop_attack(self):
+        if self.state != "walking":
+            self.state = "walking"
+            self.current_frame = 0
+
+    def take_damage(self, damage):
+        if not self.is_dead:
+            self.hits_received += 1
+            if self.hits_received >= self.max_hits:
+                self.die()
+            else:
+                self.state = "hurt"
+                self.current_frame = 0
+                self.image = self.hurt_images[self.current_frame]
+
+    def die(self):
+        self.is_dead = True
+        self.current_frame = 0
+        self.death_start_time = pygame.time.get_ticks()
+        self.image = pygame.image.load(os.path.join(config.BASE_SPRITES_PATH, 'Bosses', 'Boss1', 'Dead.png'))
+        new_rect = self.image.get_rect()
+        new_rect.bottom = self.ground_level
+        new_rect.centerx = self.rect.centerx
+        self.rect = new_rect
+        self.hitbox = self.rect.inflate(-150, -150)
+
+    def mark_for_damage(self, time):
+        self.damage_time = time
+
+    def is_off_screen(self):
+        return self.rect.right < 0 or self.rect.left > self.screen_width

@@ -27,7 +27,7 @@ def handle_player_input(game, event):
             game.handle_character_death()
 
     # Handles the level change
-    if event.key == pygame.K_5:
+    if event.key == pygame.K_x:
         print("5 key pressed - attempting to move to next level")  # Debug output
         game.next_level()
 
