@@ -48,9 +48,12 @@ class Game:
         self.questions = config.get_random_questions(5)
         self.waiting_for_answer = False
         self.correct_answers = 0
-        self.total_questions = 3
+        self.total_questions = 5
         self.enemy_count = 0
         self.first_encounter = 0
+
+        #trigger for boss spawn
+        self.boss_spawned = False
 
         #trigger for boss spawn
         self.boss_spawned = False
@@ -60,6 +63,7 @@ class Game:
 
         # Dialogue setup for change level to level
         self.boss_deaths = 1
+        self.boss_trigger = True
         self.boss_trigger = False
         self.boss = None
         
@@ -75,6 +79,7 @@ class Game:
     def change_level_dialogue(self):
         if self.boss_deaths in [1, 2, 3]:
             self.show_dialog(f"You have completed Level {self.boss_deaths}, press 'x' to continue!", auto_hide_seconds=5)
+
 
 
     def set_level(self, level):
@@ -172,11 +177,10 @@ class Game:
             if self.enemy_count == self.max_enemies and not self.boss_spawned:
                 print("MAX_ENEMIES reached, spawning Boss!")
                 ground_level = self.ground_level  # Use the same ground level as regular enemies
-                boss = Boss(folder_path="sprites/Bosses/Boss1", screen_width=self.surface.get_width(), ground_level=ground_level, main_character=self.character)
-                self.all_sprites.add(boss)
-                self.enemy_group.add(boss)
+                self.boss = Boss(folder_path="sprites/Bosses/Boss1", screen_width=self.surface.get_width(), ground_level=ground_level, main_character=self.character)
+                self.all_sprites.add(self.boss)
+                self.enemy_group.add(self.boss)
                 self.boss_spawned = True  # Set the flag to True after spawning the boss
-                
 
             # Continue with normal enemy spawning until max is reached
             if now - self.enemy_spawn_timer > 3000 and len(self.enemy_group) != self.max_enemies:
@@ -199,7 +203,7 @@ class Game:
                 # Check for the first encounter with an enemy
                 if not hasattr(self, 'first_encounter_triggered') and self.is_in_attack_range(enemy):
                     self.first_encounter_triggered = True
-                    self.dialog_box.show_dialog("(Use the left mouse button to attack!)", auto_hide_seconds=5)
+                    self.dialog_box.show_dialog("Zoey Tip: (Use the left mouse button to attack!)", auto_hide_seconds=5)
 
                     # Add the remaining dialogues to the queue
                     for counter in range(1, 5):

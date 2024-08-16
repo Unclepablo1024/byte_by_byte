@@ -14,8 +14,8 @@ def ask_for_name(self):
         pygame.display.flip()
         self.name = self.get_user_input()
         self.dialog_box.show(
-            f" {self.name}!! \n We are truly sorry, we cannot work with someone who doesn't know how to code! You're "
-            f"fired! Don't come back until \n you've learned something!",
+            f" Zoey: {self.name}!! \n We cannot work with you, You're "
+            f"fired! Don't come back until \n you've learned to code!",
             auto_hide_seconds=11)
 
 def handle_player_input(game, event):

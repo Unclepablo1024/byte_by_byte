@@ -18,11 +18,11 @@ SCROLL_SPEED = 5
 RUN_SPEED_MULTIPLIER = 2
 
 # Paths
-FONT_PATH = os.path.join("../fonts", "determinationmono.ttf")
-AUDIO_PATH = os.path.join("../audio")
-BASE_SPRITES_PATH = os.path.join("../sprites")
-LOGO_PATH = os.path.join("../logo", "icon.png")
-PIC_PATH = os.path.join("../pic")
+FONT_PATH = os.path.join("fonts", "determinationmono.ttf")
+AUDIO_PATH = os.path.join("audio")
+BASE_SPRITES_PATH = os.path.join("sprites")
+LOGO_PATH = os.path.join("logo", "icon.png")
+PIC_PATH = os.path.join("pic")
 
 # Background settings
 BACKGROUND_IMAGE_PATH = os.path.join(BASE_SPRITES_PATH, 'backgrounds', 'City2_pale.png')
@@ -167,9 +167,11 @@ def get_random_questions(n=5):
 
 #level 1 dialog
 
-LEVEL_ONE_DIALOGUE =  {1:"What do I do know!? I lost my job and know nothing about coding", 2: "Spare Change!",
-    3:"Sorry man I don't have any.", 4:"We will see about that, guys!! Take his money.",
-    5:"Click your right mouse button to atack enemies.", 6:"Our leader will show you who is boss."}
+
+LEVEL_ONE_DIALOGUE =  {1:"You: What do I do know!? I lost my job and know nothing about coding", 2: "Enemy: Spare Change!",
+    3:"You: Sorry man I don't have any..", 4:"Enemy: We will see about that, guys!! Take his money.",
+    5:"Zoey Tip: Click your right mouse button to atack enemies.", 6:" Enemy: Our leader will show you who is boss."}
+
 
 
 def wrap_text(text, font, max_width):

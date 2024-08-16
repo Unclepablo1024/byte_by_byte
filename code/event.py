@@ -25,7 +25,7 @@ def handle_events(self):
                     pygame.event.clear()  # Clear the event queue after processing the response
             elif event.key == pygame.K_BACKSPACE:
                 self.dialog_box.backspace()
-            elif self.enemy_count == config.MAX_ENEMIES and event.key == pygame.K_x:  #Changeg this line to change the level due to all enemies beaten, change to this for changing based on boss defeat elif self.boss_trigger and event.key == pygame.K_x:
+            elif self.boss_trigger and event.key == pygame.K_x:  #Changeg this line to change the level due to all enemies beaten, change to this for changing based on boss defeat elif self.boss_trigger and event.key == pygame.K_x:
 
                 print("Attempting to change level...")  # Debug print
                 self.next_level()
