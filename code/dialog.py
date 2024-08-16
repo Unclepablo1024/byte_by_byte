@@ -103,7 +103,7 @@ class DialogBox:
     def _set_dialog_style(self, message):
         sprite_path = None
         if "Here is Level 1" in message:
-            sprite_path = os.path.join(config.BASE_SPRITES_PATH, 's2.png')
+            sprite_path = os.path.join(config.PIC_PATH, 's2.png')
         elif 'We are truly sorry' in message:
             prite_path = os.path.join(config.BASE_SPRITES_PATH, 'karen.gif')
         elif 'What do I do know!?' in message or 'Sorry man' in message:

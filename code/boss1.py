@@ -1,11 +1,12 @@
 import pygame
 import config
+import os
 
 
 class Boss(pygame.sprite.Sprite):
     def __init__(self, folder_path, screen_width, ground_level, main_character):
         super().__init__()
-        self.folder_path = folder_path
+        self.folder_path = os.path.join(config.BASE_SPRITES_PATH, 'Bosses', 'Boss1')
         self.walk_images = self.load_images("Walk.png")
         self.attack_images = self.load_images("Attack_1.png")
         self.hurt_images = self.load_images("Hurt.png")
@@ -21,7 +22,7 @@ class Boss(pygame.sprite.Sprite):
         self.state = "walking"
         self.is_dead = False
         self.screen_width = screen_width
-        self.ground_level = 560  # Adjusted ground level for better positioning
+        self.ground_level = config.ENEMY_POSITION  # Adjusted ground level for better positioning
         self.main_character = main_character
         self.direction = -1
         self.attack_distance = 50  # Larger attack distance for the boss
@@ -143,7 +144,12 @@ class Boss(pygame.sprite.Sprite):
         self.is_dead = True
         self.current_frame = 0
         self.death_start_time = pygame.time.get_ticks()
-        self.image = self.dead_images[self.current_frame]
+        self.image = pygame.image.load(os.path.join(config.BASE_SPRITES_PATH, 'Bosses', 'Boss1', 'Dead.png'))
+        new_rect = self.image.get_rect()
+        new_rect.bottom = self.ground_level
+        new_rect.centerx = self.rect.centerx
+        self.rect = new_rect
+        self.hitbox = self.rect.inflate(-150, -150)
 
     def mark_for_damage(self, time):
         self.damage_time = time

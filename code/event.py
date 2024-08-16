@@ -1,6 +1,7 @@
 import pygame
 import config
 import game
+from dialog_response import handle_dialog_response
 
 def handle_events(self):
     for event in pygame.event.get():
@@ -20,7 +21,7 @@ def handle_events(self):
                 response = self.dialog_box.get_input()
                 if response:
                     print(f"Dialog response received: {response}")
-                    self.handle_dialog_response(response)
+                    handle_dialog_response(self, response)
                     pygame.event.clear()  # Clear the event queue after processing the response
             elif event.key == pygame.K_BACKSPACE:
                 self.dialog_box.backspace()

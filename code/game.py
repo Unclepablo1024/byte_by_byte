@@ -55,12 +55,17 @@ class Game:
         #trigger for boss spawn
         self.boss_spawned = False
 
+        #trigger for boss spawn
+        self.boss_spawned = False
+
         # Flag for dialogue trigger for levels
-        self.dialogue_shown = False
+        self.level_start_dialog_shown = False
 
         # Dialogue setup for change level to level
         self.boss_deaths = 1
         self.boss_trigger = True
+        self.boss_trigger = False
+        self.boss = None
         
 
     def init_resources(self):
@@ -74,6 +79,7 @@ class Game:
     def change_level_dialogue(self):
         if self.boss_deaths in [1, 2, 3]:
             self.show_dialog(f"You have completed Level {self.boss_deaths}, press 'x' to continue!", auto_hide_seconds=5)
+
 
 
     def set_level(self, level):
@@ -171,9 +177,9 @@ class Game:
             if self.enemy_count == self.max_enemies and not self.boss_spawned:
                 print("MAX_ENEMIES reached, spawning Boss!")
                 ground_level = self.ground_level  # Use the same ground level as regular enemies
-                boss = Boss(folder_path="sprites/Bosses/Boss1", screen_width=self.surface.get_width(), ground_level=ground_level, main_character=self.character)
-                self.all_sprites.add(boss)
-                self.enemy_group.add(boss)
+                self.boss = Boss(folder_path="sprites/Bosses/Boss1", screen_width=self.surface.get_width(), ground_level=ground_level, main_character=self.character)
+                self.all_sprites.add(self.boss)
+                self.enemy_group.add(self.boss)
                 self.boss_spawned = True  # Set the flag to True after spawning the boss
 
             # Continue with normal enemy spawning until max is reached
@@ -188,10 +194,16 @@ class Game:
                 if self.character.is_attacking and self.is_in_attack_range(enemy):
                     enemy.mark_for_damage(pygame.time.get_ticks() + 10)
 
+                          # Check for collision with boss and trigger dialogue
+                if isinstance(enemy, Boss) and pygame.sprite.collide_rect(self.character, enemy):
+                    if not hasattr(self, 'dialog_cooldown') or self.dialog_cooldown <= 0:
+                        self.dialog_box.show_dialog("Here is Level 1....\nYou need to answer at least 5 questions correctly to pass..\nAre you ready?! Y/N")
+                        self.dialog_cooldown = 5000  # Set cooldown to 5 seconds (adjust as needed)
+
                 # Check for the first encounter with an enemy
                 if not hasattr(self, 'first_encounter_triggered') and self.is_in_attack_range(enemy):
                     self.first_encounter_triggered = True
-                    self.dialog_box.show_dialog("(Use the left mouse button to attack!)", auto_hide_seconds=5)
+                    self.dialog_box.show_dialog("Zoey Tip: (Use the left mouse button to attack!)", auto_hide_seconds=5)
 
                     # Add the remaining dialogues to the queue
                     for counter in range(1, 5):
