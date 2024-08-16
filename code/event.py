@@ -22,22 +22,20 @@ def handle_events(self):
                 if response:
                     print(f"Dialog response received: {response}")
                     handle_dialog_response(self, response)
-                    pygame.event.clear()  # Clear the event queue after processing the response
             elif event.key == pygame.K_BACKSPACE:
                 self.dialog_box.backspace()
-            elif self.boss_trigger and event.key == pygame.K_x:  #Changeg this line to change the level due to all enemies beaten, change to this for changing based on boss defeat elif self.boss_trigger and event.key == pygame.K_x:
-
-                print("Attempting to change level...")  # Debug print
-                self.next_level()
-                self.boss_deaths += 1
-                self.boss_trigger = False
-                print(f"New level: {self.current_level}, Boss deaths: {self.boss_deaths}")  # Debug print
+            elif event.key == pygame.K_x:
+                if self.boss_trigger:
+                    print("Attempting to change level...")  
+                    self.next_level()
+                    self.boss_deaths += 1
+                    self.boss_trigger = False
+                    print(f"New level: {self.current_level}, Boss deaths: {self.boss_deaths}") 
             else:
                 self.dialog_box.add_char(event.unicode)
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:  # Left mouse button
+            if event.button == 1:  # 左键点击
                 self.character.attack()
 
     if not self.dialog_box.active:
         self.handle_continuous_input()
-        

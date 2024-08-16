@@ -16,20 +16,24 @@ def ask_for_name(self):
         self.dialog_box.show(
             f" Zoey: {self.name}!! \n We cannot work with you, You're "
             f"fired! Don't come back until \n you've learned to code!",
-            auto_hide_seconds=11)
+            auto_hide_seconds=9)
 
-def handle_player_input(game, event):
-    # Handle specific player input for actions like hurting the character or changing levels
-    if event.key == pygame.K_1:
-        game.character.hurt()
-        game.health_bar.update_health(-5)
-        if game.health_bar.current_health <= 0:
-            game.handle_character_death()
-
-    # Handles the level change
-    if event.key == pygame.K_x:
-        print("5 key pressed - attempting to move to next level")  # Debug output
-        game.next_level()
+def handle_player_input(self, event):
+    if event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_1:
+            self.character.hurt()
+            self.health_bar.update_health(-5)
+            if self.health_bar.current_health <= 0:
+                self.handle_character_death()
+        
+        elif self.waiting_for_level_change:
+            if event.key == pygame.K_x:
+                print(f"Changing to level {self.boss_deaths + 2}")  
+                self.next_level()
+                self.waiting_for_level_change = False
+                self.dialog_box.hide()
+                pygame.time.set_timer(pygame.USEREVENT + 3, 0)  
+            
 
 def handle_continuous_input(game):
     # Handle continuous input (e.g., movement keys held down)

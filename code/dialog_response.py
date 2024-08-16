@@ -90,7 +90,7 @@ def ask_next_question(game):
                 game.boss.die()
             
             game.dialog_box.show(
-                "Congratulations! You've answered all 5 questions correctly. You've defeated the boss!",
+                "You've defeated the boss!",
                 auto_hide_seconds=5)
             
             # Trigger level change dialogue

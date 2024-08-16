@@ -114,7 +114,7 @@ class DialogBox:
         if sprite_path:
             try:
                 self.image = pygame.image.load(sprite_path)
-                self.image = pygame.transform.scale(self.image, (100, 100))
+                self.image = pygame.transform.scale(self.image, (120, 100))
                 self.image_rect = self.image.get_rect(topleft=(self.rect.right - 120, self.rect.top + 100))
             except pygame.error as e:
                 print(f"Error loading image {sprite_path}: {e}")

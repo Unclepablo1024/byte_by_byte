@@ -17,7 +17,7 @@ from change_level import set_level, next_level, restart_level
 from handle_input import ask_for_name, handle_player_input, handle_continuous_input, get_user_input
 from restart import restart_game
 from dialog_response import handle_dialog_response, ask_next_question, check_answer, set_timer
-from enemy_spawner import spawn_enemy, draw_enemy_counter
+from enemy_spawner import spawn_enemy
 
 
 # Initialize game and its components
@@ -48,24 +48,25 @@ class Game:
         self.questions = config.get_random_questions(5)
         self.waiting_for_answer = False
         self.correct_answers = 0
-        self.total_questions = 5
+        self.total_questions = 3
         self.enemy_count = 0
+        self.defeated_enemies = 0
         self.first_encounter = 0
 
         #trigger for boss spawn
         self.boss_spawned = False
-
-        #trigger for boss spawn
-        self.boss_spawned = False
+        self.enemy_spawn_timer = 0
 
         # Flag for dialogue trigger for levels
         self.level_start_dialog_shown = False
 
         # Dialogue setup for change level to level
-        self.boss_deaths = 1
-        self.boss_trigger = True
+        self.boss_deaths = 0
         self.boss_trigger = False
         self.boss = None
+
+        self.waiting_for_level_change = False
+        self.game_completed = False
         
 
     def init_resources(self):
@@ -77,9 +78,27 @@ class Game:
         self.name = ask_for_name(self)
     
     def change_level_dialogue(self):
-        if self.boss_deaths in [1, 2, 3]:
-            self.show_dialog(f"You have completed Level {self.boss_deaths}, press 'x' to continue!", auto_hide_seconds=5)
+        if self.boss_deaths in [0, 1, 2]:  
+            self.show_dialog(f"Congratulations! You have completed Level {self.boss_deaths}. Press 'X' to continue to the next level.", auto_hide_seconds=5)
+            self.waiting_for_level_change = False
+            pygame.event.clear() 
+        elif self.boss_deaths == 3:
+            self.show_dialog("Congratulations! You have completed all 3 levels! Game Over!", auto_hide_seconds=5)
+            self.game_completed = True
+        else:
+            print(f"Unexpected boss_deaths value: {self.boss_deaths}")
+        pygame.event.clear()
 
+    def handle_level_change_response(self, key):
+        if self.waiting_for_level_change:
+            if key == pygame.K_x:
+                print(f"Changing to level {self.boss_deaths + 2}")  # +2 because boss_deaths is 0-based
+                self.next_level()
+        
+            self.waiting_for_level_change = False
+            self.dialog_box.hide()
+            pygame.time.set_timer(pygame.USEREVENT + 3, 0)  # Stop the timer
+            pygame.event.clear() 
 
 
     def set_level(self, level):
@@ -173,28 +192,19 @@ class Game:
             self.character.move(dx, 0)
             now = pygame.time.get_ticks()
 
-            # Check if it's time to spawn a boss and ensure it only happens once
-            if self.enemy_count == self.max_enemies and not self.boss_spawned:
-                print("MAX_ENEMIES reached, spawning Boss!")
-                ground_level = self.ground_level  # Use the same ground level as regular enemies
-                self.boss = Boss(folder_path="sprites/Bosses/Boss1", screen_width=self.surface.get_width(), ground_level=ground_level, main_character=self.character)
-                self.all_sprites.add(self.boss)
-                self.enemy_group.add(self.boss)
-                self.boss_spawned = True  # Set the flag to True after spawning the boss
-
             # Continue with normal enemy spawning until max is reached
-            if now - self.enemy_spawn_timer > 3000 and len(self.enemy_group) != self.max_enemies:
+            if now - self.enemy_spawn_timer > 3000 and self.enemy_count < config.MAX_ENEMIES and not self.boss_spawned:
                 spawn_enemy(self)
                 self.enemy_spawn_timer = now
 
-            for enemy in self.enemy_group:
+            for enemy in list(self.enemy_group):
                 if enemy.is_dead:
                     continue  # Skip processing for dead enemies
 
                 if self.character.is_attacking and self.is_in_attack_range(enemy):
                     enemy.mark_for_damage(pygame.time.get_ticks() + 10)
 
-                          # Check for collision with boss and trigger dialogue
+                # Check for collision with boss and trigger dialogue
                 if isinstance(enemy, Boss) and pygame.sprite.collide_rect(self.character, enemy):
                     if not hasattr(self, 'dialog_cooldown') or self.dialog_cooldown <= 0:
                         self.dialog_box.show_dialog("Here is Level 1....\nYou need to answer at least 5 questions correctly to pass..\nAre you ready?! Y/N")
@@ -210,8 +220,9 @@ class Game:
                         self.dialog_box.show_dialog(f"{config.LEVEL_ONE_DIALOGUE[counter]}", auto_hide_seconds=5)
                     break  # Exit the loop after showing the dialog for the first encounter
 
+            # Handle collisions and character movement
             collided = False
-            for enemy in self.enemy_group:
+            for enemy in list(self.enemy_group):
                 if not enemy.is_dead and pygame.sprite.collide_rect(self.character, enemy):
                     if self.character.rect.centerx < enemy.rect.centerx:
                         self.character.stop_movement('right')
@@ -223,9 +234,11 @@ class Game:
             if not collided:
                 self.character.resume_movement()
 
+            # Update background and sprites
             self.background.update(dx)
             self.all_sprites.update()
 
+            # Check character health and handle death
             if self.character.health_bar.is_depleted():
                 print("Character health depleted, calling handle_character_death")
                 self.handle_character_death()
@@ -241,16 +254,42 @@ class Game:
             for enemy in list(self.enemy_group):
                 if enemy.is_dead and enemy.current_frame == len(enemy.dead_images) - 1:
                     self.enemy_group.remove(enemy)
-                    self.enemy_count += 1
+                    if not isinstance(enemy, Boss):
+                        self.defeated_enemies += 1
+
+            # Spawn Boss if max enemies defeated
+            if self.defeated_enemies >= config.MAX_ENEMIES and not self.boss_spawned:
+                print("MAX_ENEMIES defeated, spawning Boss!")
+                self.spawn_boss()
 
             # Check for boss defeat and trigger level change
-            if self.boss_trigger:
+            if self.boss and self.boss.is_dead:
+                print("Boss is dead. Triggering level change.")
+                self.boss_trigger = True
                 self.change_level_dialogue()
+                pygame.time.set_timer(pygame.USEREVENT + 3, 10000)  # 10 seconds delay
+                self.waiting_for_level_change = True
 
-                
-            # if boss_mana.Boss_HealthBar == HealthBar.is_depleted:
-            #     self.boss_trigger = True
-            #     self.change_level_dialogue()
+            # Handle level change dialogue timeout
+            for event in pygame.event.get():
+                if event.type == pygame.USEREVENT + 3:
+                    if self.waiting_for_level_change:
+                        self.change_level_dialogue()
+                    pygame.time.set_timer(pygame.USEREVENT + 3, 0)
+                    self.waiting_for_level_change = False
+
+    def spawn_boss(self):
+        ground_level = self.ground_level
+        self.boss = Boss(folder_path="sprites/Bosses/Boss1", screen_width=self.surface.get_width(), ground_level=ground_level, main_character=self.character)
+        self.all_sprites.add(self.boss)
+        self.enemy_group.add(self.boss)
+        self.boss_spawned = True
+
+    def draw_enemy_counter(self):
+        font = pygame.font.Font(config.GAME_OVER_FONT_PATH, 32)
+        counter_text = f"{self.defeated_enemies}/{config.MAX_ENEMIES}"
+        text_surface = font.render(counter_text, True, (255, 255, 255))
+        self.surface.blit(text_surface, (10, 10))
 
 
     def is_in_attack_range(self, enemy):
@@ -265,7 +304,7 @@ class Game:
         self.character.health_bar.draw(self.surface)  # Ensure health bar is drawn here
 
         # Draw the enemy spawn counter
-        draw_enemy_counter(self)
+        self.draw_enemy_counter()
 
         for enemy in self.enemy_group:
             enemy.draw_rectangle(self.surface)
