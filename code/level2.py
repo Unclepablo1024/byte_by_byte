@@ -12,13 +12,13 @@ screen = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
 pygame.display.set_caption("Fibonacci Coding Challenge")
 
 # Load sound effects
-background_music = pygame.mixer.Sound('../audio/teach.mp3')
+background_music = pygame.mixer.Sound('audio/teach.mp3')
 background_music.set_volume(0.02)
 background_music.play(-1)
 
 # Load images for feedback
-correct_image = pygame.image.load('../pic/correct.webp')
-wrong_image = pygame.image.load('../pic/wrong.webp')
+correct_image = pygame.image.load('pic/correct.webp')
+wrong_image = pygame.image.load('pic/wrong.webp')
 image_width, image_height = 440, 300
 correct_image = pygame.transform.scale(correct_image, (image_width, image_height))
 wrong_image = pygame.transform.scale(wrong_image, (image_width, image_height))
