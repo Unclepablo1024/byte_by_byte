@@ -102,13 +102,13 @@ class DialogBox:
 
     def _set_dialog_style(self, message):
         sprite_path = None
-        if "Here is Level 1" in message:
-            sprite_path = os.path.join(config.PIC_PATH, 's2.png')
-        elif 'We are truly sorry' in message:
-            prite_path = os.path.join(config.BASE_SPRITES_PATH, 'karen.gif')
-        elif 'What do I do know!?' in message or 'Sorry man' in message:
+        if "You think you know git?" in message or "minions" in message: # Sarah's image path, more dialogues regarding her add here (Images)
+            sprite_path = os.path.join(config.PIC_PATH, 's2.png') 
+        elif 'Zoey' in message or "Zoey: Congratulations! You have completed Level" in message: # Zoey Tips Dialogues (Images)
+            prite_path = os.path.join(config.BASE_SPRITES_PATH, 'karen.gif') 
+        elif 'What do I do know!?' in message or 'Sorry man' in message: # Main character Dialogues (Images)
             sprite_path = os.path.join(config.BASE_SPRITES_PATH, 'man.png')
-        elif any(keyword in message for keyword in ['Spare', 'boss', 'guys']):
+        elif any(keyword in message for keyword in ['Spare', 'boss', 'guys']): #Enemy Dialogue (Images)
             sprite_path = os.path.join(config.BASE_SPRITES_PATH, 'Enemies', 'homeless.png')
 
         if sprite_path:

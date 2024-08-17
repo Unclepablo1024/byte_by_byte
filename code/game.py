@@ -79,11 +79,11 @@ class Game:
     
     def change_level_dialogue(self):
         if self.boss_deaths in [0, 1, 2]:  
-            self.show_dialog(f"Congratulations! You have completed Level {self.boss_deaths}. Press 'X' to continue to the next level.", auto_hide_seconds=5)
+            self.show_dialog(f"Zoey: Congratulations! You have completed Level {self.boss_deaths}. Press 'X' to continue to the next level.", auto_hide_seconds=5)
             self.waiting_for_level_change = False
             pygame.event.clear() 
         elif self.boss_deaths == 3:
-            self.show_dialog("Congratulations! You have completed all 3 levels! Game Over!", auto_hide_seconds=5)
+            self.show_dialog("Zoey: Congratulations! You have completed all 3 levels! Game Over!", auto_hide_seconds=5)
             self.game_completed = True
         else:
             print(f"Unexpected boss_deaths value: {self.boss_deaths}")
@@ -207,7 +207,8 @@ class Game:
                 # Check for collision with boss and trigger dialogue
                 if isinstance(enemy, Boss) and pygame.sprite.collide_rect(self.character, enemy):
                     if not hasattr(self, 'dialog_cooldown') or self.dialog_cooldown <= 0:
-                        self.dialog_box.show_dialog("Hey.. You think you know git?\nLet's test your knowledge! \nAre you ready?! Y/N")
+                        self.dialog_box.show_dialog("So you are the intern beating all my minions..", auto_hide_seconds= 5) # The auto hide allows to move to next question
+                        self.dialog_box.show_dialog("You think you know git?\nLet's test your knowledge! \nAnswer my questions and ill let you pass, Are you ready?! Y/N")
                         self.dialog_cooldown = 5000  # Set cooldown to 5 seconds (adjust as needed)
 
                 # Check for the first encounter with an enemy
