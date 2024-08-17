@@ -7,6 +7,7 @@ import config
 def set_level(game, level):
     print(f"Setting level: {level}")
     level_settings = config.LEVELS.get(level)
+
     if level_settings:
         print(f"Loading background for level {level}: {level_settings['background']}")
         try:
@@ -54,6 +55,7 @@ def set_level(game, level):
 
     # Reset game state for the new level
     game.enemy_count = 0
+    game.defeated_enemies = 0  # Reset the defeated enemies count
     game.enemy_group.empty()
     game.all_sprites.remove([sprite for sprite in game.all_sprites if isinstance(sprite, Enemy)])
 
@@ -61,6 +63,12 @@ def set_level(game, level):
     game.character.rect.x = config.CHARACTER_INITIAL_X
     game.character.rect.y = config.CHARACTER_GROUND_LEVEL
     print(f"Character position reset to ({game.character.rect.x}, {game.character.rect.y})")
+
+    # Reset boss-related state
+    game.boss = None
+    game.boss_spawned = False
+    game.boss_trigger = False
+    game.boss_deaths = 0  # Reset boss deaths if necessary
 
     # Reset enemy spawn timer
     game.enemy_spawn_timer = pygame.time.get_ticks()
@@ -73,6 +81,11 @@ def set_level(game, level):
 
     print(f"Level {level} setup complete")
 
+
+
+
+
+
 def next_level(game):
     # Function handles the update of levels
     game.current_level += 1
@@ -84,6 +97,9 @@ def next_level(game):
         set_level(game, game.current_level)
         print(f"Level set to {game.current_level}")  # Debugging
         game.restart_game()
+
+    # Set boss_trigger back to False
+    game.boss_trigger = False
 
 
 def restart_level(game):

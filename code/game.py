@@ -207,7 +207,7 @@ class Game:
                 # Check for collision with boss and trigger dialogue
                 if isinstance(enemy, Boss) and pygame.sprite.collide_rect(self.character, enemy):
                     if not hasattr(self, 'dialog_cooldown') or self.dialog_cooldown <= 0:
-                        self.dialog_box.show_dialog("Here is Level 1....\nYou need to answer at least 5 questions correctly to pass..\nAre you ready?! Y/N")
+                        self.dialog_box.show_dialog("Hey.. You think you know git?\nLet's test your knowledge! \nAre you ready?! Y/N")
                         self.dialog_cooldown = 5000  # Set cooldown to 5 seconds (adjust as needed)
 
                 # Check for the first encounter with an enemy
