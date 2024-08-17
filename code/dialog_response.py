@@ -34,7 +34,7 @@ def handle_dialog_response(game, response):
             game.waiting_for_answer = True
             ask_next_question(game)
         elif response == 'n':
-            game.show_dialog(f"Austin!! {game.name} is not ready!!! Come here to help!", auto_hide_seconds=4)
+            game.show_dialog(f"Austin!! {game.name} is not ready!! Maybe using git documentation will work!", auto_hide_seconds=4)
         pygame.event.clear()
         return
 
@@ -47,25 +47,25 @@ def handle_dialog_response(game, response):
             game.show_dialog(
                 #f"Good job! You've answered {game.correct_answers} out of {game.total_questions} questions correctly.",
                 #auto_hide_seconds=9)
-                f"Good job! You've answered {game.correct_answers} questions correctly.",auto_hide_seconds=9)
+                f"Gosh darn it! You've answered {game.correct_answers} questions correctly.",auto_hide_seconds=20)
             game.current_attempt = 0
             game.current_question_index += 1
             game.waiting_for_answer = False
-            pygame.time.set_timer(pygame.USEREVENT + 2, 3000)
+            pygame.time.set_timer(pygame.USEREVENT + 2, 5000)
         else:
             game.current_attempt += 1
             game.health_bar.update_health(-10)
 
             if game.current_attempt >= game.max_attempts:
                 correct_answer = game.questions[game.current_question_index]["answer"]
-                game.dialog_box.show(f"Oh no! The correct answer was: {correct_answer}", auto_hide_seconds=5)
+                game.dialog_box.show(f"The correct answer was: {correct_answer}, one step closer to my victory!", auto_hide_seconds=5)
                 game.current_attempt = 0
                 game.waiting_for_answer = False
                 game.current_question_index += 1
                 pygame.time.set_timer(pygame.USEREVENT + 2, 5000)  # Give more time to read the correct answer
             else:
                 attempts_left = game.max_attempts - game.current_attempt
-                game.dialog_box.show(f"Wrong! Attempts left: {attempts_left}. Please try again!",
+                game.dialog_box.show(f"Wrong! Attempts left: {attempts_left}. Keep on failing!",
                                      auto_hide_seconds=3)
                 set_timer(game)
             pygame.event.clear()
@@ -90,8 +90,8 @@ def ask_next_question(game):
                 game.boss.die()
             
             game.dialog_box.show(
-                "You've defeated the boss!",
-                auto_hide_seconds=5)
+                "You somehow answered all my questions, you may pass! Lets see your luck against the others...",
+                auto_hide_seconds=7)
             
             # Trigger level change dialogue
             game.boss_deaths += 1
@@ -100,7 +100,7 @@ def ask_next_question(game):
            
         else:
             game.show_dialog(
-                f"You've only answered {game.correct_answers} out of {game.total_questions} questions correctly. You need to answer all 5 questions correctly to pass. Try again!",
+                f"You've only answered {game.correct_answers} out of {game.total_questions} questions correctly. If you dont answer my questions you shall not pass!!",
                 auto_hide_seconds=7)
             game.restart_level()
         game.waiting_for_answer = False
