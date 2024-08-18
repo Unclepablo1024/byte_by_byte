@@ -4,7 +4,7 @@ import os
 from pygame.locals import *
 import boss_mana
 from boss1 import Boss
-from enemy import Enemy
+from enemy import Enemytth
 from background import Background
 from healthbar import HealthBar, LifeIcon
 from music import MusicPlayer
@@ -178,11 +178,11 @@ class Game:
                 if not hasattr(self, 'first_encounter_triggered') and self.is_in_attack_range(enemy):
                     self.first_encounter_triggered = True
                     self.dialog_box.show_dialog("TIP -- (Use the left mouse button to attack!)", auto_hide_seconds=5)
-                    self.dialog_box.set_style((3,3,3), os.path.join("pic", "s2.png"))
+
 
                     # Add the remaining dialogues to the queue
                     for counter in range(1, 5):
-                        self.dialog_box.show_dialog(f"{config.LEVEL_ONE_DIALOGUE[counter]}", auto_hide_seconds=5)
+                        self.dialog_box.show_dialog(f"Dialogue Line {counter}", auto_hide_seconds=5)
                     break  # Exit the loop after showing the dialog for the first encounter
 
             collided = False
