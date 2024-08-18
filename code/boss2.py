@@ -1,14 +1,14 @@
-import pygame
-import config
 import os
 
+import pygame
+import config
 
-class Boss1(pygame.sprite.Sprite):
+class Boss2(pygame.sprite.Sprite):
     def __init__(self, folder_path, screen_width, ground_level, main_character):
         super().__init__()
-        self.folder_path = os.path.join(config.BASE_SPRITES_PATH, 'Bosses', 'Boss1')
+        self.folder_path = folder_path
         self.walk_images = self.load_images("Walk.png")
-        self.attack_images = self.load_images("Attack_1.png")
+        self.attack_images = self.load_images("Attack.png")
         self.hurt_images = self.load_images("Hurt.png")
         self.dead_images = self.load_images("Dead.png")
         self.image = self.walk_images[0]
@@ -43,7 +43,9 @@ class Boss1(pygame.sprite.Sprite):
         for i in range(width // frame_height):
             frame_rect = pygame.Rect(i * frame_height, 0, frame_height, frame_height)
             frame = image.subsurface(frame_rect)
-            images.append(frame)
+            # Mirror the image horizontally
+            mirrored_frame = pygame.transform.flip(frame, True, False)
+            images.append(mirrored_frame)
         return images
 
     def draw_rectangle(self, screen):
@@ -144,7 +146,7 @@ class Boss1(pygame.sprite.Sprite):
         self.is_dead = True
         self.current_frame = 0
         self.death_start_time = pygame.time.get_ticks()
-        self.image = pygame.image.load(os.path.join(config.BASE_SPRITES_PATH, 'Bosses', 'Boss1', 'Dead.png'))
+        self.image = pygame.image.load(os.path.join(config.BASE_SPRITES_PATH, 'Bosses', 'Boss2', 'Dead.png'))
         new_rect = self.image.get_rect()
         new_rect.bottom = self.ground_level
         new_rect.centerx = self.rect.centerx

@@ -18,6 +18,7 @@ SCROLL_SPEED = 5
 RUN_SPEED_MULTIPLIER = 2
 
 # Paths
+
 FONT_PATH = os.path.join("fonts", "determinationmono.ttf")
 AUDIO_PATH = os.path.join("audio")
 BASE_SPRITES_PATH = os.path.join("sprites")

@@ -102,12 +102,14 @@ class DialogBox:
 
     def _set_dialog_style(self, message):
         sprite_path = None
-        if "Here is Level 1" in message:
+        if "Haha! You think you know git?" in message:
             sprite_path = os.path.join(config.PIC_PATH, 's2.png')
         elif 'We are truly sorry' in message:
-            prite_path = os.path.join(config.BASE_SPRITES_PATH, 'karen.gif')
+            sprite_path = os.path.join(config.BASE_SPRITES_PATH, 'karen.gif')
         elif 'What do I do know!?' in message or 'Sorry man' in message:
             sprite_path = os.path.join(config.BASE_SPRITES_PATH, 'man.png')
+        elif 'Level 2: This challenge will be tougher!' in message:
+            sprite_path = os.path.join(config.PIC_PATH, 'a1.png')  # Add the specific image for Boss2
         elif any(keyword in message for keyword in ['Spare', 'boss', 'guys']):
             sprite_path = os.path.join(config.BASE_SPRITES_PATH, 'Enemies', 'homeless.png')
 

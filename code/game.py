@@ -3,7 +3,9 @@ import sys
 import os
 from pygame.locals import *
 import boss_mana
-from boss1 import Boss
+from boss1 import Boss1
+from boss2 import Boss2
+
 from enemy import Enemy
 from background import Background
 from healthbar import HealthBar, LifeIcon
@@ -79,7 +81,7 @@ class Game:
     
     def change_level_dialogue(self):
         if self.boss_deaths in [0, 1, 2]:  
-            self.show_dialog(f"Congratulations! You have completed Level {self.boss_deaths}. Press 'X' to continue to the next level.", auto_hide_seconds=5)
+            self.show_dialog(f" You have completed Level {self.boss_deaths}. Press 'X' to continue to the next level.", auto_hide_seconds=7)
             self.waiting_for_level_change = False
             pygame.event.clear() 
         elif self.boss_deaths == 3:
@@ -135,10 +137,25 @@ class Game:
 
     def restart_level(self):
         restart_level(self)
-    
 
     def handle_dialog_response(self, response):
-        handle_dialog_response(self, response)
+        if isinstance(self.boss, Boss2):
+            if response.lower() == 'y':
+                print("Launching Fibonacci Minigame...")
+                pygame.quit()
+                os.system("python level2.py")
+                sys.exit()
+            elif response.lower() == 'n':
+                print("Restarting level...")
+                self.restart_level()
+
+        elif isinstance(self.boss, Boss1):
+            # Boss1 specific response handling
+            if response.lower() == 'y':
+                # Proceed with Boss1 logic
+                pass
+            elif response.lower() == 'n':
+                self.dialog_box.show("You can't escape the challenge!")
 
     def ask_next_question(self):
         ask_next_question(self)
@@ -204,21 +221,29 @@ class Game:
                 if self.character.is_attacking and self.is_in_attack_range(enemy):
                     enemy.mark_for_damage(pygame.time.get_ticks() + 10)
 
-                # Check for collision with boss and trigger dialogue
-                if isinstance(enemy, Boss) and pygame.sprite.collide_rect(self.character, enemy):
-                    if not hasattr(self, 'dialog_cooldown') or self.dialog_cooldown <= 0:
-                        self.dialog_box.show_dialog("Hey.. You think you know git?\nLet's test your knowledge! \nAre you ready?! Y/N")
-                        self.dialog_cooldown = 5000  # Set cooldown to 5 seconds (adjust as needed)
-
                 # Check for the first encounter with an enemy
                 if not hasattr(self, 'first_encounter_triggered') and self.is_in_attack_range(enemy):
                     self.first_encounter_triggered = True
-                    self.dialog_box.show_dialog("Zoey Tip: (Use the left mouse button to attack!)", auto_hide_seconds=5)
+                    self.dialog_box.show_dialog("TIP: (Use the left mouse button to attack!)", auto_hide_seconds=5)
 
                     # Add the remaining dialogues to the queue
                     for counter in range(1, 5):
                         self.dialog_box.show_dialog(f"{config.LEVEL_ONE_DIALOGUE[counter]}", auto_hide_seconds=5)
                     break  # Exit the loop after showing the dialog for the first encounter
+
+                # Check for collision with Boss1 and trigger Boss1 dialog
+                if isinstance(enemy, Boss1) and pygame.sprite.collide_rect(self.character, enemy):
+                    self.dialog_box.show_dialog(
+                        "Haha! You think you know git?\nLet's test your knowledge then!\nAre you ready?! Y/N")
+                    self.boss_trigger = True  # Ensure the dialog is tied to the first boss
+                    break  # Exit loop after showing Boss1 dialog
+
+                # Check for collision with Boss2 and trigger Boss2 dialog
+                if isinstance(enemy, Boss2) and pygame.sprite.collide_rect(self.character, enemy):
+                    self.dialog_box.show_dialog(
+                        "Level 2: This challenge will be tougher!\nPrepare yourself for a new set of questions.\nAre you ready?! Y/N")
+                    self.boss_trigger = True  # Ensure the dialog is tied to the second boss
+                    break  # Exit loop after showing Boss2 dialog
 
             # Handle collisions and character movement
             collided = False
@@ -254,7 +279,7 @@ class Game:
             for enemy in list(self.enemy_group):
                 if enemy.is_dead and enemy.current_frame == len(enemy.dead_images) - 1:
                     self.enemy_group.remove(enemy)
-                    if not isinstance(enemy, Boss):
+                    if not isinstance(enemy, Boss1) and not isinstance(enemy, Boss2):
                         self.defeated_enemies += 1
 
             # Spawn Boss if max enemies defeated
@@ -280,7 +305,14 @@ class Game:
 
     def spawn_boss(self):
         ground_level = self.ground_level
-        self.boss = Boss(folder_path="sprites/Bosses/Boss1", screen_width=self.surface.get_width(), ground_level=ground_level, main_character=self.character)
+
+        if self.boss_deaths == 0:
+            self.boss = Boss1(folder_path="sprites/Bosses/Boss1", screen_width=self.surface.get_width(),
+                              ground_level=ground_level, main_character=self.character)
+        elif self.boss_deaths > 0:
+            self.boss = Boss2(folder_path="sprites/Bosses/Boss2", screen_width=self.surface.get_width(),
+                              ground_level=ground_level, main_character=self.character)
+
         self.all_sprites.add(self.boss)
         self.enemy_group.add(self.boss)
         self.boss_spawned = True
