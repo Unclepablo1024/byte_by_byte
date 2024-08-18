@@ -18,20 +18,9 @@ class DialogBox:
         self.font = pygame.font.Font(config.DIALOG_FONT_PATH, 32)
         self.text = ""
         self.active = False
-
-        #Loads images and stores then in a dictionary
-        self.images = {
-            'player':pygame.image.load(os.path.join(config.PIC_PATH,'Bart.jpg')),
-            'homeless':pygame.image.load(os.path.join(config.PIC_PATH, 'homelessMan.jpg')),
-            'sarah':pygame.image.load(os.path.join(config.PIC_PATH, 's4.png'))
-        }
-
-        for key in self.images:
-            self.images[key] = pygame.transform.scale(self.images[key], (120, 100))
-
-        self.image = self.images['sarah'] # Default Image
+        self.image = pygame.image.load(os.path.join(config.BASE_SPRITES_PATH, 'Karen.gif'))
+        self.image = pygame.transform.scale(self.image, (120, 100))
         self.image_rect = self.dialog_image.get_rect(topleft=(self.rect.right - 120, self.rect.top + 100))
-
         self.typing_speed = 50
         self.last_update_time = pygame.time.get_ticks()
         self.current_char_index = 0
@@ -50,11 +39,6 @@ class DialogBox:
         self.dialog_queue = []  # Queue to handle multiple dialogues
         self.is_showing = False  # Flag to check if a dialog is being shown
 
-    def set_image(self, image_key):
-        if image_key in self.images:
-            print(f"Setting image: {image_key}")
-            self.image = self.images[image_key]
-
     def show(self, text, auto_hide_seconds=None):
         self.full_text = text
         self.text = ""
@@ -67,13 +51,12 @@ class DialogBox:
         else:
             self.auto_hide_time = None
 
-
-    def hide(self):
-        self.active = False
-        self.auto_hide_time = None
-        self.is_showing = False
-        self.process_queue()  # Check if there are more dialogues in the queue
-        print("Dialog box hidden")
+    # def hide(self):
+    #     self.active = False
+    #     self.auto_hide_time = None
+    #     self.is_showing = False
+    #     self.process_queue()  # Check if there are more dialogues in the queue
+    #     print("Dialog box hidden")
 
     def update(self):
         if not self.active:
@@ -88,6 +71,11 @@ class DialogBox:
             self.text += self.full_text[self.current_char_index]
             self.current_char_index += 1
 
+    def process_queue(self):
+        if self.dialog_queue and not self.is_showing:
+            next_message, auto_hide_seconds = self.dialog_queue.pop(0)
+            self.show(next_message, auto_hide_seconds)
+
     def add_char(self, char):
         self.user_input += char
 
@@ -100,26 +88,44 @@ class DialogBox:
         return input_text
 
     def show_dialog(self, message, auto_hide_seconds=None):
-        if "Here is Level 1" in message:
-            self.set_image('sarah')
-        elif 'What do I do now!?? I lost my job and cannot code' in message:
-            self.set_image('player')
-        elif 'Spare Change ?' in message:
-            self.set_image('homeless')
-        elif "The enemy is attacking" in message:
-            self.set_image('sarah')
-        # Add the message to queue and processes
         self.dialog_queue.append((message, auto_hide_seconds))
-        self.process_queue()
-
+        
         if not self.is_showing:
-            self.process_queue()
+            self._process_next_dialog()
 
-    def process_queue(self):
-        if self.dialog_queue and not self.is_showing:
-            next_message, auto_hide_seconds = self.dialog_queue.pop(0)
-            self.show(next_message, auto_hide_seconds)
-            self.is_showing = True # Ensures the dialog is shown
+    def _process_next_dialog(self):
+        if self.dialog_queue:
+            message, auto_hide_seconds = self.dialog_queue.pop(0)
+            self._set_dialog_style(message)
+            self.show(message, auto_hide_seconds)
+            self.is_showing = True
+
+    def _set_dialog_style(self, message):
+        sprite_path = None
+        if "You think you know git?" in message or "minions" in message: # Sarah's image path, more dialogues regarding her add here (Images)
+            sprite_path = os.path.join(config.PIC_PATH, 's2.png') 
+        elif 'Zoey' in message or "Zoey: Congratulations! You have completed Level" in message: # Zoey Tips Dialogues (Images)
+            prite_path = os.path.join(config.BASE_SPRITES_PATH, 'karen.gif') 
+        elif 'What do I do know!?' in message or 'Sorry man' in message: # Main character Dialogues (Images)
+            sprite_path = os.path.join(config.BASE_SPRITES_PATH, 'man.png')
+        elif any(keyword in message for keyword in ['Spare', 'boss', 'guys']): #Enemy Dialogue (Images)
+            sprite_path = os.path.join(config.BASE_SPRITES_PATH, 'Enemies', 'homeless.png')
+
+        if sprite_path:
+            try:
+                self.image = pygame.image.load(sprite_path)
+                self.image = pygame.transform.scale(self.image, (120, 100))
+                self.image_rect = self.image.get_rect(topleft=(self.rect.right - 120, self.rect.top + 100))
+            except pygame.error as e:
+                print(f"Error loading image {sprite_path}: {e}")
+
+    def hide(self):
+        self.active = False
+        self.auto_hide_time = None
+        self.is_showing = False
+        self._process_next_dialog()
+
+
 
     def handle_events(self, event):
         if event.type == pygame.KEYDOWN:
@@ -163,4 +169,3 @@ class DialogBox:
         self.background_color = background_color
         self.image = pygame.image.load(image_path)
         self.image = pygame.transform.scale(self.image, (100, 100))
-
