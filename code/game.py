@@ -1,3 +1,5 @@
+import subprocess
+
 import pygame
 import sys
 import os
@@ -42,7 +44,7 @@ class Game:
         self.max_enemies = config.MAX_ENEMIES  # Ensure this line is here
         self.dialog_box = DialogBox(self.surface, 600, 200)  # Moved this line up
         self.restart_game()
-
+        self.minigame_process = None
         self.current_question_index = 0
         self.current_attempt = 0
         self.attempts = 0
@@ -69,7 +71,6 @@ class Game:
 
         self.waiting_for_level_change = False
         self.game_completed = False
-        
 
     def init_resources(self):
         # Loads resources like music and sounds
@@ -78,12 +79,13 @@ class Game:
 
     def ask_for_name(self):
         self.name = ask_for_name(self)
-    
+
     def change_level_dialogue(self):
-        if self.boss_deaths in [0, 1, 2]:  
-            self.show_dialog(f" You have completed Level {self.boss_deaths}. Press 'X' to continue to the next level.", auto_hide_seconds=7)
+        if self.boss_deaths in [0, 1, 2]:
+            self.show_dialog(f" You have completed Level {self.boss_deaths}. Press 'X' to continue to the next level.",
+                             auto_hide_seconds=7)
             self.waiting_for_level_change = False
-            pygame.event.clear() 
+            pygame.event.clear()
         elif self.boss_deaths == 3:
             self.show_dialog("Congratulations! You have completed all 3 levels! Game Over!", auto_hide_seconds=5)
             self.game_completed = True
@@ -96,12 +98,11 @@ class Game:
             if key == pygame.K_x:
                 print(f"Changing to level {self.boss_deaths + 2}")  # +2 because boss_deaths is 0-based
                 self.next_level()
-        
+
             self.waiting_for_level_change = False
             self.dialog_box.hide()
             pygame.time.set_timer(pygame.USEREVENT + 3, 0)  # Stop the timer
-            pygame.event.clear() 
-
+            pygame.event.clear()
 
     def set_level(self, level):
         set_level(self, level)
@@ -137,25 +138,6 @@ class Game:
 
     def restart_level(self):
         restart_level(self)
-
-    def handle_dialog_response(self, response):
-        if isinstance(self.boss, Boss2):
-            if response.lower() == 'y':
-                print("Launching Fibonacci Minigame...")
-                pygame.quit()
-                os.system("python level2.py")
-                sys.exit()
-            elif response.lower() == 'n':
-                print("Restarting level...")
-                self.restart_level()
-
-        elif isinstance(self.boss, Boss1):
-            # Boss1 specific response handling
-            if response.lower() == 'y':
-                # Proceed with Boss1 logic
-                pass
-            elif response.lower() == 'n':
-                self.dialog_box.show("You can't escape the challenge!")
 
     def ask_next_question(self):
         ask_next_question(self)
@@ -196,6 +178,26 @@ class Game:
         self.health_bar.reset()
         self.death_timer = None
 
+    def handle_dialog_response(self, response):
+        print(f"Response received: {response}")
+        if response.lower() == 'y':
+            print(f"Current boss type: {type(self.boss).__name__}")
+            if isinstance(self.boss, Boss2):
+                print("Launching Fibonacci minigame for Boss2")
+                self.launch_level2()  # Call the method that launches level2.py
+            else:
+                print("Proceeding with questions for Boss1")
+                self.dialog_box.show(
+                    "Here is Level 1....\nYou need to answer at least 5 questions correctly to pass..\nAre you ready?! Y/N")
+        elif response.lower() == 'n':
+            print("Restarting the level")
+            self.restart_level()
+
+    def launch_level2(self):
+        # Ensure this does not auto-launch and only runs upon user confirmation
+        level2_path = os.path.join(os.path.dirname(__file__), 'level2.py')
+        subprocess.run(['python', level2_path])
+
     def update(self):
         self.dialog_box.update()
         dx = 0
@@ -234,15 +236,15 @@ class Game:
                 # Check for collision with Boss1 and trigger Boss1 dialog
                 if isinstance(enemy, Boss1) and pygame.sprite.collide_rect(self.character, enemy):
                     self.dialog_box.show_dialog(
-                        "Haha! You think you know git?\nLet's test your knowledge then!\nAre you ready?! Y/N")
-                    self.boss_trigger = True  # Ensure the dialog is tied to the first boss
+                        "Haha! You think you know git?\nLets test your knowledge then!\nAre you ready?! Y/N")
                     break  # Exit loop after showing Boss1 dialog
 
                 # Check for collision with Boss2 and trigger Boss2 dialog
                 if isinstance(enemy, Boss2) and pygame.sprite.collide_rect(self.character, enemy):
+                    print("Collision with Boss2 detected.")
                     self.dialog_box.show_dialog(
-                        "Level 2: This challenge will be tougher!\nPrepare yourself for a new set of questions.\nAre you ready?! Y/N")
-                    self.boss_trigger = True  # Ensure the dialog is tied to the second boss
+                        "Level 2: This challenge will be tougher!\nPrepare yourself for a new set of questions.\nAre "
+                        "you ready?! Y/N")
                     break  # Exit loop after showing Boss2 dialog
 
             # Handle collisions and character movement
@@ -323,7 +325,6 @@ class Game:
         text_surface = font.render(counter_text, True, (255, 255, 255))
         self.surface.blit(text_surface, (10, 10))
 
-
     def is_in_attack_range(self, enemy):
         distance = abs(self.character.rect.centerx - enemy.rect.centerx)
         return distance < config.ATTACK_RANGE  # Smaller range for attack detection
@@ -347,11 +348,10 @@ class Game:
         self.dialog_box.draw()
         pygame.display.flip()
 
-  
     def game_over(self):
         game_over(self.surface)
         ask_to_play_again(self.surface, self)
-    
+
     def restart_game(self):
         restart_game(self)
 
