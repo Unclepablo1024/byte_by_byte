@@ -18,11 +18,12 @@ SCROLL_SPEED = 5
 RUN_SPEED_MULTIPLIER = 2
 
 # Paths
-FONT_PATH = os.path.join("fonts", "determinationmono.ttf")
-AUDIO_PATH = os.path.join("audio")
-BASE_SPRITES_PATH = os.path.join("sprites")
-LOGO_PATH = os.path.join("logo", "icon.png")
-PIC_PATH = os.path.join("pic")
+
+FONT_PATH = os.path.join("../fonts", "determinationmono.ttf")
+AUDIO_PATH = os.path.join("../audio")
+BASE_SPRITES_PATH = os.path.join("../sprites")
+LOGO_PATH = os.path.join("../logo", "icon.png")
+PIC_PATH = os.path.join("../pic")
 
 # Background settings
 BACKGROUND_IMAGE_PATH = os.path.join(BASE_SPRITES_PATH, 'backgrounds', 'City2_pale.png')
@@ -58,7 +59,7 @@ DIALOG_COOLDOWN_TIME = 2000  # 2 seconds cooldown
 # Enemy settings
 ENEMY_TYPES = ["Homeless_1", "Homeless_2", "Homeless_3"]
 ENEMY_SPRITES_PATH = os.path.join(BASE_SPRITES_PATH, 'enemies')
-MAX_ENEMIES = 3
+MAX_ENEMIES = 1
 ENEMY_POSITION = 565
 # Attack animations paths
 ATTACK_1_GIF_PATH = os.path.join(BASE_SPRITES_PATH, 'Gangsters_2', 'Attack_1.png')
@@ -141,6 +142,7 @@ GRAY = (200, 200, 200)
 DARK_GRAY = (50, 50, 50)
 HINT_BG_COLOR = (255, 255, 200)
 HINT_TEXT_COLOR = (0, 100, 0)
+LIGHT_GRAY = (200, 200, 200)
 
 # Level one question
 LEVEL_ONE_QUESTIONS = [
@@ -173,6 +175,23 @@ LEVEL_ONE_DIALOGUE =  {1:"You: What do I do know!? I lost my job and know nothin
     5:"Zoey Tip: Click your right mouse button to atack enemies.", 6:" Enemy: Our leader will show you who is boss."}
 
 
+LEVEL_TWO_DIALOGUE = {
+    1: "You: A futuristic city? How did I end up here?",
+    2: "Enemy: You thought you could escape us? Think again.",
+    3: "You: Seriously? You followed me here too?",
+    4: "Enemy: We don't work alone. Meet our new friend, the robot!",
+    5: "Robot: Target acquired. Initiating Fibonacci sequence challenge.",
+    6: "You: Guess I'll have to code my way out of this one!"
+}
+
+LEVEL_THREE_DIALOGUE = {
+    1: "You: This place just keeps getting crazier... Now it's swarming with enemies!",
+    2: "Enemy: We’ve got new allies. Meet the vampires, dogs, and cats!",
+    3: "Vampire: Your blood won’t save you from the data structures we command.",
+    4: "You: Great, now I have to deal with vampires and their pets?",
+    5: "Dog: Woof! Fetch the data, or face the consequences.",
+    6: "You: Alright, let's see how well you handle my coding skills!"
+}
 
 def wrap_text(text, font, max_width):
     lines = []

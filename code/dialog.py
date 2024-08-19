@@ -102,14 +102,22 @@ class DialogBox:
 
     def _set_dialog_style(self, message):
         sprite_path = None
-        if "You think you know git?" in message or "minions" in message: # Sarah's image path, more dialogues regarding her add here (Images)
-            sprite_path = os.path.join(config.PIC_PATH, 's2.png') 
-        elif 'Zoey' in message or "Zoey: Congratulations! You have completed Level" in message: # Zoey Tips Dialogues (Images)
-            prite_path = os.path.join(config.BASE_SPRITES_PATH, 'karen.gif') 
-        elif 'What do I do know!?' in message or 'Sorry man' in message: # Main character Dialogues (Images)
+        if "Haha! You think you know git?" in message:
+            sprite_path = os.path.join(config.PIC_PATH, 's2.png')
+        elif 'We are truly sorry' in message:
+            sprite_path = os.path.join(config.BASE_SPRITES_PATH, 'karen.gif')
+        elif 'You:' in message:
             sprite_path = os.path.join(config.BASE_SPRITES_PATH, 'man.png')
-        elif any(keyword in message for keyword in ['Spare', 'boss', 'guys']): #Enemy Dialogue (Images)
+        elif 'Level 2: This challenge will be tougher!' in message:
+            sprite_path = os.path.join(config.PIC_PATH, 'a1.png')  # Add the specific image for Boss2
+        elif 'Enemy:' in message:
             sprite_path = os.path.join(config.BASE_SPRITES_PATH, 'Enemies', 'homeless.png')
+        elif 'Vampire:' in message:
+            sprite_path = os.path.join(config.BASE_SPRITES_PATH, 'Enemies', 'vampire.png')
+        elif 'Dog:' in message:
+            sprite_path = os.path.join(config.BASE_SPRITES_PATH, 'Enemies', 'dog.png')
+        
+
 
         if sprite_path:
             try:
