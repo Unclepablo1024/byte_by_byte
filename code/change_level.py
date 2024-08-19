@@ -86,20 +86,19 @@ def set_level(game, level):
 
 
 
-def next_level(game):
-    # Function handles the update of levels
-    game.current_level += 1
-    print(f"Moving to level {game.current_level}")  # Debugging
-    if game.current_level > len(config.LEVELS):
-        print("You have completed all levels!")
-        game.running = False
-    else:
-        set_level(game, game.current_level)
-        print(f"Level set to {game.current_level}")  # Debugging
-        game.restart_game()
+def next_level(self):
+        self.current_level += 1
+        print(f"Moving to level {self.current_level}")  # Debugging
+        if self.current_level > len(config.LEVELS):
+            print("You have completed all levels!")
+            self.running = False
+        else:
+            self.set_level(self.current_level)
+            print(f"Level set to {self.current_level}")  # Debugging
+            self.restart_game()
 
-    # Set boss_trigger back to False
-    game.boss_trigger = False
+        # Set boss_trigger back to False
+        self.boss_trigger = False
 
 
 def restart_level(game):

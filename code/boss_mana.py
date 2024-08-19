@@ -1,6 +1,6 @@
 import pygame
 import config
-from boss1 import Boss
+from boss1 import Boss1
 
 
 class GameManager:
