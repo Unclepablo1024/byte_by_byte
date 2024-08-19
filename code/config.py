@@ -19,11 +19,11 @@ RUN_SPEED_MULTIPLIER = 2
 
 # Paths
 
-FONT_PATH = os.path.join("../fonts", "determinationmono.ttf")
-AUDIO_PATH = os.path.join("../audio")
-BASE_SPRITES_PATH = os.path.join("../sprites")
-LOGO_PATH = os.path.join("../logo", "icon.png")
-PIC_PATH = os.path.join("../pic")
+FONT_PATH = os.path.join("fonts", "determinationmono.ttf")
+AUDIO_PATH = os.path.join("audio")
+BASE_SPRITES_PATH = os.path.join("sprites")
+LOGO_PATH = os.path.join("logo", "icon.png")
+PIC_PATH = os.path.join("pic")
 
 # Background settings
 BACKGROUND_IMAGE_PATH = os.path.join(BASE_SPRITES_PATH, 'backgrounds', 'City2_pale.png')
@@ -106,7 +106,7 @@ LEVELS = {
 pygame.init()
 pygame.mixer.init()
 
-
+#Boss 1 path files
 BOSSES_FOLDER_PATH = os.path.join(BASE_SPRITES_PATH, 'Bosses', 'Boss1')
 IDLE_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Idlefix.png')
 WALK_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Walk.png')
@@ -114,6 +114,16 @@ JUMP_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Jump.png')
 RUN_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Run.png')
 HURT_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Hurt.png')
 DIE_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Dead.png')
+
+#boss 2 path files
+BOSSES_FOLDER_PATH_2 = os.path.join(BASE_SPRITES_PATH, 'Bosses', 'Boss2')
+IDLE_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Idlefix.png')
+WALK_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Walk.png')
+JUMP_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Jump.png')
+RUN_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Run.png')
+HURT_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Hurt.png')
+DIE_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Dead.png')
+
 
 
 # Load common fonts
