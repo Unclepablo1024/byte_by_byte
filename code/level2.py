@@ -3,6 +3,7 @@ import random
 import time
 import config
 import sys
+import os
 
 class Level2:
     def __init__(self, game):
@@ -11,8 +12,8 @@ class Level2:
         self.clock = pygame.time.Clock()
         
         # Load images for feedback
-        self.correct_image = pygame.image.load('../pic/correct.webp')
-        self.wrong_image = pygame.image.load('../pic/wrong.webp')
+        self.correct_image = pygame.image.load(os.path.join(config.PIC_PATH, 'correct.webp'))
+        self.wrong_image = pygame.image.load(os.path.join(config.PIC_PATH, 'wrong.webp'))
         image_width, image_height = 440, 300
         self.correct_image = pygame.transform.scale(self.correct_image, (image_width, image_height))
         self.wrong_image = pygame.transform.scale(self.wrong_image, (image_width, image_height))
@@ -22,7 +23,9 @@ class Level2:
         
         self.dragging_block = None
         self.hint_text = config.small_font.render(
-            "Press H for hint | Press Enter to submit code | Press Space to close feedback image", True, config.BLACK)
+            "Press H for hint | Press Enter to submit code", True, config.BLACK)
+        self.level_completed = False
+        
 
     def run(self):
         while not self.game_state.game_completed:
@@ -30,6 +33,7 @@ class Level2:
             self.update()
             self.draw()
             self.clock.tick(60)
+        self.level_completed = True
         print("Level2 completed")
         self.game.is_level2_active = False
 
@@ -46,22 +50,25 @@ class Level2:
                 self.handle_mouseup(event)
 
     def handle_keydown(self, event):
-        
         if event.key == pygame.K_RETURN and not self.game_state.feedback_image:
             if self.game_state.check_code():
                 config.correct_sound.play()
                 config.correct_sound.set_volume(0.02)
                 self.game_state.score += 1
+                self.game_state.show_feedback(self.game_state.correct_image)
                 self.game_state.next_level()
             else:
                 config.wrong_sound.play()
                 config.wrong_sound.set_volume(0.02)
-                self.game_state.feedback_image = self.game_state.wrong_image
+                self.game_state.show_feedback(self.game_state.wrong_image)
                 self.game_state.score -= 1
-        elif event.key == pygame.K_SPACE and self.game_state.feedback_image:
-            self.game_state.feedback_image = None
         elif event.key == pygame.K_h:
             self.game_state.show_hint()
+
+    def update(self):
+        self.game_state.update_hint()
+        self.game_state.update_feedback()
+        self.game_state.code_blocks.update()
 
     def handle_mousedown(self, event):
         if event.button == 1:  # Left mouse button
@@ -85,9 +92,6 @@ class Level2:
                 self.dragging_block.reset_position()
             self.dragging_block = None
 
-    def update(self):
-        self.game_state.update_hint()
-        self.game_state.code_blocks.update()
 
     def draw(self):
         self.screen.fill(config.WHITE)
@@ -112,9 +116,6 @@ class Level2:
             if self.game_state.hint_visible:
                 self.draw_hint()
 
-        if self.game_state.show_congratulatory_dialog:
-            self.draw_dialog_box("Congratulations! You've completed Fibonacci Coding Challenge!")
-            self.game_state.show_congratulatory_dialog = False
 
         pygame.display.flip()
 
@@ -184,13 +185,22 @@ class Level2:
             self.code_blocks = pygame.sprite.Group()
             self.answer_slots = []
             self.feedback_image = None
+            self.feedback_start_time = 0
+            self.feedback_duration = 2  # 2 seconds
             self.game_completed = False
             self.hint_visible = False
             self.hint_start_time = 0
             self.hint_duration = 3
             self.hint_lines = []
-            self.show_congratulatory_dialog = False
             self.reset_level()
+
+        def show_feedback(self, image):
+            self.feedback_image = image
+            self.feedback_start_time = time.time()
+
+        def update_feedback(self):
+            if self.feedback_image and time.time() - self.feedback_start_time > self.feedback_duration:
+                self.feedback_image = None
 
         def generate_levels(self):
             return [
@@ -264,7 +274,6 @@ class Level2:
                 self.feedback_image = self.correct_image
             else:
                 self.game_completed = True
-                self.show_congratulatory_dialog = True
                 self.feedback_image = None
 
         def get_current_level_description(self):

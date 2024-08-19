@@ -77,6 +77,7 @@ class Game:
         self.waiting_for_boss2_response = False
         self.level2 = None
         self.is_level2_active = False
+        self.boss2_defeated = False
         
     def init_resources(self):
         # Loads resources like music and sounds
@@ -87,13 +88,11 @@ class Game:
         self.name = ask_for_name(self)
 
     def change_level_dialogue(self):
-        if self.boss_deaths in [0, 1, 2]:
-            self.show_dialog(f" You have completed Level {self.boss_deaths}. Press 'X' to continue to the next level.",
-                             auto_hide_seconds=7)
-            self.waiting_for_level_change = False
-            pygame.event.clear()
-        elif self.boss_deaths == 3:
-            self.show_dialog("Congratulations! You have completed all 3 levels! Game Over!", auto_hide_seconds=5)
+        if self.boss_deaths in [1, 2, 3]:  
+            self.show_dialog(f"You have completed Level {self.boss_deaths}. Press 'X' to continue to the next level.", auto_hide_seconds=10)
+            self.waiting_for_level_change = True
+        elif self.boss_deaths > 3:
+            self.show_dialog("Congratulations! You have completed all 3 levels! Game Over!", auto_hide_seconds=10)
             self.game_completed = True
         else:
             print(f"Unexpected boss_deaths value: {self.boss_deaths}")
@@ -102,9 +101,8 @@ class Game:
     def handle_level_change_response(self, key):
         if self.waiting_for_level_change:
             if key == pygame.K_x:
-                print(f"Changing to level {self.boss_deaths + 2}")  # +2 because boss_deaths is 0-based
+                print(f"Changing to level {self.boss_deaths + 1}")
                 self.next_level()
-
             self.waiting_for_level_change = False
             self.dialog_box.hide()
             pygame.time.set_timer(pygame.USEREVENT + 3, 0)  # Stop the timer
@@ -133,12 +131,16 @@ class Game:
             event.handle_events(self)
             
             if self.is_level2_active:
+                if self.level2 is None:
+                    self.level2 = Level2(self)
+                
+                self.level2.run()
+                
                 if self.level2.game_state.game_completed:
                     self.is_level2_active = False
-                    self.level2 = None
                     print("Level2 completed, returning to main game")
-                else:
-                    self.level2.run()
+                    self.show_boss_defeated_dialog("Boss 2")
+                    self.level2 = None
             else:
                 self.update()
                 self.draw()
@@ -149,6 +151,13 @@ class Game:
         self.music_player.stop_main_music()
         pygame.quit()
         sys.exit()
+
+    def show_boss_defeated_dialog(self, boss_name):
+        dialog_text = f"{boss_name} has been defeated! Congratulations!"
+        self.show_dialog(dialog_text, auto_hide_seconds=5)
+        self.boss_deaths += 1  
+        pygame.time.delay(1000)  
+        self.change_level_dialogue()
 
     def show_dialog(self, message, auto_hide_seconds=None):
         self.dialog_box.show(message, auto_hide_seconds)
@@ -218,11 +227,10 @@ class Game:
 
     def show_coffee_picture(self):
         coffee_image = pygame.image.load("../pic/coffee.jpg")
-        coffee_image = pygame.transform.scale(coffee_image, (self.surface.get_width(), self.surface.get_height()))  
-        self.surface.blit(coffee_image, (0, 0))  
+        coffee_image = pygame.transform.scale(coffee_image, (self.surface.get_width(), self.surface.get_height()))
+        self.surface.blit(coffee_image, (0, 0))
         pygame.display.flip()
-        self.dialog_box.show_dialog("Enjoy your coffee! After that, keep going!", auto_hide_seconds=4)
-
+        
 
     def update(self):
         if self.is_level2_active:
@@ -230,7 +238,9 @@ class Game:
 
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
-                if self.waiting_for_boss2_response:
+                if self.waiting_for_level_change:
+                    self.handle_level_change_response(event.key)
+                elif self.waiting_for_boss2_response:
                     if event.key == pygame.K_y:
                         print("Y key pressed for Boss2 response")
                         self.handle_boss2_dialog_response('y')
@@ -239,7 +249,6 @@ class Game:
                         print("N key pressed for Boss2 response")
                         self.handle_boss2_dialog_response('n')
                         self.waiting_for_boss2_response = False
-                    pygame.event.clear()
                 elif self.dialog_box.active:
                     if event.key == pygame.K_y:
                         self.handle_dialog_response('y')
@@ -263,7 +272,7 @@ class Game:
             self.character.move(dx, 0)
             now = pygame.time.get_ticks()
 
-            # 繼續正常的敵人生成,直到達到最大數量
+            
             if now - self.enemy_spawn_timer > 3000 and self.enemy_count < config.MAX_ENEMIES and not self.boss_spawned:
                 spawn_enemy(self)
                 self.enemy_spawn_timer = now
@@ -294,7 +303,7 @@ class Game:
                     self.waiting_for_boss2_response = True
                     break
 
-            # 處理碰撞和角色移動
+           
             collided = False
             for enemy in list(self.enemy_group):
                 if not enemy.is_dead and pygame.sprite.collide_rect(self.character, enemy):
@@ -308,11 +317,11 @@ class Game:
             if not collided:
                 self.character.resume_movement()
 
-            # 更新背景和精靈
+            
             self.background.update(dx)
             self.all_sprites.update()
 
-            # 檢查角色健康狀況並處理死亡
+            
             if self.character.health_bar.is_depleted():
                 print("Character health depleted, calling handle_character_death")
                 self.handle_character_death()
@@ -324,24 +333,24 @@ class Game:
                 elif self.lives == 0 and current_time - self.death_timer >= 1000:
                     self.game_over()
 
-            # 移除已完成死亡動畫的敵人並增加計數器
+            
             for enemy in list(self.enemy_group):
                 if enemy.is_dead and enemy.current_frame == len(enemy.dead_images) - 1:
                     self.enemy_group.remove(enemy)
                     if not isinstance(enemy, Boss1) and not isinstance(enemy, Boss2):
                         self.defeated_enemies += 1
 
-            # 如果達到最大敵人數量,生成Boss
+            
             if self.defeated_enemies >= config.MAX_ENEMIES and not self.boss_spawned:
                 print("MAX_ENEMIES defeated, spawning Boss!")
                 self.spawn_boss()
 
-            # 檢查Boss是否被擊敗並觸發關卡變更
+           
             if self.boss and self.boss.is_dead:
                 print("Boss is dead. Triggering level change.")
                 self.boss_trigger = True
-                self.change_level_dialogue()
-                pygame.time.set_timer(pygame.USEREVENT + 3, 10000)  # 10秒延遲
+                self.boss_deaths += 1
+                self.show_boss_defeated_dialog(f"Boss {self.boss_deaths}")
                 self.waiting_for_level_change = True
 
     def spawn_boss(self):
