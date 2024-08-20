@@ -1,5 +1,3 @@
-import subprocess
-
 import pygame
 import sys
 import os
@@ -23,7 +21,6 @@ from handle_input import ask_for_name, handle_player_input, handle_continuous_in
 from restart import restart_game
 from dialog_response import handle_dialog_response, ask_next_question, check_answer, set_timer
 from enemy_spawner import spawn_enemy
-
 
 
 # Initialize game and its components
@@ -86,13 +83,14 @@ class Game:
 
     def ask_for_name(self):
         self.name = ask_for_name(self)
-
+    
     def change_level_dialogue(self):
-        if self.boss_deaths in [1, 2, 3]:  
-            self.show_dialog(f"You have completed Level {self.boss_deaths}. Press 'X' to continue to the next level.", auto_hide_seconds=10)
-            self.waiting_for_level_change = True
-        elif self.boss_deaths > 3:
-            self.show_dialog("Congratulations! You have completed all 3 levels! Game Over!", auto_hide_seconds=10)
+        if self.boss_deaths in [0, 1, 2]:  
+            self.show_dialog(f"Zoey: Congratulations! You have completed Level {self.boss_deaths}. Press 'X' to continue to the next level.", auto_hide_seconds=5)
+            self.waiting_for_level_change = False
+            pygame.event.clear() 
+        elif self.boss_deaths == 3:
+            self.show_dialog("Zoey: Congratulations! You have completed all 3 levels! Game Over!", auto_hide_seconds=5)
             self.game_completed = True
         else:
             print(f"Unexpected boss_deaths value: {self.boss_deaths}")
@@ -101,7 +99,7 @@ class Game:
     def handle_level_change_response(self, key):
         if self.waiting_for_level_change:
             if key == pygame.K_x:
-                print(f"Changing to level {self.boss_deaths + 1}")
+                print(f"Changing to level {self.boss_deaths + 2}")  # +2 because boss_deaths is 0-based
                 self.next_level()
             self.waiting_for_level_change = False
             self.dialog_box.hide()
@@ -155,6 +153,10 @@ class Game:
     def show_boss_defeated_dialog(self, boss_name):
         dialog_text = f"{boss_name} has been defeated! Congratulations!"
         self.show_dialog(dialog_text, auto_hide_seconds=5)
+        self.boss2_defeated = True
+        if self.boss2_defeated and self.boss:
+            print("boss die!!!!!")
+            self.boss.die()
         self.boss_deaths += 1  
         pygame.time.delay(1000)  
         self.change_level_dialogue()
@@ -174,6 +176,10 @@ class Game:
 
     def restart_level(self):
         restart_level(self)
+    
+
+    def handle_dialog_response(self, response):
+        handle_dialog_response(self, response)
 
     def ask_next_question(self):
         ask_next_question(self)
@@ -272,31 +278,41 @@ class Game:
             self.character.move(dx, 0)
             now = pygame.time.get_ticks()
 
-            
+            # Continue with normal enemy spawning until max is reached
             if now - self.enemy_spawn_timer > 3000 and self.enemy_count < config.MAX_ENEMIES and not self.boss_spawned:
                 spawn_enemy(self)
                 self.enemy_spawn_timer = now
 
             for enemy in list(self.enemy_group):
                 if enemy.is_dead:
-                    continue
+                    continue  # Skip processing for dead enemies
 
                 if self.character.is_attacking and self.is_in_attack_range(enemy):
                     enemy.mark_for_damage(pygame.time.get_ticks() + 10)
 
+                # Check for collision with boss and trigger dialogue
+                if isinstance(enemy, Boss1) and pygame.sprite.collide_rect(self.character, enemy):
+                    if not hasattr(self, 'dialog_cooldown') or self.dialog_cooldown <= 0:
+                        self.dialog_box.show_dialog("So you are the intern beating all my minions..", auto_hide_seconds= 5) # The auto hide allows to move to next question
+                        self.dialog_box.show_dialog("You think you know git?\nLet's test your knowledge! \nAnswer my questions and ill let you pass, Are you ready?! Y/N")
+                        self.dialog_cooldown = 5000  # Set cooldown to 5 seconds (adjust as needed)
+
+                # Check for the first encounter with an enemy
                 if not hasattr(self, 'first_encounter_triggered') and self.is_in_attack_range(enemy):
                     self.first_encounter_triggered = True
-                    self.dialog_box.show_dialog("TIP: (Use the left mouse button to attack!)", auto_hide_seconds=5)
+                    self.dialog_box.show_dialog("Zoey Tip: (Use the left mouse button to attack!)", auto_hide_seconds=5)
+
+                    # Add the remaining dialogues to the queue
                     for counter in range(1, 5):
                         self.dialog_box.show_dialog(f"{config.LEVEL_ONE_DIALOGUE[counter]}", auto_hide_seconds=5)
                     break
 
-                if isinstance(enemy, Boss1) and pygame.sprite.collide_rect(self.character, enemy):
-                    self.dialog_box.show_dialog(
-                        "Haha! You think you know git?\nLets test your knowledge then!\nAre you ready?! Y/N")
-                    break
+                # if isinstance(enemy, Boss1) and pygame.sprite.collide_rect(self.character, enemy):
+                #     self.dialog_box.show_dialog(
+                #         "Haha! You think you know git?\nLets test your knowledge then!\nAre you ready?! Y/N")
+                #     break
 
-                if isinstance(enemy, Boss2) and pygame.sprite.collide_rect(self.character, enemy):
+                if isinstance(enemy, Boss2) and pygame.sprite.collide_rect(self.character, enemy) and not self.boss2_defeated:
                     print("Collision with Boss2 detected.")
                     self.dialog_box.show_dialog(
                         "Level 2: This challenge will be tougher!\nPrepare yourself for a new set of questions.\nAre you ready?! Y/N")
@@ -317,41 +333,49 @@ class Game:
             if not collided:
                 self.character.resume_movement()
 
-            
+            # Update background and sprites
             self.background.update(dx)
             self.all_sprites.update()
 
-            
+            # Check character health and handle death
             if self.character.health_bar.is_depleted():
                 print("Character health depleted, calling handle_character_death")
                 self.handle_character_death()
 
             if self.character.is_dead:
                 current_time = pygame.time.get_ticks()
-                if self.lives > 0 and current_time - self.death_timer >= 1000:
+                if self.lives > 0 and current_time - self.death_timer >= 1000:  # 1000 milliseconds = 1 second
                     self.revive_character()
-                elif self.lives == 0 and current_time - self.death_timer >= 1000:
+                elif self.lives == 0 and current_time - self.death_timer >= 1000:  # 1 second delay before game over
                     self.game_over()
 
-            
+            # Remove enemies that have finished their death animation and increase the counter
             for enemy in list(self.enemy_group):
                 if enemy.is_dead and enemy.current_frame == len(enemy.dead_images) - 1:
                     self.enemy_group.remove(enemy)
                     if not isinstance(enemy, Boss1) and not isinstance(enemy, Boss2):
                         self.defeated_enemies += 1
 
-            
+            # Spawn Boss if max enemies defeated
             if self.defeated_enemies >= config.MAX_ENEMIES and not self.boss_spawned:
                 print("MAX_ENEMIES defeated, spawning Boss!")
                 self.spawn_boss()
 
-           
+            # Check for boss defeat and trigger level change
             if self.boss and self.boss.is_dead:
                 print("Boss is dead. Triggering level change.")
                 self.boss_trigger = True
-                self.boss_deaths += 1
-                self.show_boss_defeated_dialog(f"Boss {self.boss_deaths}")
+                self.change_level_dialogue()
+                pygame.time.set_timer(pygame.USEREVENT + 3, 10000)  # 10 seconds delay
                 self.waiting_for_level_change = True
+
+            # Handle level change dialogue timeout
+            for event in pygame.event.get():
+                if event.type == pygame.USEREVENT + 3:
+                    if self.waiting_for_level_change:
+                        self.change_level_dialogue()
+                    pygame.time.set_timer(pygame.USEREVENT + 3, 0)
+                    self.waiting_for_level_change = False
 
     def spawn_boss(self):
         ground_level = self.ground_level
@@ -375,6 +399,7 @@ class Game:
         counter_text = f"{self.defeated_enemies}/{config.MAX_ENEMIES}"
         text_surface = font.render(counter_text, True, (255, 255, 255))
         self.surface.blit(text_surface, (10, 10))
+
 
     def is_in_attack_range(self, enemy):
         distance = abs(self.character.rect.centerx - enemy.rect.centerx)
@@ -409,7 +434,7 @@ class Game:
     def game_over(self):
         game_over(self.surface)
         ask_to_play_again(self.surface, self)
-
+    
     def restart_game(self):
         restart_game(self)
 
