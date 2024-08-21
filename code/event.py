@@ -16,6 +16,7 @@ def handle_events(self):
             else:
                 self.show_dialog("Congratulations! You've completed all questions for Level One.",
                                  auto_hide_seconds=5)
+                self.ask_next_question()
         elif event.type == pygame.KEYDOWN:
             if self.waiting_for_boss2_response:
                 if event.key == pygame.K_y:
@@ -23,15 +24,27 @@ def handle_events(self):
                     self.waiting_for_boss2_response = False
                 elif event.key == pygame.K_n:
                     self.handle_boss2_dialog_response('n')
-                    self.waiting_for_boss2_response = False
+                    self.waiting_for_boss2_response = True
                 pygame.event.clear()
+
+            if self.waiting_for_boss3_response:
+                if event.key == pygame.K_y:
+                    self.handle_boss3_dialog_response('y')
+                    self.waiting_for_boss3_response = False
+                elif event.key == pygame.K_n:
+                    self.handle_boss3_dialog_response('n')
+                    self.waiting_for_boss3_response = True
+                pygame.event.clear()
+
             elif event.key == pygame.K_RETURN:
                 response = self.dialog_box.get_input()
                 if response:
                     print(f"Dialog response received: {response}")
                     handle_dialog_response(self, response)
+
             elif event.key == pygame.K_BACKSPACE:
                 self.dialog_box.backspace()
+
             elif event.key == pygame.K_x and self.boss_trigger:
                 print("Attempting to change level...")  
                 self.next_level()

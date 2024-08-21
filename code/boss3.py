@@ -3,12 +3,12 @@ import config
 import os
 
 
-class Boss1(pygame.sprite.Sprite):
+class Boss3(pygame.sprite.Sprite):
     def __init__(self, folder_path, screen_width, ground_level, main_character):
         super().__init__()
-        self.folder_path = os.path.join(config.BASE_SPRITES_PATH, 'Bosses', 'Boss1')
+        self.folder_path = os.path.join(config.BASE_SPRITES_PATH, 'Bosses', 'Boss3')
         self.walk_images = self.load_images("Walk.png")
-        self.attack_images = self.load_images("Attack_1.png")
+        self.attack_images = self.load_images("Attack.png")
         self.hurt_images = self.load_images("Hurt.png")
         self.dead_images = self.load_images("Dead.png")
         self.image = self.walk_images[0]

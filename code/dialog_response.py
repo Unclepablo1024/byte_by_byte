@@ -2,12 +2,13 @@ import pygame
 import config
 import os
 
-fight_image = pygame.image.load(os.path.join(config.BASE_SPRITES_PATH, 'fight.png'))
-bang_image = pygame.image.load(os.path.join(config.BASE_SPRITES_PATH, 'bang.png'))
-congra_image = pygame.image.load(os.path.join(config.PIC_PATH, 'congra.png'))
-hit_sound = pygame.mixer.Sound(config.hit_sound)
-duck_sound = pygame.mixer.Sound(config.duck_sound)
-congra_sound = pygame.mixer.Sound(config.congra_sound)
+fight_image = config.fight_image
+bang_image = config.bang_image
+congra_image = config.congra_image
+hit_sound = config.hit_sound
+duck_sound = config.duck_sound
+congra_sound = config.congra_sound
+congra_sound.set_volume(0.2)
 
 def show_feedback(game, is_correct):
     if is_correct:
@@ -32,9 +33,11 @@ def handle_dialog_response(game, response):
         if response == 'y':
             print("Starting Question Sequence.")  # Debug Print
             game.waiting_for_answer = True
+            game.waiting_for_boss1_response = True
             ask_next_question(game)
         elif response == 'n':
             game.show_dialog(f"Austin!! {game.name} is not ready!!! Come here to help!", auto_hide_seconds=4)
+            game.waiting_for_boss1_response = False
         pygame.event.clear()
         return
 
@@ -45,8 +48,6 @@ def handle_dialog_response(game, response):
         if is_correct:
             game.correct_answers += 1
             game.show_dialog(
-                #f"Good job! You've answered {game.correct_answers} out of {game.total_questions} questions correctly.",
-                #auto_hide_seconds=9)
                 f"Good job! You've answered {game.correct_answers} questions correctly.",auto_hide_seconds=9)
             game.current_attempt = 0
             game.current_question_index += 1
@@ -96,15 +97,12 @@ def ask_next_question(game):
             # Trigger level change dialogue
             game.boss_deaths += 1
             game.boss_trigger = True
-            
-           
+                       
         else:
             game.show_dialog(
                 f"You've only answered {game.correct_answers} out of {game.total_questions} questions correctly. You need to answer all 5 questions correctly to pass. Try again!",
                 auto_hide_seconds=7)
             game.restart_level()
-        game.waiting_for_answer = False
-
 
 def check_answer(game, response):
     correct_answer = game.questions[game.current_question_index]["answer"]

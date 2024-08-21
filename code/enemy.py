@@ -38,16 +38,16 @@ class Enemy(pygame.sprite.Sprite):
     def set_enemy_attributes(self):
         if "Robot" in self.enemy_type:
             self.speed = 3
-            self.attack_power = 15
+            self.attack_power = 10
             self.health = 120
         elif "Vampire" in self.enemy_type:
-            self.speed = 4
-            self.attack_power = 20
+            self.speed = 3
+            self.attack_power = 15
             self.health = 100
         elif self.enemy_type in ["Cat", "Dog"]:
-            self.speed = 5
-            self.attack_power = 10
-            self.health = 80
+            self.speed = 4
+            self.attack_power = 5
+            self.health = 20
         else:  # Homeless
             self.speed = 2
             self.attack_power = 5
@@ -73,7 +73,7 @@ class Enemy(pygame.sprite.Sprite):
 
         #Handle death state
         if self.is_dead:
-            if self.death_start_time and now - self.death_start_time > 2000:
+            if self.death_start_time and now - self.death_start_time > 4000:
                 self.kill()
             elif now - self.last_update > self.frame_rate:
                 self.last_update = now
@@ -169,7 +169,7 @@ class Enemy(pygame.sprite.Sprite):
         self.current_frame = 0
         self.death_start_time = pygame.time.get_ticks()
         self.image = self.dead_images[self.current_frame]
-
+    
     def mark_for_damage(self, time):
         self.damage_time = time
 

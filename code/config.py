@@ -36,6 +36,9 @@ JUMP_GIF_PATH = os.path.join(BASE_SPRITES_PATH, 'Gangsters_2', 'Jump.png')
 RUN_GIF_PATH = os.path.join(BASE_SPRITES_PATH, 'Gangsters_2', 'Run.png')
 HURT_GIF_PATH = os.path.join(BASE_SPRITES_PATH, 'Gangsters_2', 'Hurt.png')
 DIE_GIF_PATH = os.path.join(BASE_SPRITES_PATH, 'Gangsters_2', 'Dead.png')
+ATTACK_1_GIF_PATH = os.path.join(BASE_SPRITES_PATH, 'Gangsters_2', 'Attack_1.png')
+ATTACK_2_GIF_PATH = os.path.join(BASE_SPRITES_PATH, 'Gangsters_2', 'Attack_2.png')
+ATTACK_3_GIF_PATH = os.path.join(BASE_SPRITES_PATH, 'Gangsters_2', 'Attack_3.png')
 
 # Health bar settings
 HEALTH_BAR_MAX_HEALTH = 200
@@ -56,9 +59,32 @@ DIALOGUE_TEXT_COLOR = (255, 255, 255)
 DIALOGUE_BOX_IMAGE_PATH = os.path.join(BASE_SPRITES_PATH, 'Dialouge', 'Dialouge boxes', 'BetterDialouge1.png')
 DIALOG_COOLDOWN_TIME = 2000  # 2 seconds cooldown
 
+
+LEVELS = {
+    1: {
+        "background": os.path.join(BASE_SPRITES_PATH, "backgrounds", "City2_pale.png"),
+        "enemies": ["Homeless_1", "Homeless_2", "Homeless_3"],
+        "music": os.path.join(AUDIO_PATH, 'western.mp3'),
+        "max_enemies": 5
+    },
+    2: {
+        "background": os.path.join(BASE_SPRITES_PATH, "backgrounds", "City3.png"),
+        "enemies": ["Homeless_1", "Homeless_2", "Homeless_3", "Robot_1", "Robot_2", "Robot_3"],
+        "music": os.path.join(AUDIO_PATH, 'cyberpunk.mp3'),
+        "max_enemies": 10
+    },
+    3: {
+        "background": os.path.join(BASE_SPRITES_PATH, "backgrounds", "City4.png"),
+        "enemies": ["Homeless_1", "Homeless_2", "Homeless_3", "Robot_1", "Robot_2", "Robot_3", "Vampire_1", "Vampire_3", "Dog", "Cat"],
+        "music": os.path.join(AUDIO_PATH, 'bleach.mp3'),
+        "max_enemies": 20
+    }
+}
+
 # Enemy settings
 ENEMY_TYPES = ["Homeless_1", "Homeless_2", "Homeless_3"]
 ENEMY_SPRITES_PATH = os.path.join(BASE_SPRITES_PATH, 'enemies')
+current_level = LEVELS.get("current_level", 1)
 MAX_ENEMIES = 1
 ENEMY_POSITION = 565
 # Attack animations paths
@@ -84,47 +110,20 @@ DIALOG_FONT_PATH = os.path.join(FONT_PATH)
 DIALOGUE_FONT_SIZE = 24
 DIALOG_COOLDOWN_TIME = 2000  # 2 seconds in milliseconds
 
-LEVELS = {
-    1: {
-        "background": os.path.join(BASE_SPRITES_PATH, "backgrounds", "City2_pale.png"),
-        "enemies": ["Homeless_1", "Homeless_2", "Homeless_3"],
-        "music": os.path.join(AUDIO_PATH, 'western.mp3')
-    },
-    2: {
-        "background": os.path.join(BASE_SPRITES_PATH, "backgrounds", "City3.png"),
-        "enemies": ["Homeless_1", "Homeless_2", "Homeless_3", "Robot_1", "Robot_2", "Robot_3"],
-        "music": os.path.join(AUDIO_PATH, 'cyberpunk.mp3')
-    },
-    3: {
-        "background": os.path.join(BASE_SPRITES_PATH, "backgrounds", "City4.png"),
-        "enemies": ["Cat", "Dog", "Homeless_1", "Homeless_2", "Homeless_3", "Robot_1", "Robot_2", "Robot_3"],
-        "music": os.path.join(AUDIO_PATH, 'bleach.mp3')
-    }
-}
 
 # Initialize Pygame and mixer
 pygame.init()
 pygame.mixer.init()
 
-#Boss 1 path files
-BOSSES_FOLDER_PATH = os.path.join(BASE_SPRITES_PATH, 'Bosses', 'Boss1')
-IDLE_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Idlefix.png')
-WALK_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Walk.png')
-JUMP_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Jump.png')
-RUN_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Run.png')
-HURT_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Hurt.png')
-DIE_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Dead.png')
-
-#boss 2 path files
-BOSSES_FOLDER_PATH_2 = os.path.join(BASE_SPRITES_PATH, 'Bosses', 'Boss2')
-IDLE_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Idlefix.png')
-WALK_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Walk.png')
-JUMP_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Jump.png')
-RUN_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Run.png')
-HURT_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Hurt.png')
-DIE_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Dead.png')
-
-
+BOSSES1_FOLDER_PATH = os.path.join(BASE_SPRITES_PATH, 'Bosses', 'Boss1')
+BOSSES2_FOLDER_PATH = os.path.join(BASE_SPRITES_PATH, 'Bosses', 'Boss2')
+BOSSES3_FOLDER_PATH = os.path.join(BASE_SPRITES_PATH, 'Bosses', 'Boss3')
+IDLE_PATH = os.path.join(BOSSES1_FOLDER_PATH, 'Idlefix.png')
+WALK_PATH = os.path.join(BOSSES1_FOLDER_PATH, 'Walk.png')
+JUMP_PATH = os.path.join(BOSSES1_FOLDER_PATH, 'Jump.png')
+RUN_PATH = os.path.join(BOSSES1_FOLDER_PATH, 'Run.png')
+HURT_PATH = os.path.join(BOSSES1_FOLDER_PATH, 'Hurt.png')
+DIE_PATH = os.path.join(BOSSES1_FOLDER_PATH, 'Dead.png')
 
 # Load common fonts
 font = pygame.font.Font(FONT_PATH, 24)
@@ -132,13 +131,24 @@ large_font = pygame.font.Font(FONT_PATH, 36)
 small_font = pygame.font.Font(FONT_PATH, 18)
 title_font = pygame.font.Font(FONT_PATH, 48)
 
-
 # Load common sounds
 correct_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "get_point.wav"))
 wrong_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "lost-sobbing.wav"))
 hit_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "hit.wav"))
 duck_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "duck.wav"))
-congra_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "congra.mp3"))
+congra_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "cheer.wav"))
+congra_sound.set_volume(0.2)
+
+# Load common pic
+fight_image = pygame.image.load(os.path.join(BASE_SPRITES_PATH, 'fight.png'))
+bang_image = pygame.image.load(os.path.join(BASE_SPRITES_PATH, 'bang.png'))
+congra_image = pygame.image.load(os.path.join(PIC_PATH, 'congra.png'))
+coffee_image = pygame.image.load(os.path.join(PIC_PATH, 'coffee.png'))
+noway_image = pygame.image.load(os.path.join(PIC_PATH, 'anoway.png'))
+awesome_image = pygame.image.load(os.path.join(PIC_PATH, 'awesome.jpg'))
+excellent_image = pygame.image.load(os.path.join(PIC_PATH, 'fexcellent.png'))
+ending_image = pygame.image.load(os.path.join(PIC_PATH, 'ending.png'))
+wrong_image = pygame.image.load(os.path.join(PIC_PATH, 'ending.png'))
 
 # Define colors
 WHITE = (255, 255, 255)
@@ -172,14 +182,11 @@ LEVEL_ONE_QUESTIONS = [
     {"question": "What file is used to specify which files Git should ignore?", "answer": ".gitignore"},
 ]
 
-
 def get_random_questions(n=5):
     return random.sample(LEVEL_ONE_QUESTIONS, min(n, len(LEVEL_ONE_QUESTIONS)))
 
 
 #level 1 dialog
-
-
 LEVEL_ONE_DIALOGUE =  {1:"You: What do I do know!? I lost my job and know nothing about coding", 2: "Enemy: Spare Change!",
     3:"You: Sorry man I don't have any..", 4:"Enemy: We will see about that, guys!! Take his money.",
     5:"Zoey Tip: Click your right mouse button to atack enemies.", 6:" Enemy: Our leader will show you who is boss."}
