@@ -110,6 +110,8 @@ class DialogBox:
             sprite_path = os.path.join(config.BASE_SPRITES_PATH, 'man.png')
         elif 'Level 2: This challenge will be tougher!' in message:
             sprite_path = os.path.join(config.PIC_PATH, 'a1.png')  # Add the specific image for Boss2
+        elif 'Level 3: Prepare yourself!' in message:
+            sprite_path = os.path.join(config.PIC_PATH, 'f1.png')  # Add the specific image for Boss2
         elif 'Enemy:' in message:
             sprite_path = os.path.join(config.BASE_SPRITES_PATH, 'Enemies', 'homeless.png')
         elif 'Vampire:' in message:

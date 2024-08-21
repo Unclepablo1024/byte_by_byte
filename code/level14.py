@@ -10,6 +10,7 @@ pygame.init()
 screen = pygame.display.set_mode((1200, 900))
 pygame.display.set_caption("OOP Matching Game")
 
+
 class Block:
     def __init__(self, x, y, width, height, text, category, pair_id):
         self.rect = pygame.Rect(x, y, width, height)
@@ -28,9 +29,9 @@ class Block:
             color = config.WHITE
         pygame.draw.rect(surface, color, self.rect)
         pygame.draw.rect(surface, config.GRAY, self.rect, 3)
-        
+
         lines = config.wrap_text(self.text, config.font, self.rect.width - 10)
-        
+
         y_offset = 10
         for line in lines:
             text_surface = config.small_font.render(line, True, config.BLACK)
@@ -38,7 +39,8 @@ class Block:
             surface.blit(text_surface, text_rect)
             y_offset += 30
 
-class Game:
+
+class Level3:
     def __init__(self):
         self.blocks = []
         self.selected_blocks = []
@@ -115,11 +117,11 @@ class Game:
             block.draw(screen)
         score_text = config.font.render(f"Score: {self.score}", True, config.BLACK)
         screen.blit(score_text, (10, 760))
-        
+
         if time.time() - self.feedback_time < 2:  # Show feedback for 2 seconds
             feedback_surface = config.font.render(self.feedback_text, True, self.feedback_color)
             screen.blit(feedback_surface, (config.SCREEN_WIDTH // 2 - feedback_surface.get_width() // 2, 730))
-        
+
         pygame.display.flip()
 
     def run(self):
@@ -131,6 +133,7 @@ class Game:
             clock.tick(60)
         pygame.quit()
 
+
 if __name__ == "__main__":
-    game = Game()
+    game = Level3()
     game.run()

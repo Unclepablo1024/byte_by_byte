@@ -125,6 +125,14 @@ HURT_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Hurt.png')
 DIE_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Dead.png')
 
 
+#boss 3 path files
+BOSSES_FOLDER_PATH_3 = os.path.join(BASE_SPRITES_PATH, 'Bosses', 'Boss3')
+IDLE_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Idle.png')
+WALK_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Walk.png')
+JUMP_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Jump.png')
+RUN_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Run.png')
+HURT_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Hurt.png')
+DIE_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Dead.png')
 
 # Load common fonts
 font = pygame.font.Font(FONT_PATH, 24)
