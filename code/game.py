@@ -72,7 +72,6 @@ class Game:
         self.waiting_for_level_change = False
         self.game_completed = False
 
-        self.waiting_for_boss1_response = False
         self.waiting_for_boss2_response = False
         self.level2 = None
         self.is_level2_active = False
@@ -82,9 +81,6 @@ class Game:
         self.level3 = None
         self.is_level3_active = False
         self.boss3_defeated = False
-        self.coffee_image = config.coffee_image
-        self.noway_image = config.noway_image
-
         
     def init_resources(self):
         # Loads resources like music and sounds
@@ -92,16 +88,13 @@ class Game:
         self.death_sound = pygame.mixer.Sound(config.DEATH_SOUND_PATH)
 
     def ask_for_name(self):
-        return ask_for_name(self)
-    
-    def handle_dialog_response(self, response):
-        return handle_dialog_response(self, response)
+        self.name = ask_for_name(self)
 
     def change_level_dialogue(self):
-        if self.boss_deaths in [1, 2]:  
+        if self.boss_deaths in [1, 2, 3]:  
             self.show_dialog(f"You have completed Level {self.current_level}. Press 'X' to continue to the next level.", auto_hide_seconds=10)
             self.waiting_for_level_change = True
-        elif self.boss_deaths >= 3:
+        elif self.boss_deaths > 3:
             self.show_dialog("Congratulations! You have completed all 3 levels! Game Over!", auto_hide_seconds=10)
             self.game_completed = True
         else:
@@ -240,10 +233,7 @@ class Game:
         if response.lower() == 'y':
             self.start_level2()
         elif response.lower() == 'n':
-            self.surface.blit(self.noway_image, ((self.surface.get_width() - self.noway_image.get_width()) // 2,
-                                             (self.surface.get_height() - self.noway_image.get_height()) // 2))
-            pygame.display.flip()
-            pygame.time.wait(2000)
+            self.show_coffee_picture()
         else:
             self.dialog_box.show("Please answer Y or N")
         self.waiting_for_boss2_response = False
@@ -253,14 +243,16 @@ class Game:
         if response.lower() == 'y':
             self.start_level3()
         elif response.lower() == 'n':
-            self.surface.blit(self.coffee_image, ((self.surface.get_width() - self.coffee_image.get_width()) // 2,
-                                             (self.surface.get_height() - self.coffee_image.get_height()) // 2))
-            pygame.display.flip()
-            pygame.time.wait(2000)
+            self.show_coffee_picture()
         else:
             self.dialog_box.show("Please answer Y or N")
         self.waiting_for_boss3_response = False
 
+    def show_coffee_picture(self):
+        coffee_image = pygame.image.load("../pic/coffee.jpg")
+        coffee_image = pygame.transform.scale(coffee_image, (self.surface.get_width(), self.surface.get_height()))
+        self.surface.blit(coffee_image, (0, 0))
+        pygame.display.flip()
         
     def update(self):
         if self.is_level2_active:
@@ -312,7 +304,6 @@ class Game:
                         self.handle_boss3_dialog_response('n')
                         self.waiting_for_boss3_response = False
 
-            
             elif event.type == pygame.USEREVENT + 3:
                 if self.waiting_for_level_change:
                     self.change_level_dialogue()
@@ -350,28 +341,25 @@ class Game:
                     break
 
                 if isinstance(enemy, Boss1) and pygame.sprite.collide_rect(self.character, enemy):
-                    if not self.waiting_for_boss1_response:
-                        self.dialog_box.show_dialog(
-                            "Haha! You think you know git?\nLets test your knowledge then!\nAre you ready?! Y/N")
-                        self.waiting_for_answer = False
-                        self.waiting_for_boss1_response = True
+                    self.dialog_box.show_dialog(
+                        "Haha! You think you know git?\nLets test your knowledge then!\nAre you ready?! Y/N")
+                    break
 
                 if isinstance(enemy, Boss2) and pygame.sprite.collide_rect(self.character, enemy):
                     print("Collision with Boss2 detected.")
-                    if not self.waiting_for_boss2_response:
-                        self.dialog_box.show_dialog(
-                            "Level 2: This challenge will be tougher!\nPrepare yourself for a new set of questions.\nAre you ready?! Y/N")
-                        self.waiting_for_boss2_response = True
-                        break
+                    self.dialog_box.show_dialog(
+                        "Level 2: This challenge will be tougher!\nPrepare yourself for a new set of questions.\nAre you ready?! Y/N")
+                    self.waiting_for_boss2_response = True
+                    break
 
                 if isinstance(enemy, Boss3) and pygame.sprite.collide_rect(self.character, enemy):
                     print("Collision with Boss3 detected.")
-                    if not self.waiting_for_boss2_response:
-                        self.dialog_box.show_dialog(
-                            "Level 3: This the final test.\nAre you ready?! Y/N")
-                        self.waiting_for_boss3_response = True
-                        break
-        
+                    self.dialog_box.show_dialog(
+                        "Level 3: This the final test.\nAre you ready?! Y/N")
+                    self.waiting_for_boss3_response = True
+                    break
+
+           
             collided = False
             for enemy in list(self.enemy_group):
                 if not enemy.is_dead and pygame.sprite.collide_rect(self.character, enemy):
@@ -420,13 +408,13 @@ class Game:
         ground_level = self.ground_level
 
         if self.current_level == 2:
-            self.boss = Boss2(config.BOSSES2_FOLDER_PATH, screen_width=self.surface.get_width(),
+            self.boss = Boss2(folder_path="../sprites/Bosses/Boss2", screen_width=self.surface.get_width(),
                             ground_level=ground_level, main_character=self.character)
         elif self.current_level == 3:
-            self.boss = Boss3(config.BOSSES3_FOLDER_PATH, screen_width=self.surface.get_width(),
+            self.boss = Boss3(folder_path="../sprites/Bosses/Boss3", screen_width=self.surface.get_width(),
                             ground_level=ground_level, main_character=self.character)
         else:
-            self.boss = Boss1(config.BOSSES1_FOLDER_PATH, screen_width=self.surface.get_width(),
+            self.boss = Boss1(folder_path="../sprites/Bosses/Boss1", screen_width=self.surface.get_width(),
                             ground_level=ground_level, main_character=self.character)
 
         self.all_sprites.add(self.boss)

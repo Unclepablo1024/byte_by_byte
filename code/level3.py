@@ -151,13 +151,18 @@ class Level3:
         if correct:
             next_index = next(i for i in range(len(self.FULL_TEXT)) if i not in self.revealed_text_indices)
             self.revealed_text_indices.add(next_index)
-
+        else:
+            wrong_image = config.wrong_image
+            self.screen.blit(wrong_image, (config.SCREEN_WIDTH // 2 - wrong_image.get_width() // 2, (config.SCREEN_HEIGHT - wrong_image.get_height()) // 2))
+            pygame.display.flip()
+            pygame.time.delay(1000)
         self.draw_revealed_text()
 
         result_text = "Correct!" if correct else "Incorrect!"
         result_color = config.GREEN if correct else config.RED
         result_surface = config.large_font.render(result_text, True, result_color)
         self.screen.blit(result_surface, (config.SCREEN_WIDTH // 2 - result_surface.get_width() // 2, 400))
+        
 
         pygame.display.flip()
         pygame.time.delay(1000)
@@ -166,7 +171,7 @@ class Level3:
         self.screen.fill(config.WHITE)
         game_over_text = config.title_font.render("Finished!!", True, config.RED)
         final_score_text = config.large_font.render(f"Final Score: {self.score}", True, config.BLACK)
-        final_score_text_rect = final_score_text.get_rect(midtop=(config.SCREEN_WIDTH // 2, 150))
+        final_score_text_rect = final_score_text.get_rect(midtop=(config.SCREEN_WIDTH // 2, 5))
         self.screen.blit(self.excellent_image, (config.SCREEN_WIDTH // 2 - self.excellent_image.get_width() // 2, config.SCREEN_HEIGHT // 2 - self.excellent_image.get_height() // 2))
         self.screen.blit(game_over_text, final_score_text_rect)
         pygame.display.flip()

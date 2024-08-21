@@ -44,13 +44,12 @@ def handle_events(self):
             elif event.key == pygame.K_BACKSPACE:
                 self.dialog_box.backspace()
 
-            elif event.key == pygame.K_x:
-                if self.boss_trigger:
-                    print("Attempting to change level...")  
-                    self.next_level()
-                    self.boss_deaths += 1
-                    self.boss_trigger = False
-                    print(f"New level: {self.current_level}, Boss deaths: {self.boss_deaths}") 
+            elif event.key == pygame.K_x and self.boss_trigger:
+                print("Attempting to change level...")  
+                self.next_level()
+                self.boss_deaths += 1
+                self.boss_trigger = False
+                print(f"New level: {self.current_level}, Boss deaths: {self.boss_deaths}") 
             else:
                 self.dialog_box.add_char(event.unicode)
 

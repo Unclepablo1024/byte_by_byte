@@ -137,6 +137,8 @@ coffee_image = pygame.image.load(os.path.join(PIC_PATH, 'coffee.png'))
 noway_image = pygame.image.load(os.path.join(PIC_PATH, 'anoway.png'))
 awesome_image = pygame.image.load(os.path.join(PIC_PATH, 'awesome.jpg'))
 excellent_image = pygame.image.load(os.path.join(PIC_PATH, 'fexcellent.png'))
+ending_image = pygame.image.load(os.path.join(PIC_PATH, 'ending.png'))
+wrong_image = pygame.image.load(os.path.join(PIC_PATH, 'fwrong.png'))
 
 # Define colors
 WHITE = (255, 255, 255)
