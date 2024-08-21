@@ -88,6 +88,8 @@ def set_level(game, level):
 
 def next_level(self):
         self.current_level += 1
+
+
         print(f"Moving to level {self.current_level}")  # Debugging
         if self.current_level > len(config.LEVELS):
             print("You have completed all levels!")
@@ -102,9 +104,11 @@ def next_level(self):
 
 
 def restart_level(game):
+    print("game is restarting")
     game.current_question_index = 0
     game.correct_answers = 0
     game.questions = config.get_random_questions(game.total_questions)
     game.health_bar.reset()
     game.current_attempt = 0
     game.waiting_for_answer = False
+    game.waiting_for_boss1_response = False

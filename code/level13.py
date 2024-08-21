@@ -19,9 +19,9 @@ large_font = config.large_font
 title_font = config.title_font
 
 # Sounds
-correct_sound = pygame.mixer.Sound(os.path.join("..", "audio", "get_point.wav"))
-wrong_sound = pygame.mixer.Sound(os.path.join("..", "audio", "lost-sobbing.wav"))
-pygame.mixer.music.load(os.path.join("..", "audio", "supershy.mp3"))
+correct_sound = pygame.mixer.Sound(os.path.join("audio", "get_point.wav"))
+wrong_sound = pygame.mixer.Sound(os.path.join("audio", "lost-sobbing.wav"))
+pygame.mixer.music.load(os.path.join("audio", "supershy.mp3"))
 pygame.mixer.music.set_volume(0.1)
 pygame.mixer.music.play(-1)
 

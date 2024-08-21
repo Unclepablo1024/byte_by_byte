@@ -49,33 +49,31 @@ class Boss1(pygame.sprite.Sprite):
     def draw_rectangle(self, screen):
         pygame.draw.rect(screen, (255, 0, 0), self.hitbox, 2)
 
-    def die(self):
-        self.is_dead = True
-        self.current_frame = 0
-        self.death_start_time = pygame.time.get_ticks()
-        self.image = self.current_frame
-        #pygame.image.load(os.path.join(config.BASE_SPRITES_PATH, 'Bosses', 'Boss1', 'Dead.png')))
-        #new_rect = self.image.get_rect()
-        #new_rect.bottom = self.ground_level
-        #new_rect.centerx = self.rect.centerx
-        #self.rect = new_rect
-        #self.hitbox = self.rect.inflate(-150, -150)
-
     def update(self):
         now = pygame.time.get_ticks()
 
-        # Handle death state
-        if self.is_dead:
-            if self.death_start_time and now - self.death_start_time > 2000:
-                self.kill()
-            elif now - self.last_update > self.frame_rate:
+        # Handle death animation
+        if self.state == "dying":
+            if now - self.last_update > self.frame_rate:
                 self.last_update = now
                 if self.current_frame < len(self.dead_images) - 1:
                     self.current_frame += 1
                     self.image = self.dead_images[self.current_frame]
                 else:
-                    self.kill()
+                    # Animation is done, the boss is truly dead now
+                    if now - self.death_start_time > 2000:
+                        self.kill()
             return
+        
+        if self.is_dead:
+            if self.death_start_time and now - self.death_start_time > 200:
+                self.kill()
+            elif now - self.last_update > self.frame_rate:
+                self.last_update = now
+                self.current_frame = min(self.current_frame + 1, len(self.dead_images) - 1)
+                self.image = self.dead_images[self.current_frame]
+            return
+        
 
         # Handle movement and attack logic if the character is not dead
         if self.main_character and not self.is_dead:
@@ -155,6 +153,19 @@ class Boss1(pygame.sprite.Sprite):
                 self.current_frame = 0
                 self.image = self.hurt_images[self.current_frame]
 
+    def die(self):
+        self.is_dead = True
+        self.current_frame = 0
+        self.death_start_time = pygame.time.get_ticks()
+        self.state = "dying"
+
+        # Reset image to the first frame of the death animation
+        self.image = self.dead_images[self.current_frame]
+        new_rect = self.image.get_rect()
+        new_rect.bottom = self.ground_level
+        new_rect.centerx = self.rect.centerx
+        self.rect = new_rect
+        self.hitbox = self.rect.inflate(-150, -150)
 
     def mark_for_damage(self, time):
         self.damage_time = time

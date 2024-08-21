@@ -102,7 +102,7 @@ class DialogBox:
 
     def _set_dialog_style(self, message):
         sprite_path = None
-        if "Haha! You think you know git?" in message:
+        if "You think you know git?" in message or "So you are the intern beating all my minions" in message:
             sprite_path = os.path.join(config.PIC_PATH, 's2.png')
         elif 'Austin!!' in message:
             sprite_path = os.path.join(config.PIC_PATH, 's5.png')

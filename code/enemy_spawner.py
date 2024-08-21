@@ -8,8 +8,9 @@ def spawn_enemy(game):
     if game.dialog_box.active or game.boss_spawned:
         print("Dialog box is active or boss has spawned, delaying enemy spawn.")
         return
-
-    if game.enemy_count >= config.MAX_ENEMIES:
+    current_level = game.current_level
+    max_enemies = config.LEVELS[current_level]["max_enemies"]
+    if game.enemy_count >= max_enemies:
         return
 
     try:

@@ -15,7 +15,7 @@ from character import MainCharacter
 from dialog import DialogBox
 import config
 import event
-from game_over import game_over, ask_to_play_again
+from game_over import game_over, ask_to_play_again, show_ending_screen
 from change_level import set_level, next_level, restart_level
 from handle_input import ask_for_name, handle_player_input, handle_continuous_input, get_user_input
 from restart import restart_game
@@ -85,7 +85,7 @@ class Game:
         self.coffee_image = config.coffee_image
         self.noway_image = config.noway_image
 
-        
+
     def init_resources(self):
         # Loads resources like music and sounds
         self.music_player = MusicPlayer()
@@ -98,15 +98,22 @@ class Game:
         return handle_dialog_response(self, response)
 
     def change_level_dialogue(self):
-        if self.boss_deaths in [1, 2]:  
+        if self.boss_deaths in [1, 2]:
             self.show_dialog(f"You have completed Level {self.current_level}. Press 'X' to continue to the next level.", auto_hide_seconds=10)
             self.waiting_for_level_change = True
-        elif self.boss_deaths >= 3:
+        elif self.boss_deaths > 3:
             self.show_dialog("Congratulations! You have completed all 3 levels! Game Over!", auto_hide_seconds=10)
+            self.game_over()
             self.game_completed = True
+            self.waiting_for_level_change = False
         else:
             print(f"Unexpected boss_deaths value: {self.boss_deaths}")
-        pygame.event.clear()   
+        pygame.event.clear()
+
+    def increment_max_enemies(self):
+        """Increase MAX_ENEMIES by 15 after each level switch."""
+        config.MAX_ENEMIES += 15
+        print(f"MAX_ENEMIES increased to {config.MAX_ENEMIES} for Level {self.current_level}")
 
     def start_level2(self):
         self.is_level2_active = True
@@ -131,6 +138,11 @@ class Game:
 
     def next_level(self):
         next_level(self)
+
+    def increment_max_enemies(self):
+        """Increase MAX_ENEMIES by 15 after each level switch."""
+        config.MAX_ENEMIES += 15
+        print(f"MAX_ENEMIES increased to {config.MAX_ENEMIES} for Level {self.current_level}")
 
     def run(self):
         self.ask_for_name()
@@ -174,10 +186,12 @@ class Game:
 
     def show_boss_defeated_dialog(self, boss_name):
         dialog_text = f"{boss_name} has been defeated! Congratulations!"
-        self.show_dialog(dialog_text, auto_hide_seconds=5)
+        self.show_dialog(dialog_text, auto_hide_seconds=10)
         self.boss_trigger = True
-        self.boss_deaths += 1  
-        pygame.time.delay(1000)  
+
+        pygame.time.delay(1000)
+        self.increment_max_enemies()
+
         self.change_level_dialogue()
 
     def show_dialog(self, message, auto_hide_seconds=None):
@@ -350,7 +364,9 @@ class Game:
                     break
 
                 if isinstance(enemy, Boss1) and pygame.sprite.collide_rect(self.character, enemy):
+                    print("I am here!")
                     if not self.waiting_for_boss1_response:
+                        print("i AM RUNNINBG")
                         self.dialog_box.show_dialog(
                             "Haha! You think you know git?\nLets test your knowledge then!\nAre you ready?! Y/N")
                         self.waiting_for_answer = False
@@ -366,7 +382,7 @@ class Game:
 
                 if isinstance(enemy, Boss3) and pygame.sprite.collide_rect(self.character, enemy):
                     print("Collision with Boss3 detected.")
-                    if not self.waiting_for_boss2_response:
+                    if not self.waiting_for_boss3_response:
                         self.dialog_box.show_dialog(
                             "Level 3: This the final test.\nAre you ready?! Y/N")
                         self.waiting_for_boss3_response = True
@@ -409,7 +425,7 @@ class Game:
                 print("MAX_ENEMIES defeated, spawning Boss!")
                 self.spawn_boss()
           
-            if self.boss and self.boss.is_dead and self.boss.current ==len(self.boss.dead_images) - 1:
+            if self.boss and self.boss.is_dead and self.boss.current_frame == len(self.boss.dead_images) - 1:
                 print("Boss is dead. Triggering level change.")
                 self.boss_trigger = True
                 self.show_boss_defeated_dialog(f"Boss {self.boss_deaths}")
@@ -474,6 +490,8 @@ class Game:
     def game_over(self):
         game_over(self.surface)
         ask_to_play_again(self.surface, self)
+        show_ending_screen(self.surface)
+
 
     def restart_game(self):
         restart_game(self)
