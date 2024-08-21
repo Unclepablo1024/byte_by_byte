@@ -4,12 +4,15 @@ import time
 import config
 import sys
 import os
+from boss2 import Boss2
 
 class Level2:
     def __init__(self, game):
         self.game = game
         self.screen = game.surface
         self.clock = pygame.time.Clock()
+        self.boss = Boss2(folder_path="../sprites/Bosses/Boss2", screen_width=game.surface.get_width(),
+                          ground_level=game.ground_level, main_character=game.character)
         
         # Load images for feedback
         self.correct_image = pygame.image.load(os.path.join(config.PIC_PATH, 'correct.webp'))
@@ -25,7 +28,16 @@ class Level2:
         self.hint_text = config.small_font.render(
             "Press H for hint | Press Enter to submit code", True, config.BLACK)
         self.level_completed = False
+
         
+
+    
+    def show_awesome_image(self):
+        self.awesome_image = config.awesome_image
+        self.awesome_image = pygame.transform.scale(self.awesome_image, (600, 400))
+        self.screen.blit(self.awesome_image, (config.SCREEN_WIDTH // 2 - self.awesome_image.get_width() // 2, config.SCREEN_HEIGHT // 2 - self.awesome_image.get_height() // 2))
+        pygame.display.flip()
+        time.sleep(3)
 
     def run(self):
         while not self.game_state.game_completed:
@@ -33,9 +45,26 @@ class Level2:
             self.update()
             self.draw()
             self.clock.tick(60)
+        
         self.level_completed = True
         print("Level2 completed")
+        
+        if self.boss:
+            self.boss.die()
+            
+            death_animation_time = 0
+            while death_animation_time < 2000:  
+                self.boss.update()
+                self.draw()
+                pygame.display.flip()
+                death_animation_time += self.clock.tick(60)
+        
+        if self.level_completed:
+            self.show_awesome_image()
+        
         self.game.is_level2_active = False
+        self.game.boss = self.boss 
+        print("Exiting Level2")
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -95,7 +124,7 @@ class Level2:
 
     def draw(self):
         self.screen.fill(config.WHITE)
-        self.screen.blit(self.hint_text, (config.SCREEN_WIDTH - 700, config.SCREEN_HEIGHT - 50))
+        self.screen.blit(self.hint_text, (config.SCREEN_WIDTH - 600, config.SCREEN_HEIGHT - 50))
 
         if self.game_state.feedback_image:
             self.screen.blit(self.game_state.feedback_image, (
@@ -292,8 +321,6 @@ class Level2:
             if self.hint_visible:
                 if time.time() - self.hint_start_time > self.hint_duration:
                     self.hint_visible = False
-
-    
 
     class CodeBlock(pygame.sprite.Sprite):
         def __init__(self, text, x, y):

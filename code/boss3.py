@@ -1,15 +1,13 @@
-import pygame
-import random
 import os
+import pygame
+import config
 
-
-class Enemy(pygame.sprite.Sprite):
-    def __init__(self, enemy_type, folder_path, screen_width, ground_level, main_character):
+class Boss3(pygame.sprite.Sprite):
+    def __init__(self, folder_path, screen_width, ground_level, main_character):
         super().__init__()
         self.folder_path = folder_path
-        self.enemy_type = enemy_type
         self.walk_images = self.load_images("Walk.png")
-        self.attack_images = self.load_images("Attack_1.png")
+        self.attack_images = self.load_images("Attack.png")
         self.hurt_images = self.load_images("Hurt.png")
         self.dead_images = self.load_images("Dead.png")
         self.image = self.walk_images[0]
@@ -18,51 +16,35 @@ class Enemy(pygame.sprite.Sprite):
 
         self.last_update = pygame.time.get_ticks()
         self.frame_rate = 100
-        self.health = 100
+        self.health = 500  # Higher health for the boss
         self.current_frame = 0
         self.state = "walking"
         self.is_dead = False
         self.screen_width = screen_width
-        self.ground_level = ground_level
+        self.ground_level = config.ENEMY_POSITION  # Adjusted ground level for better positioning
         self.main_character = main_character
         self.direction = -1
-        self.attack_distance = 35
-        self.attack_damage = 10
-        self.speed = 2
+        self.attack_distance = 50  # Larger attack distance for the boss
+        self.attack_damage = 25  # Higher attack damage for the boss
+        self.speed = 1  # Slower speed for the boss
         self.hits_received = 0
-        self.max_hits = 1
+        self.max_hits = 10  # More hits required to defeat the boss
         self.death_start_time = None
         self.damage_time = None
         self.reset_position()
 
-    def set_enemy_attributes(self):
-        if "Robot" in self.enemy_type:
-            self.speed = 3
-            self.attack_power = 10
-            self.health = 120
-        elif "Vampire" in self.enemy_type:
-            self.speed = 3
-            self.attack_power = 15
-            self.health = 100
-        elif self.enemy_type in ["Cat", "Dog"]:
-            self.speed = 4
-            self.attack_power = 5
-            self.health = 20
-        else:  # Homeless
-            self.speed = 2
-            self.attack_power = 5
-            self.health = 100
-
     def load_images(self, action):
         images = []
-        image_path = os.path.join(self.folder_path, self.enemy_type, action)
+        image_path = f"{self.folder_path}/{action}"
         image = pygame.image.load(image_path).convert_alpha()
         width, height = image.get_size()
         frame_height = height
         for i in range(width // frame_height):
             frame_rect = pygame.Rect(i * frame_height, 0, frame_height, frame_height)
             frame = image.subsurface(frame_rect)
-            images.append(frame)
+            # Mirror the image horizontally
+            mirrored_frame = pygame.transform.flip(frame, True, False)
+            images.append(mirrored_frame)
         return images
 
     def draw_rectangle(self, screen):
@@ -71,7 +53,7 @@ class Enemy(pygame.sprite.Sprite):
     def update(self):
         now = pygame.time.get_ticks()
 
-        #Handle death state
+        # Handle death state
         if self.is_dead:
             if self.death_start_time and now - self.death_start_time > 2000:
                 self.kill()
@@ -80,14 +62,14 @@ class Enemy(pygame.sprite.Sprite):
                 self.current_frame = min(self.current_frame + 1, len(self.dead_images) - 1)
                 self.image = self.dead_images[self.current_frame]
             return
-        
+
         # Handle movement and attack logic if the character is not dead
         if self.main_character and not self.is_dead:
             player_x = self.main_character.rect.centerx
             enemy_x = self.rect.centerx
             distance = abs(player_x - enemy_x)
 
-            #Determines Direction and attack state
+            # Determines Direction and attack state
             if distance < self.attack_distance:
                 self.attack()
                 self.direction = 1 if player_x > enemy_x else -1
@@ -112,7 +94,7 @@ class Enemy(pygame.sprite.Sprite):
             self.image = pygame.transform.flip(self.image, self.direction == 1, False)
 
             new_rect = self.image.get_rect()
-            new_rect.bottom = self.ground_level
+            new_rect.bottom = self.ground_level  # Align the bottom of the boss with the ground level
             new_rect.centerx = self.rect.centerx
 
             self.rect = new_rect
@@ -125,27 +107,23 @@ class Enemy(pygame.sprite.Sprite):
 
     def move(self, dx, dy):
         self.rect.x += dx
-        self.rect.bottom = self.ground_level
+        self.rect.bottom = self.ground_level  # Ensure the boss moves along the ground level
 
     def reset_position(self):
-        self.rect.bottom = self.ground_level
-        self.rect.left = self.screen_width + random.randint(50, 200)
+        self.rect.bottom = self.ground_level  # Align the bottom of the boss with the ground level
+        self.rect.left = self.screen_width + 100  # Fixed starting position for the boss
         self.state = "walking"
         self.current_frame = 0
         self.image = self.walk_images[self.current_frame]
         self.direction = -1
         self.is_dead = False
-        self.set_enemy_attributes()  # Reset health and other attributes
 
     def attack(self):
-        print("Enemy attacks")
         if self.state != "attacking":
             self.state = "attacking"
             self.current_frame = 0
             if self.main_character and not self.main_character.is_dead:
                 self.main_character.hurt(self.attack_damage)
-
-            return self.attack_power
         return 0
 
     def stop_attack(self):
@@ -154,7 +132,6 @@ class Enemy(pygame.sprite.Sprite):
             self.current_frame = 0
 
     def take_damage(self, damage):
-
         if not self.is_dead:
             self.hits_received += 1
             if self.hits_received >= self.max_hits:
@@ -168,8 +145,13 @@ class Enemy(pygame.sprite.Sprite):
         self.is_dead = True
         self.current_frame = 0
         self.death_start_time = pygame.time.get_ticks()
-        self.image = self.dead_images[self.current_frame]
-    
+        self.image = pygame.image.load(os.path.join(config.BASE_SPRITES_PATH, 'Bosses', 'Boss3', 'Dead.png'))
+        new_rect = self.image.get_rect()
+        new_rect.bottom = self.ground_level
+        new_rect.centerx = self.rect.centerx
+        self.rect = new_rect
+        self.hitbox = self.rect.inflate(-150, -150)
+
     def mark_for_damage(self, time):
         self.damage_time = time
 
