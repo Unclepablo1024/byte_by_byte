@@ -58,7 +58,7 @@ DIALOG_COOLDOWN_TIME = 2000  # 2 seconds cooldown
 # Enemy settings
 ENEMY_TYPES = ["Homeless_1", "Homeless_2", "Homeless_3"]
 ENEMY_SPRITES_PATH = os.path.join(BASE_SPRITES_PATH, 'enemies')
-MAX_ENEMIES = 1
+MAX_ENEMIES = 15
 ENEMY_POSITION = 565
 # Attack animations paths
 ATTACK_1_GIF_PATH = os.path.join(BASE_SPRITES_PATH, 'Gangsters_2', 'Attack_1.png')

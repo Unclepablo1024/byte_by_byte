@@ -85,7 +85,7 @@ class Game:
         self.coffee_image = config.coffee_image
         self.noway_image = config.noway_image
 
-        
+
     def init_resources(self):
         # Loads resources like music and sounds
         self.music_player = MusicPlayer()
@@ -106,7 +106,12 @@ class Game:
             self.game_completed = True
         else:
             print(f"Unexpected boss_deaths value: {self.boss_deaths}")
-        pygame.event.clear()   
+        pygame.event.clear()
+
+    def increment_max_enemies(self):
+        """Increase MAX_ENEMIES by 15 after each level switch."""
+        config.MAX_ENEMIES += 15
+        print(f"MAX_ENEMIES increased to {config.MAX_ENEMIES} for Level {self.current_level}")
 
     def start_level2(self):
         self.is_level2_active = True
@@ -176,7 +181,8 @@ class Game:
         dialog_text = f"{boss_name} has been defeated! Congratulations!"
         self.show_dialog(dialog_text, auto_hide_seconds=5)
         self.boss_trigger = True
-        pygame.time.delay(1000)  
+        pygame.time.delay(1000)
+        self.increment_max_enemies()
         self.change_level_dialogue()
 
     def show_dialog(self, message, auto_hide_seconds=None):
