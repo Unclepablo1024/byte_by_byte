@@ -104,21 +104,23 @@ class DialogBox:
         sprite_path = None
         if "Haha! You think you know git?" in message:
             sprite_path = os.path.join(config.PIC_PATH, 's2.png')
+        elif 'Austin!!' in message:
+            sprite_path = os.path.join(config.PIC_PATH, 's5.png')
         elif 'We are truly sorry' in message:
             sprite_path = os.path.join(config.BASE_SPRITES_PATH, 'karen.gif')
         elif 'You:' in message:
             sprite_path = os.path.join(config.BASE_SPRITES_PATH, 'man.png')
         elif 'Level 2: This challenge will be tougher!' in message:
             sprite_path = os.path.join(config.PIC_PATH, 'a1.png')  # Add the specific image for Boss2
+        elif 'Level 3:' in message:
+            sprite_path = os.path.join(config.PIC_PATH, 'f2.png')   
         elif 'Enemy:' in message:
             sprite_path = os.path.join(config.BASE_SPRITES_PATH, 'Enemies', 'homeless.png')
         elif 'Vampire:' in message:
             sprite_path = os.path.join(config.BASE_SPRITES_PATH, 'Enemies', 'vampire.png')
         elif 'Dog:' in message:
             sprite_path = os.path.join(config.BASE_SPRITES_PATH, 'Enemies', 'dog.png')
-        
-
-
+               
         if sprite_path:
             try:
                 self.image = pygame.image.load(sprite_path)
@@ -132,8 +134,6 @@ class DialogBox:
         self.auto_hide_time = None
         self.is_showing = False
         self._process_next_dialog()
-
-
 
     def handle_events(self, event):
         if event.type == pygame.KEYDOWN:

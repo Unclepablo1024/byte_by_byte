@@ -1,14 +1,12 @@
-import subprocess
-
 import pygame
 import sys
 import os
 from pygame.locals import *
-import boss_mana
 from boss1 import Boss1
 from boss2 import Boss2
+from boss3 import Boss3
 from level2 import Level2
-
+from level3 import Level3
 from enemy import Enemy
 from background import Background
 from healthbar import HealthBar, LifeIcon
@@ -74,10 +72,19 @@ class Game:
         self.waiting_for_level_change = False
         self.game_completed = False
 
+        self.waiting_for_boss1_response = False
         self.waiting_for_boss2_response = False
         self.level2 = None
         self.is_level2_active = False
         self.boss2_defeated = False
+
+        self.waiting_for_boss3_response = False
+        self.level3 = None
+        self.is_level3_active = False
+        self.boss3_defeated = False
+        self.coffee_image = config.coffee_image
+        self.noway_image = config.noway_image
+
         
     def init_resources(self):
         # Loads resources like music and sounds
@@ -85,28 +92,21 @@ class Game:
         self.death_sound = pygame.mixer.Sound(config.DEATH_SOUND_PATH)
 
     def ask_for_name(self):
-        self.name = ask_for_name(self)
+        return ask_for_name(self)
+    
+    def handle_dialog_response(self, response):
+        return handle_dialog_response(self, response)
 
     def change_level_dialogue(self):
-        if self.boss_deaths in [1, 2, 3]:  
-            self.show_dialog(f"You have completed Level {self.boss_deaths}. Press 'X' to continue to the next level.", auto_hide_seconds=10)
+        if self.boss_deaths in [1, 2]:  
+            self.show_dialog(f"You have completed Level {self.current_level}. Press 'X' to continue to the next level.", auto_hide_seconds=10)
             self.waiting_for_level_change = True
-        elif self.boss_deaths > 3:
+        elif self.boss_deaths >= 3:
             self.show_dialog("Congratulations! You have completed all 3 levels! Game Over!", auto_hide_seconds=10)
             self.game_completed = True
         else:
             print(f"Unexpected boss_deaths value: {self.boss_deaths}")
-        pygame.event.clear()
-
-    def handle_level_change_response(self, key):
-        if self.waiting_for_level_change:
-            if key == pygame.K_x:
-                print(f"Changing to level {self.boss_deaths + 1}")
-                self.next_level()
-            self.waiting_for_level_change = False
-            self.dialog_box.hide()
-            pygame.time.set_timer(pygame.USEREVENT + 3, 0)  # Stop the timer
-            pygame.event.clear()
+        pygame.event.clear()   
 
     def start_level2(self):
         self.is_level2_active = True
@@ -116,7 +116,15 @@ class Game:
     def end_level2(self):
         self.is_level2_active = False
         self.level2 = None
-    
+
+    def start_level3(self):
+        self.is_level3_active = True
+        self.level3 = Level3(self)
+        print("Level3 started")
+
+    def end_level3(self):
+        self.is_level3_active = False
+        self.level3 = None
 
     def set_level(self, level):
         set_level(self, level)
@@ -141,6 +149,18 @@ class Game:
                     print("Level2 completed, returning to main game")
                     self.show_boss_defeated_dialog("Boss 2")
                     self.level2 = None
+
+            if self.is_level3_active:
+                if self.level3 is None:
+                    self.level3 = Level3(self)
+                
+                self.level3.run()
+                
+                if self.level3.game_completed:
+                    self.is_level3_active = False
+                    print("Level3 completed, returning to main game")
+                    self.show_boss_defeated_dialog("Boss 3")
+                    self.level3 = None
             else:
                 self.update()
                 self.draw()
@@ -155,6 +175,7 @@ class Game:
     def show_boss_defeated_dialog(self, boss_name):
         dialog_text = f"{boss_name} has been defeated! Congratulations!"
         self.show_dialog(dialog_text, auto_hide_seconds=5)
+        self.boss_trigger = True
         self.boss_deaths += 1  
         pygame.time.delay(1000)  
         self.change_level_dialogue()
@@ -219,41 +240,79 @@ class Game:
         if response.lower() == 'y':
             self.start_level2()
         elif response.lower() == 'n':
-            self.show_coffee_picture()
+            self.surface.blit(self.noway_image, ((self.surface.get_width() - self.noway_image.get_width()) // 2,
+                                             (self.surface.get_height() - self.noway_image.get_height()) // 2))
+            pygame.display.flip()
+            pygame.time.wait(2000)
         else:
             self.dialog_box.show("Please answer Y or N")
         self.waiting_for_boss2_response = False
 
+    def handle_boss3_dialog_response(self, response):
+        print(f"Boss3 dialog response received: {response}")
+        if response.lower() == 'y':
+            self.start_level3()
+        elif response.lower() == 'n':
+            self.surface.blit(self.coffee_image, ((self.surface.get_width() - self.coffee_image.get_width()) // 2,
+                                             (self.surface.get_height() - self.coffee_image.get_height()) // 2))
+            pygame.display.flip()
+            pygame.time.wait(2000)
+        else:
+            self.dialog_box.show("Please answer Y or N")
+        self.waiting_for_boss3_response = False
 
-    def show_coffee_picture(self):
-        coffee_image = pygame.image.load("../pic/coffee.jpg")
-        coffee_image = pygame.transform.scale(coffee_image, (self.surface.get_width(), self.surface.get_height()))
-        self.surface.blit(coffee_image, (0, 0))
-        pygame.display.flip()
         
-
     def update(self):
         if self.is_level2_active:
+            self.level2.run()
+            if self.level2.game_state.game_completed:
+                self.is_level2_active = False
+                self.handle_level2_completion()
+                self.level2 = None
+                self.boss = None  
+                self.boss_spawned = False 
             return 
 
+        if self.is_level3_active:
+            self.level3.run()
+            if self.level3.game_state.game_completed:
+                self.is_level3_active = False
+                self.handle_level3_completion()
+                self.level3 = None
+                self.boss = None  
+                self.boss_spawned = False  
+            return 
+        
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if self.waiting_for_level_change:
-                    self.handle_level_change_response(event.key)
-                elif self.waiting_for_boss2_response:
+                    if event.key == pygame.K_y:
+                        self.next_level()
+                        self.waiting_for_level_change = False
+                        self.dialog_box.hide()
+                        pygame.event.clear()
+                    elif event.key == pygame.K_n:
+                        self.show_dialog("You have chosen to stay on the current level.", auto_hide_seconds=3)
+                        pygame.event.clear()
+                if self.waiting_for_boss2_response:
                     if event.key == pygame.K_y:
                         print("Y key pressed for Boss2 response")
                         self.handle_boss2_dialog_response('y')
                         self.waiting_for_boss2_response = False
                     elif event.key == pygame.K_n:
-                        print("N key pressed for Boss2 response")
                         self.handle_boss2_dialog_response('n')
                         self.waiting_for_boss2_response = False
-                elif self.dialog_box.active:
+
+                if self.waiting_for_boss3_response:
                     if event.key == pygame.K_y:
-                        self.handle_dialog_response('y')
+                        print("Y key pressed for Boss3 response")
+                        self.handle_boss3_dialog_response('y')
+                        self.waiting_for_boss_response = False
                     elif event.key == pygame.K_n:
-                        self.handle_dialog_response('n')
+                        self.handle_boss3_dialog_response('n')
+                        self.waiting_for_boss3_response = False
+
+            
             elif event.type == pygame.USEREVENT + 3:
                 if self.waiting_for_level_change:
                     self.change_level_dialogue()
@@ -271,8 +330,7 @@ class Game:
                 dx = -self.scroll_speed
             self.character.move(dx, 0)
             now = pygame.time.get_ticks()
-
-            
+         
             if now - self.enemy_spawn_timer > 3000 and self.enemy_count < config.MAX_ENEMIES and not self.boss_spawned:
                 spawn_enemy(self)
                 self.enemy_spawn_timer = now
@@ -292,18 +350,28 @@ class Game:
                     break
 
                 if isinstance(enemy, Boss1) and pygame.sprite.collide_rect(self.character, enemy):
-                    self.dialog_box.show_dialog(
-                        "Haha! You think you know git?\nLets test your knowledge then!\nAre you ready?! Y/N")
-                    break
+                    if not self.waiting_for_boss1_response:
+                        self.dialog_box.show_dialog(
+                            "Haha! You think you know git?\nLets test your knowledge then!\nAre you ready?! Y/N")
+                        self.waiting_for_answer = False
+                        self.waiting_for_boss1_response = True
 
                 if isinstance(enemy, Boss2) and pygame.sprite.collide_rect(self.character, enemy):
                     print("Collision with Boss2 detected.")
-                    self.dialog_box.show_dialog(
-                        "Level 2: This challenge will be tougher!\nPrepare yourself for a new set of questions.\nAre you ready?! Y/N")
-                    self.waiting_for_boss2_response = True
-                    break
+                    if not self.waiting_for_boss2_response:
+                        self.dialog_box.show_dialog(
+                            "Level 2: This challenge will be tougher!\nPrepare yourself for a new set of questions.\nAre you ready?! Y/N")
+                        self.waiting_for_boss2_response = True
+                        break
 
-           
+                if isinstance(enemy, Boss3) and pygame.sprite.collide_rect(self.character, enemy):
+                    print("Collision with Boss3 detected.")
+                    if not self.waiting_for_boss2_response:
+                        self.dialog_box.show_dialog(
+                            "Level 3: This the final test.\nAre you ready?! Y/N")
+                        self.waiting_for_boss3_response = True
+                        break
+        
             collided = False
             for enemy in list(self.enemy_group):
                 if not enemy.is_dead and pygame.sprite.collide_rect(self.character, enemy):
@@ -316,11 +384,9 @@ class Game:
 
             if not collided:
                 self.character.resume_movement()
-
             
             self.background.update(dx)
             self.all_sprites.update()
-
             
             if self.character.health_bar.is_depleted():
                 print("Character health depleted, calling handle_character_death")
@@ -332,39 +398,36 @@ class Game:
                     self.revive_character()
                 elif self.lives == 0 and current_time - self.death_timer >= 1000:
                     self.game_over()
-
             
             for enemy in list(self.enemy_group):
                 if enemy.is_dead and enemy.current_frame == len(enemy.dead_images) - 1:
                     self.enemy_group.remove(enemy)
                     if not isinstance(enemy, Boss1) and not isinstance(enemy, Boss2):
                         self.defeated_enemies += 1
-
             
             if self.defeated_enemies >= config.MAX_ENEMIES and not self.boss_spawned:
                 print("MAX_ENEMIES defeated, spawning Boss!")
                 self.spawn_boss()
-
-           
+          
             if self.boss and self.boss.is_dead:
                 print("Boss is dead. Triggering level change.")
                 self.boss_trigger = True
-                self.boss_deaths += 1
+                # self.boss_deaths += 1
                 self.show_boss_defeated_dialog(f"Boss {self.boss_deaths}")
                 self.waiting_for_level_change = True
 
     def spawn_boss(self):
         ground_level = self.ground_level
 
-        if self.boss_deaths == 0:
-            self.boss = Boss1(folder_path="../sprites/Bosses/Boss1", screen_width=self.surface.get_width(),
-                              ground_level=ground_level, main_character=self.character)
-        elif self.boss_deaths == 1:
-            self.boss = Boss2(folder_path="../sprites/Bosses/Boss2", screen_width=self.surface.get_width(),
-                              ground_level=ground_level, main_character=self.character)
-        # elif self.boss_deaths == 2:
-        #     self.boss = Boss3(folder_path="../sprites/Bosses/Boss3", screen_width=self.surface.get_width(),
-        #                       ground_level=ground_level, main_character=self.character)
+        if self.current_level == 2:
+            self.boss = Boss2(config.BOSSES2_FOLDER_PATH, screen_width=self.surface.get_width(),
+                            ground_level=ground_level, main_character=self.character)
+        elif self.current_level == 3:
+            self.boss = Boss3(config.BOSSES3_FOLDER_PATH, screen_width=self.surface.get_width(),
+                            ground_level=ground_level, main_character=self.character)
+        else:
+            self.boss = Boss1(config.BOSSES1_FOLDER_PATH, screen_width=self.surface.get_width(),
+                            ground_level=ground_level, main_character=self.character)
 
         self.all_sprites.add(self.boss)
         self.enemy_group.add(self.boss)
@@ -402,6 +465,9 @@ class Game:
         # Draw additional level-specific elements if Level 2 is active
         if self.is_level2_active:
             self.level2.draw(self.surface)
+
+        if self.is_level3_active:
+            self.level3.draw(self.surface)
         
         # Update the display
         pygame.display.flip()
@@ -413,7 +479,6 @@ class Game:
     def restart_game(self):
         restart_game(self)
 
-
 def main():
     try:
         game = Game()
@@ -422,7 +487,6 @@ def main():
         print(f"An error occurred: {e}")
         import traceback
         traceback.print_exc()
-
 
 if __name__ == '__main__':
     main()
