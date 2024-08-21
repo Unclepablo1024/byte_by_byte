@@ -101,7 +101,7 @@ class Game:
         if self.boss_deaths in [1, 2]:  
             self.show_dialog(f"You have completed Level {self.current_level}. Press 'X' to continue to the next level.", auto_hide_seconds=10)
             self.waiting_for_level_change = True
-        elif self.boss_deaths >= 3:
+        elif self.boss_deaths > 3:
             self.show_dialog("Congratulations! You have completed all 3 levels! Game Over!", auto_hide_seconds=10)
             self.game_completed = True
         else:
@@ -176,7 +176,6 @@ class Game:
         dialog_text = f"{boss_name} has been defeated! Congratulations!"
         self.show_dialog(dialog_text, auto_hide_seconds=5)
         self.boss_trigger = True
-        self.boss_deaths += 1  
         pygame.time.delay(1000)  
         self.change_level_dialogue()
 
@@ -366,7 +365,7 @@ class Game:
 
                 if isinstance(enemy, Boss3) and pygame.sprite.collide_rect(self.character, enemy):
                     print("Collision with Boss3 detected.")
-                    if not self.waiting_for_boss2_response:
+                    if not self.waiting_for_boss3_response:
                         self.dialog_box.show_dialog(
                             "Level 3: This the final test.\nAre you ready?! Y/N")
                         self.waiting_for_boss3_response = True
