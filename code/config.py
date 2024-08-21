@@ -35,6 +35,9 @@ JUMP_GIF_PATH = os.path.join(BASE_SPRITES_PATH, 'Gangsters_2', 'Jump.png')
 RUN_GIF_PATH = os.path.join(BASE_SPRITES_PATH, 'Gangsters_2', 'Run.png')
 HURT_GIF_PATH = os.path.join(BASE_SPRITES_PATH, 'Gangsters_2', 'Hurt.png')
 DIE_GIF_PATH = os.path.join(BASE_SPRITES_PATH, 'Gangsters_2', 'Dead.png')
+ATTACK_1_GIF_PATH = os.path.join(BASE_SPRITES_PATH, 'Gangsters_2', 'Attack_1.png')
+ATTACK_2_GIF_PATH = os.path.join(BASE_SPRITES_PATH, 'Gangsters_2', 'Attack_2.png')
+ATTACK_3_GIF_PATH = os.path.join(BASE_SPRITES_PATH, 'Gangsters_2', 'Attack_3.png')
 
 # Health bar settings
 HEALTH_BAR_MAX_HEALTH = 200
@@ -55,9 +58,32 @@ DIALOGUE_TEXT_COLOR = (255, 255, 255)
 DIALOGUE_BOX_IMAGE_PATH = os.path.join(BASE_SPRITES_PATH, 'Dialouge', 'Dialouge boxes', 'BetterDialouge1.png')
 DIALOG_COOLDOWN_TIME = 2000  # 2 seconds cooldown
 
+
+LEVELS = {
+    1: {
+        "background": os.path.join(BASE_SPRITES_PATH, "backgrounds", "City2_pale.png"),
+        "enemies": ["Homeless_1", "Homeless_2", "Homeless_3"],
+        "music": os.path.join(AUDIO_PATH, 'western.mp3'),
+        "max_enemies": 5
+    },
+    2: {
+        "background": os.path.join(BASE_SPRITES_PATH, "backgrounds", "City3.png"),
+        "enemies": ["Homeless_1", "Homeless_2", "Homeless_3", "Robot_1", "Robot_2", "Robot_3"],
+        "music": os.path.join(AUDIO_PATH, 'cyberpunk.mp3'),
+        "max_enemies": 10
+    },
+    3: {
+        "background": os.path.join(BASE_SPRITES_PATH, "backgrounds", "City4.png"),
+        "enemies": ["Homeless_1", "Homeless_2", "Homeless_3", "Robot_1", "Robot_2", "Robot_3", "Vampire_1", "Vampire_3", "Dog", "Cat"],
+        "music": os.path.join(AUDIO_PATH, 'bleach.mp3'),
+        "max_enemies": 20
+    }
+}
+
 # Enemy settings
 ENEMY_TYPES = ["Homeless_1", "Homeless_2", "Homeless_3"]
 ENEMY_SPRITES_PATH = os.path.join(BASE_SPRITES_PATH, 'enemies')
+current_level = LEVELS.get("current_level", 1)
 MAX_ENEMIES = 1
 ENEMY_POSITION = 565
 # Attack animations paths
@@ -83,23 +109,6 @@ DIALOG_FONT_PATH = os.path.join(FONT_PATH)
 DIALOGUE_FONT_SIZE = 24
 DIALOG_COOLDOWN_TIME = 2000  # 2 seconds in milliseconds
 
-LEVELS = {
-    1: {
-        "background": os.path.join(BASE_SPRITES_PATH, "backgrounds", "City2_pale.png"),
-        "enemies": ["Homeless_1", "Homeless_2", "Homeless_3"],
-        "music": os.path.join(AUDIO_PATH, 'western.mp3')
-    },
-    2: {
-        "background": os.path.join(BASE_SPRITES_PATH, "backgrounds", "City3.png"),
-        "enemies": ["Homeless_1", "Homeless_2", "Homeless_3", "Robot_1", "Robot_2", "Robot_3"],
-        "music": os.path.join(AUDIO_PATH, 'cyberpunk.mp3')
-    },
-    3: {
-        "background": os.path.join(BASE_SPRITES_PATH, "backgrounds", "City4.png"),
-        "enemies": ["Homeless_1", "Homeless_2", "Homeless_3", "Robot_1", "Robot_2", "Robot_3", "Vampire_1", "Vampire_3", "Dog", "Cat"],
-        "music": os.path.join(AUDIO_PATH, 'bleach.mp3')
-    }
-}
 
 # Initialize Pygame and mixer
 pygame.init()
@@ -138,7 +147,7 @@ noway_image = pygame.image.load(os.path.join(PIC_PATH, 'anoway.png'))
 awesome_image = pygame.image.load(os.path.join(PIC_PATH, 'awesome.jpg'))
 excellent_image = pygame.image.load(os.path.join(PIC_PATH, 'fexcellent.png'))
 ending_image = pygame.image.load(os.path.join(PIC_PATH, 'ending.png'))
-wrong_image = pygame.image.load(os.path.join(PIC_PATH, 'fwrong.png'))
+wrong_image = pygame.image.load(os.path.join(PIC_PATH, 'ending.png'))
 
 # Define colors
 WHITE = (255, 255, 255)

@@ -73,7 +73,7 @@ class Enemy(pygame.sprite.Sprite):
 
         #Handle death state
         if self.is_dead:
-            if self.death_start_time and now - self.death_start_time > 2000:
+            if self.death_start_time and now - self.death_start_time > 4000:
                 self.kill()
             elif now - self.last_update > self.frame_rate:
                 self.last_update = now
