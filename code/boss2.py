@@ -6,7 +6,11 @@ import os
 class Boss2(pygame.sprite.Sprite):
     def __init__(self, folder_path, screen_width, ground_level, main_character):
         super().__init__()
+
+        self.folder_path = config.BOSSES_FOLDER_PATH_2
+
         self.folder_path = os.path.join(config.BASE_SPRITES_PATH, 'Bosses', 'Boss2')
+
         self.walk_images = self.load_images("Walk.png")
         self.attack_images = self.load_images("Attack.png")
         self.hurt_images = self.load_images("Hurt.png")
