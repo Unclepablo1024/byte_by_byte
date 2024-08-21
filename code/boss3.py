@@ -1,15 +1,13 @@
 import os
-
 import pygame
 import config
 
 class Boss3(pygame.sprite.Sprite):
     def __init__(self, folder_path, screen_width, ground_level, main_character):
-        print(f"Initializing Boss3 with folder path: {folder_path}")
         super().__init__()
-        self.folder_path = config.BOSSES_FOLDER_PATH_3
+        self.folder_path = folder_path
         self.walk_images = self.load_images("Walk.png")
-        self.attack_images = self.load_images("Attack_1.png")
+        self.attack_images = self.load_images("Attack.png")
         self.hurt_images = self.load_images("Hurt.png")
         self.dead_images = self.load_images("Dead.png")
         self.image = self.walk_images[0]
@@ -38,7 +36,6 @@ class Boss3(pygame.sprite.Sprite):
     def load_images(self, action):
         images = []
         image_path = f"{self.folder_path}/{action}"
-        print(f"Loading image from path: {image_path}")
         image = pygame.image.load(image_path).convert_alpha()
         width, height = image.get_size()
         frame_height = height

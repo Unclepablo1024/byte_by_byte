@@ -3,7 +3,6 @@ import config
 import game
 from dialog_response import handle_dialog_response
 
-
 def handle_events(self):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -24,36 +23,39 @@ def handle_events(self):
                     self.waiting_for_boss2_response = False
                 elif event.key == pygame.K_n:
                     self.handle_boss2_dialog_response('n')
-                    self.waiting_for_boss2_response = False
+                    self.waiting_for_boss2_response = True
                 pygame.event.clear()
+
+            if self.waiting_for_boss3_response:
+                if event.key == pygame.K_y:
+                    self.handle_boss3_dialog_response('y')
+                    self.waiting_for_boss3_response = False
+                elif event.key == pygame.K_n:
+                    self.handle_boss3_dialog_response('n')
+                    self.waiting_for_boss3_response = True
+                pygame.event.clear()
+
             elif event.key == pygame.K_RETURN:
                 response = self.dialog_box.get_input()
                 if response:
                     print(f"Dialog response received: {response}")
                     handle_dialog_response(self, response)
+
             elif event.key == pygame.K_BACKSPACE:
                 self.dialog_box.backspace()
-            elif event.key == pygame.K_x and self.boss_trigger:
 
-                print("Attempting to change level...")
+            elif event.key == pygame.K_x and self.boss_trigger:
+                print("Attempting to change level...")  
                 self.next_level()
                 self.boss_deaths += 1
                 self.boss_trigger = False
-                print(f"New level: {self.current_level}, Boss deaths: {self.boss_deaths}")
-
+                print(f"New level: {self.current_level}, Boss deaths: {self.boss_deaths}") 
             else:
                 self.dialog_box.add_char(event.unicode)
 
-            if self.boss2_minigame_completed:
-                self.boss_deaths += 1
-
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
+            if event.button == 1:  
                 self.character.attack()
 
     if not self.dialog_box.active:
         self.handle_continuous_input()
-
-
-def increment_boss_deaths(self):
-    self.boss_deaths += 1

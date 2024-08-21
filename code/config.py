@@ -18,7 +18,6 @@ SCROLL_SPEED = 5
 RUN_SPEED_MULTIPLIER = 2
 
 # Paths
-
 FONT_PATH = os.path.join("fonts", "determinationmono.ttf")
 AUDIO_PATH = os.path.join("audio")
 BASE_SPRITES_PATH = os.path.join("sprites")
@@ -97,7 +96,7 @@ LEVELS = {
     },
     3: {
         "background": os.path.join(BASE_SPRITES_PATH, "backgrounds", "City4.png"),
-        "enemies": ["Cat", "Dog", "Homeless_1", "Homeless_2", "Homeless_3", "Robot_1", "Robot_2", "Robot_3"],
+        "enemies": ["Homeless_1", "Homeless_2", "Homeless_3", "Robot_1", "Robot_2", "Robot_3", "Vampire_1", "Vampire_3", "Dog", "Cat"],
         "music": os.path.join(AUDIO_PATH, 'bleach.mp3')
     }
 }
@@ -106,33 +105,15 @@ LEVELS = {
 pygame.init()
 pygame.mixer.init()
 
-#Boss 1 path files
-BOSSES_FOLDER_PATH = os.path.join(BASE_SPRITES_PATH, 'Bosses', 'Boss1')
-IDLE_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Idlefix.png')
-WALK_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Walk.png')
-JUMP_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Jump.png')
-RUN_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Run.png')
-HURT_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Hurt.png')
-DIE_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Dead.png')
-
-#boss 2 path files
-BOSSES_FOLDER_PATH_2 = os.path.join(BASE_SPRITES_PATH, 'Bosses', 'Boss2')
-IDLE_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Idlefix.png')
-WALK_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Walk.png')
-JUMP_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Jump.png')
-RUN_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Run.png')
-HURT_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Hurt.png')
-DIE_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Dead.png')
-
-
-#boss 3 path files
-BOSSES_FOLDER_PATH_3 = os.path.join(BASE_SPRITES_PATH, 'Bosses', 'Boss3')
-IDLE_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Idle.png')
-WALK_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Walk.png')
-JUMP_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Jump.png')
-RUN_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Run.png')
-HURT_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Hurt.png')
-DIE_PATH = os.path.join(BOSSES_FOLDER_PATH, 'Dead.png')
+BOSSES1_FOLDER_PATH = os.path.join(BASE_SPRITES_PATH, 'Bosses', 'Boss1')
+BOSSES2_FOLDER_PATH = os.path.join(BASE_SPRITES_PATH, 'Bosses', 'Boss2')
+BOSSES3_FOLDER_PATH = os.path.join(BASE_SPRITES_PATH, 'Bosses', 'Boss3')
+IDLE_PATH = os.path.join(BOSSES1_FOLDER_PATH, 'Idlefix.png')
+WALK_PATH = os.path.join(BOSSES1_FOLDER_PATH, 'Walk.png')
+JUMP_PATH = os.path.join(BOSSES1_FOLDER_PATH, 'Jump.png')
+RUN_PATH = os.path.join(BOSSES1_FOLDER_PATH, 'Run.png')
+HURT_PATH = os.path.join(BOSSES1_FOLDER_PATH, 'Hurt.png')
+DIE_PATH = os.path.join(BOSSES1_FOLDER_PATH, 'Dead.png')
 
 # Load common fonts
 font = pygame.font.Font(FONT_PATH, 24)
@@ -140,13 +121,22 @@ large_font = pygame.font.Font(FONT_PATH, 36)
 small_font = pygame.font.Font(FONT_PATH, 18)
 title_font = pygame.font.Font(FONT_PATH, 48)
 
-
 # Load common sounds
 correct_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "get_point.wav"))
 wrong_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "lost-sobbing.wav"))
 hit_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "hit.wav"))
 duck_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "duck.wav"))
-congra_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "congra.mp3"))
+congra_sound = pygame.mixer.Sound(os.path.join(AUDIO_PATH, "cheer.wav"))
+congra_sound.set_volume(0.2)
+
+# Load common pic
+fight_image = pygame.image.load(os.path.join(BASE_SPRITES_PATH, 'fight.png'))
+bang_image = pygame.image.load(os.path.join(BASE_SPRITES_PATH, 'bang.png'))
+congra_image = pygame.image.load(os.path.join(PIC_PATH, 'congra.png'))
+coffee_image = pygame.image.load(os.path.join(PIC_PATH, 'coffee.png'))
+noway_image = pygame.image.load(os.path.join(PIC_PATH, 'anoway.png'))
+awesome_image = pygame.image.load(os.path.join(PIC_PATH, 'awesome.jpg'))
+excellent_image = pygame.image.load(os.path.join(PIC_PATH, 'fexcellent.png'))
 
 # Define colors
 WHITE = (255, 255, 255)
@@ -180,14 +170,11 @@ LEVEL_ONE_QUESTIONS = [
     {"question": "What file is used to specify which files Git should ignore?", "answer": ".gitignore"},
 ]
 
-
 def get_random_questions(n=5):
     return random.sample(LEVEL_ONE_QUESTIONS, min(n, len(LEVEL_ONE_QUESTIONS)))
 
 
 #level 1 dialog
-
-
 LEVEL_ONE_DIALOGUE =  {1:"You: What do I do know!? I lost my job and know nothing about coding", 2: "Enemy: Spare Change!",
     3:"You: Sorry man I don't have any..", 4:"Enemy: We will see about that, guys!! Take his money.",
     5:"Zoey Tip: Click your right mouse button to atack enemies.", 6:" Enemy: Our leader will show you who is boss."}

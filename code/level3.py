@@ -6,51 +6,43 @@ import sys
 import os
 from boss3 import Boss3
 
-
 class Level3:
     def __init__(self, game):
         self.game = game
         self.screen = game.surface
         self.clock = pygame.time.Clock()
-
+        
         # Initialize game state
         self.score = 0
         self.current_question = 0
         self.FULL_TEXT = "TechWise_Rock"
         self.revealed_text_indices = set()
+        self.game_completed = False
 
         # Load sound effects
-        self.correct_sound = pygame.mixer.Sound(os.path.join("..", "audio", "get_point.wav"))
-        self.wrong_sound = pygame.mixer.Sound(os.path.join("..", "audio", "lost-sobbing.wav"))
+        self.correct_sound = config.correct_sound
+        self.wrong_sound = config.wrong_sound
+        
+        self.excellent_image = config.excellent_image
+        
 
         # Questions
         self.questions = [
-            {"question": "What does FIFO stand for in a queue?", "options": ["First In First Out", "First In Last Out"],
-             "answer": "First In First Out"},
-            {"question": "What are the primary operations of a queue?",
-             "options": ["Enqueue and Dequeue", "Push and Pop"], "answer": "Enqueue and Dequeue"},
-            {"question": "What does LIFO stand for in a stack?", "options": ["Last In First Out", "Last In Last Out"],
-             "answer": "Last In First Out"},
-            {"question": "What are the main operations of a stack?", "options": ["Push and Pop", "Insert and Delete"],
-             "answer": "Push and Pop"},
+            {"question": "What does FIFO stand for in a queue?", "options": ["First In First Out", "First In Last Out"], "answer": "First In First Out"},
+            {"question": "What are the primary operations of a queue?", "options": ["Enqueue and Dequeue", "Push and Pop"], "answer": "Enqueue and Dequeue"},
+            {"question": "What does LIFO stand for in a stack?", "options": ["Last In First Out", "Last In Last Out"], "answer": "Last In First Out"},
+            {"question": "What are the main operations of a stack?", "options": ["Push and Pop", "Insert and Delete"], "answer": "Push and Pop"},
             {"question": "What is the top node of a tree called?", "options": ["Root", "Leaf"], "answer": "Root"},
-            {"question": "In a tree, what is a node with no children called?", "options": ["Leaf", "Root"],
-             "answer": "Leaf"},
-            {"question": "What is the relationship between parent and child nodes in a tree called?",
-             "options": ["Parent-Child Relationship", "Sibling Relationship"], "answer": "Parent-Child Relationship"},
-            {"question": "In a binary tree, how many children can each node have at most?", "options": ["Two", "Three"],
-             "answer": "Two"},
-            {"question": "What is the characteristic of a set that does not allow duplicate elements?",
-             "options": ["Uniqueness", "Order"], "answer": "Uniqueness"},
+            {"question": "In a tree, what is a node with no children called?", "options": ["Leaf", "Root"], "answer": "Leaf"},
+            {"question": "What is the relationship between parent and child nodes in a tree called?", "options": ["Parent-Child Relationship", "Sibling Relationship"], "answer": "Parent-Child Relationship"},
+            {"question": "In a binary tree, how many children can each node have at most?", "options": ["Two", "Three"], "answer": "Two"},
+            {"question": "What is the characteristic of a set that does not allow duplicate elements?", "options": ["Uniqueness", "Order"], "answer": "Uniqueness"},
             {"question": "Is the order of elements important in a set?", "options": ["No", "Yes"], "answer": "No"},
-            {"question": "In graph theory, what is a sequence of edges connecting two vertices called?",
-             "options": ["Path", "Cycle"], "answer": "Path"},
-            {"question": "What is the last node in a singly linked list called?", "options": ["Tail", "Head"],
-             "answer": "Tail"},
-            {"question": "How many pointers does a node in a doubly linked list have?", "options": ["Two", "One"],
-             "answer": "Two"}
+            {"question": "In graph theory, what is a sequence of edges connecting two vertices called?", "options": ["Path", "Cycle"], "answer": "Path"},
+            {"question": "What is the last node in a singly linked list called?", "options": ["Tail", "Head"], "answer": "Tail"},
+            {"question": "How many pointers does a node in a doubly linked list have?", "options": ["Two", "One"], "answer": "Two"}
         ]
-
+        
         self.randomize_all_options()
 
     def randomize_all_options(self):
@@ -62,8 +54,9 @@ class Level3:
             self.handle_events()
             self.draw()
             self.clock.tick(60)
-
+        
         self.show_game_over()
+        self.game_completed = True
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -85,7 +78,7 @@ class Level3:
                 else:
                     self.wrong_sound.play()
                     self.show_result(False)
-
+                
                 self.current_question += 1
                 pygame.time.delay(1000)  # Add delay to avoid immediately jumping to next question
                 break
@@ -99,10 +92,10 @@ class Level3:
 
     def show_question(self, question):
         self.screen.fill(config.WHITE)
-
+        
         title_surface = config.title_font.render("Trivia Challenge", True, config.BLUE)
         self.screen.blit(title_surface, (config.SCREEN_WIDTH // 2 - title_surface.get_width() // 2, 20))
-
+        
         wrapped_question = config.wrap_text(question["question"], config.font, config.SCREEN_WIDTH - 100)
         y_offset = 100
         for line in wrapped_question:
@@ -112,15 +105,15 @@ class Level3:
 
         options = question["options"]
         option_rects = []
-        option_width = 350
-        option_height = 80
-        space_between = 50
-        base_x = (config.SCREEN_WIDTH - 2 * option_width - space_between) // 2
-        base_y = 200
+        option_width = 350  
+        option_height = 80  
+        space_between = 50   
+        base_x = (config.SCREEN_WIDTH - 2 * option_width - space_between) // 2  
+        base_y = 200  
 
         for i, option in enumerate(options):
             x = base_x + (i % 2) * (option_width + space_between)
-            y = base_y + (i // 2) * (option_height + 10)
+            y = base_y + (i // 2) * (option_height + 10)  
             rect = pygame.Rect(x, y, option_width, option_height)
             option_rects.append(rect)
             self.draw_button(option, rect, config.BLUE, config.LIGHT_BLUE)
@@ -152,8 +145,7 @@ class Level3:
             color = config.LIGHT_BLUE if i not in self.revealed_text_indices else config.RED
             char_surface = config.title_font.render(char, True, color)
             char_width = char_surface.get_width()
-            self.screen.blit(char_surface,
-                             (config.SCREEN_WIDTH // 2 - len(self.FULL_TEXT) * char_width // 2 + i * char_width, 450))
+            self.screen.blit(char_surface, (config.SCREEN_WIDTH // 2 - len(self.FULL_TEXT) * char_width // 2 + i * char_width, 450))
 
     def show_result(self, correct):
         if correct:
@@ -172,12 +164,13 @@ class Level3:
 
     def show_game_over(self):
         self.screen.fill(config.WHITE)
-        game_over_text = config.title_font.render("Game Over!", True, config.RED)
+        game_over_text = config.title_font.render("Finished!!", True, config.RED)
         final_score_text = config.large_font.render(f"Final Score: {self.score}", True, config.BLACK)
-        self.screen.blit(game_over_text, (config.SCREEN_WIDTH // 2 - game_over_text.get_width() // 2, 200))
-        self.screen.blit(final_score_text, (config.SCREEN_WIDTH // 2 - final_score_text.get_width() // 2, 300))
-
+        final_score_text_rect = final_score_text.get_rect(midtop=(config.SCREEN_WIDTH // 2, 150))
+        self.screen.blit(self.excellent_image, (config.SCREEN_WIDTH // 2 - self.excellent_image.get_width() // 2, config.SCREEN_HEIGHT // 2 - self.excellent_image.get_height() // 2))
+        self.screen.blit(game_over_text, final_score_text_rect)
         pygame.display.flip()
         pygame.time.delay(3000)
+        self.game.boss_deaths = 3
 
         self.game.is_level1_active = False
