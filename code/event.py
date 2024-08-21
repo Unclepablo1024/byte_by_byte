@@ -16,6 +16,7 @@ def handle_events(self):
             else:
                 self.show_dialog("Congratulations! You've completed all questions for Level One.",
                                  auto_hide_seconds=5)
+                self.ask_next_question()
         elif event.type == pygame.KEYDOWN:
             if self.waiting_for_boss2_response:
                 if event.key == pygame.K_y:

@@ -102,9 +102,11 @@ def next_level(self):
 
 
 def restart_level(game):
+    print("game is restarting")
     game.current_question_index = 0
     game.correct_answers = 0
     game.questions = config.get_random_questions(game.total_questions)
     game.health_bar.reset()
     game.current_attempt = 0
     game.waiting_for_answer = False
+    game.waiting_for_boss1_response = False

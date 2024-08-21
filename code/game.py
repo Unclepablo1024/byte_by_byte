@@ -98,7 +98,7 @@ class Game:
         return handle_dialog_response(self, response)
 
     def change_level_dialogue(self):
-        if self.boss_deaths in [1, 2]:  
+        if self.boss_deaths in [1, 2]:
             self.show_dialog(f"You have completed Level {self.current_level}. Press 'X' to continue to the next level.", auto_hide_seconds=10)
             self.waiting_for_level_change = True
         elif self.boss_deaths >= 3:
@@ -176,7 +176,7 @@ class Game:
 
     def show_boss_defeated_dialog(self, boss_name):
         dialog_text = f"{boss_name} has been defeated! Congratulations!"
-        self.show_dialog(dialog_text, auto_hide_seconds=5)
+        self.show_dialog(dialog_text, auto_hide_seconds=10)
         self.boss_trigger = True
         pygame.time.delay(1000)  
         self.change_level_dialogue()
@@ -351,7 +351,9 @@ class Game:
                     break
 
                 if isinstance(enemy, Boss1) and pygame.sprite.collide_rect(self.character, enemy):
+                    print("I am here!")
                     if not self.waiting_for_boss1_response:
+                        print("i AM RUNNINBG")
                         self.dialog_box.show_dialog(
                             "Haha! You think you know git?\nLets test your knowledge then!\nAre you ready?! Y/N")
                         self.waiting_for_answer = False
@@ -415,7 +417,6 @@ class Game:
                 self.boss_trigger = True
                 self.show_boss_defeated_dialog(f"Boss {self.boss_deaths}")
                 self.waiting_for_level_change = True
-
 
     def spawn_boss(self):
         ground_level = self.ground_level
