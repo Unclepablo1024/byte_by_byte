@@ -85,7 +85,9 @@ LEVELS = {
 ENEMY_TYPES = ["Homeless_1", "Homeless_2", "Homeless_3"]
 ENEMY_SPRITES_PATH = os.path.join(BASE_SPRITES_PATH, 'enemies')
 
+
 MAX_ENEMIES = 15
+
 
 ENEMY_POSITION = 565
 # Attack animations paths
