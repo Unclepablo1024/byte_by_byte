@@ -167,9 +167,8 @@ class Level3:
         game_over_text = config.title_font.render("Finished!!", True, config.RED)
         final_score_text = config.large_font.render(f"Final Score: {self.score}", True, config.BLACK)
         final_score_text_rect = final_score_text.get_rect(midtop=(config.SCREEN_WIDTH // 2, 150))
-        self.screen.blit(game_over_text, final_score_text_rect)
         self.screen.blit(self.excellent_image, (config.SCREEN_WIDTH // 2 - self.excellent_image.get_width() // 2, config.SCREEN_HEIGHT // 2 - self.excellent_image.get_height() // 2))
-        pygame.display.flip()
+        self.screen.blit(game_over_text, final_score_text_rect)
         pygame.display.flip()
         pygame.time.delay(3000)
         self.game.boss_deaths = 3
