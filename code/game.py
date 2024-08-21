@@ -134,6 +134,11 @@ class Game:
     def next_level(self):
         next_level(self)
 
+    def increment_max_enemies(self):
+        """Increase MAX_ENEMIES by 15 after each level switch."""
+        config.MAX_ENEMIES += 15
+        print(f"MAX_ENEMIES increased to {config.MAX_ENEMIES} for Level {self.current_level}")
+
     def run(self):
         self.ask_for_name()
         while self.running:
@@ -178,7 +183,8 @@ class Game:
         dialog_text = f"{boss_name} has been defeated! Congratulations!"
         self.show_dialog(dialog_text, auto_hide_seconds=10)
         self.boss_trigger = True
-        pygame.time.delay(1000)  
+        pygame.time.delay(1000)
+        self.increment_max_enemies()
         self.change_level_dialogue()
 
     def show_dialog(self, message, auto_hide_seconds=None):
