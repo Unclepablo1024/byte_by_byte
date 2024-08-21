@@ -88,6 +88,8 @@ def set_level(game, level):
 
 def next_level(self):
         self.current_level += 1
+
+
         print(f"Moving to level {self.current_level}")  # Debugging
         if self.current_level > len(config.LEVELS):
             print("You have completed all levels!")

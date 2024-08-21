@@ -84,8 +84,9 @@ LEVELS = {
 # Enemy settings
 ENEMY_TYPES = ["Homeless_1", "Homeless_2", "Homeless_3"]
 ENEMY_SPRITES_PATH = os.path.join(BASE_SPRITES_PATH, 'enemies')
-current_level = LEVELS.get("current_level", 1)
-MAX_ENEMIES = 1
+
+MAX_ENEMIES = 15
+
 ENEMY_POSITION = 565
 # Attack animations paths
 ATTACK_1_GIF_PATH = os.path.join(BASE_SPRITES_PATH, 'Gangsters_2', 'Attack_1.png')

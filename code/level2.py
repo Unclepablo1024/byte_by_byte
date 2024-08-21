@@ -11,7 +11,7 @@ class Level2:
         self.game = game
         self.screen = game.surface
         self.clock = pygame.time.Clock()
-        self.boss = Boss2(folder_path="../sprites/Bosses/Boss2", screen_width=game.surface.get_width(),
+        self.boss = Boss2(folder_path="sprites/Bosses/Boss2", screen_width=game.surface.get_width(),
                           ground_level=game.ground_level, main_character=game.character)
         
         # Load images for feedback
