@@ -409,10 +409,9 @@ class Game:
                 print("MAX_ENEMIES defeated, spawning Boss!")
                 self.spawn_boss()
           
-            if self.boss and self.boss.is_dead:
+            if self.boss and self.boss.is_dead and self.boss.current ==len(self.boss.dead_images) - 1:
                 print("Boss is dead. Triggering level change.")
                 self.boss_trigger = True
-                # self.boss_deaths += 1
                 self.show_boss_defeated_dialog(f"Boss {self.boss_deaths}")
                 self.waiting_for_level_change = True
 
