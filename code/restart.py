@@ -4,14 +4,14 @@ from background import Background
 from healthbar import HealthBar, LifeIcon
 import config
 
-def restart_level(game):
-    # The function restarts the current level and all relevant level variables
-    game.current_question_index = 0
-    game.correct_answers = 0
-    game.questions = config.get_random_questions(game.total_questions)
-    game.health_bar.reset()
-    game.current_attempt = 0
-    game.waiting_for_answer = False
+# def restart_level(game):
+#     # The function restarts the current level and all relevant level variables
+#     game.current_question_index = 0
+#     game.correct_answers = 0
+#     game.questions = config.get_random_questions(game.total_questions)
+#     game.health_bar.reset()
+#     game.current_attempt = 0
+#     game.waiting_for_answer = False
 
 def restart_game(game):
     # This function restarts the game, including character, background, etc.

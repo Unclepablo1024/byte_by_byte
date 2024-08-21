@@ -47,6 +47,7 @@ class Level2:
             self.clock.tick(60)
         
         self.level_completed = True
+        self.game.boss_deaths = 2
         print("Level2 completed")
         
         if self.boss:
@@ -241,45 +242,46 @@ class Level2:
                 Level2.Level(2, "Implement the base case",
                     ["if n <= 1:", "if n < 2:", "if n == 0 or n == 1:", "    return n", "    return 1", "    return 0"],
                     ["if n <= 1:", "    return n"],
-                    "The base case handles the simplest inputs. For Fibonacci, what are these?"),
+                    "The base case handles the simplest inputs. For Fibonacci, what are these?")
 
-                Level2.Level(3, "Add the recursive case",
-                    ["return fibonacci(n-1) + fibonacci(n-2)", "return fibonacci(n) + fibonacci(n-1)",
-                    "return n + fibonacci(n-1)"],
-                    ["return fibonacci(n-1) + fibonacci(n-2)"],
-                    "The recursive case combines results from smaller subproblems. How do we calculate the nth Fibonacci number?"),
+                # , 
+                # Level2.Level(3, "Add the recursive case",
+                #     ["return fibonacci(n-1) + fibonacci(n-2)", "return fibonacci(n) + fibonacci(n-1)",
+                #     "return n + fibonacci(n-1)"],
+                #     ["return fibonacci(n-1) + fibonacci(n-2)"],
+                #     "The recursive case combines results from smaller subproblems. How do we calculate the nth Fibonacci number?"),
 
-                Level2.Level(4, "Initialize a list for the sequence",
-                    ["fib_sequence = []", "fib_sequence = [0, 1]", "fib_sequence = list()"],
-                    ["fib_sequence = []"],
-                    "We need a list to store our Fibonacci numbers. Start with an empty list."),
+                # Level2.Level(4, "Initialize a list for the sequence",
+                #     ["fib_sequence = []", "fib_sequence = [0, 1]", "fib_sequence = list()"],
+                #     ["fib_sequence = []"],
+                #     "We need a list to store our Fibonacci numbers. Start with an empty list."),
 
-                Level2.Level(5, "Create a loop to generate the sequence",
-                    ["for i in range(10):", "for i in range(n):", "while len(fib_sequence) < 10:"],
-                    ["for i in range(10):"],
-                    "We want to generate the first 10 Fibonacci numbers. How should we structure our loop?"),
+                # Level2.Level(5, "Create a loop to generate the sequence",
+                #     ["for i in range(10):", "for i in range(n):", "while len(fib_sequence) < 10:"],
+                #     ["for i in range(10):"],
+                #     "We want to generate the first 10 Fibonacci numbers. How should we structure our loop?"),
 
-                Level2.Level(6, "Append Fibonacci numbers to the sequence",
-                    ["fib_sequence.append(fibonacci(i))", "fib_sequence.append(i)", "fib_sequence += fibonacci(i)"],
-                    ["fib_sequence.append(fibonacci(i))"],
-                    "For each iteration, we need to calculate the Fibonacci number and add it to our sequence."),
+                # Level2.Level(6, "Append Fibonacci numbers to the sequence",
+                #     ["fib_sequence.append(fibonacci(i))", "fib_sequence.append(i)", "fib_sequence += fibonacci(i)"],
+                #     ["fib_sequence.append(fibonacci(i))"],
+                #     "For each iteration, we need to calculate the Fibonacci number and add it to our sequence."),
 
-                Level2.Level(7, "Implement the full function",
-                    ["def fibonacci(n):",
-                    " if n <= 1:",
-                    " return n",
-                    " return fibonacci(n-1) + fibonacci(n-2)",
-                    "fib_sequence = []",
-                    "for i in range(10):",
-                    " fib_sequence.append(fibonacci(i))"],
-                    ["def fibonacci(n):",
-                    " if n <= 1:",
-                    " return n",
-                    " return fibonacci(n-1) + fibonacci(n-2)",
-                    "fib_sequence = []",
-                    "for i in range(10):",
-                    " fib_sequence.append(fibonacci(i))"],
-                    "Use a loop to generate the first 10 numbers of the Fibonacci sequence.")
+                # Level2.Level(7, "Implement the full function",
+                #     ["def fibonacci(n):",
+                #     " if n <= 1:",
+                #     " return n",
+                #     " return fibonacci(n-1) + fibonacci(n-2)",
+                #     "fib_sequence = []",
+                #     "for i in range(10):",
+                #     " fib_sequence.append(fibonacci(i))"],
+                #     ["def fibonacci(n):",
+                #     " if n <= 1:",
+                #     " return n",
+                #     " return fibonacci(n-1) + fibonacci(n-2)",
+                #     "fib_sequence = []",
+                #     "for i in range(10):",
+                #     " fib_sequence.append(fibonacci(i))"],
+                #     "Use a loop to generate the first 10 numbers of the Fibonacci sequence.")
             ]
 
         def reset_level(self):

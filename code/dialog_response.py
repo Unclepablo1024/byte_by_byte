@@ -103,7 +103,6 @@ def ask_next_question(game):
                 f"You've only answered {game.correct_answers} out of {game.total_questions} questions correctly. You need to answer all 5 questions correctly to pass. Try again!",
                 auto_hide_seconds=7)
             game.restart_level()
-        game.waiting_for_answer = False
 
 def check_answer(game, response):
     correct_answer = game.questions[game.current_question_index]["answer"]
