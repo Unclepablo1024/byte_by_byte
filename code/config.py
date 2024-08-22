@@ -106,6 +106,9 @@ MAIN_SOUND_PATH = os.path.join(AUDIO_PATH, 'western.mp3')
 # Game over settings
 GAME_OVER_FONT_PATH = os.path.join(FONT_PATH)
 
+#Congrats page ending setting
+congrats_image = pygame.image.load(os.path.join(PIC_PATH, 'congrats.png'))
+
 # Dialog settings
 DIALOG_FONT_PATH = os.path.join(FONT_PATH)
 DIALOGUE_FONT_SIZE = 24
