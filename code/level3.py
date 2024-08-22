@@ -29,19 +29,18 @@ class Level3:
         # Questions
         self.questions = [
             {"question": "What does FIFO stand for in a queue?", "options": ["First In First Out", "First In Last Out"], "answer": "First In First Out"},
-            {"question": "What are the primary operations of a queue?", "options": ["Enqueue and Dequeue", "Push and Pop"], "answer": "Enqueue and Dequeue"}
-            # ,
-            # {"question": "What does LIFO stand for in a stack?", "options": ["Last In First Out", "Last In Last Out"], "answer": "Last In First Out"},
-            # {"question": "What are the main operations of a stack?", "options": ["Push and Pop", "Insert and Delete"], "answer": "Push and Pop"},
-            # {"question": "What is the top node of a tree called?", "options": ["Root", "Leaf"], "answer": "Root"},
-            # {"question": "In a tree, what is a node with no children called?", "options": ["Leaf", "Root"], "answer": "Leaf"},
-            # {"question": "What is the relationship between parent and child nodes in a tree called?", "options": ["Parent-Child Relationship", "Sibling Relationship"], "answer": "Parent-Child Relationship"},
-            # {"question": "In a binary tree, how many children can each node have at most?", "options": ["Two", "Three"], "answer": "Two"},
-            # {"question": "What is the characteristic of a set that does not allow duplicate elements?", "options": ["Uniqueness", "Order"], "answer": "Uniqueness"},
-            # {"question": "Is the order of elements important in a set?", "options": ["No", "Yes"], "answer": "No"},
-            # {"question": "In graph theory, what is a sequence of edges connecting two vertices called?", "options": ["Path", "Cycle"], "answer": "Path"},
-            # {"question": "What is the last node in a singly linked list called?", "options": ["Tail", "Head"], "answer": "Tail"},
-            # {"question": "How many pointers does a node in a doubly linked list have?", "options": ["Two", "One"], "answer": "Two"}
+            {"question": "What are the primary operations of a queue?", "options": ["Enqueue and Dequeue", "Push and Pop"], "answer": "Enqueue and Dequeue"},
+            {"question": "What does LIFO stand for in a stack?", "options": ["Last In First Out", "Last In Last Out"], "answer": "Last In First Out"},
+            {"question": "What are the main operations of a stack?", "options": ["Push and Pop", "Insert and Delete"], "answer": "Push and Pop"},
+            {"question": "What is the top node of a tree called?", "options": ["Root", "Leaf"], "answer": "Root"},
+            {"question": "In a tree, what is a node with no children called?", "options": ["Leaf", "Root"], "answer": "Leaf"},
+            {"question": "What is the relationship between parent and child nodes in a tree called?", "options": ["Parent-Child Relationship", "Sibling Relationship"], "answer": "Parent-Child Relationship"},
+            {"question": "In a binary tree, how many children can each node have at most?", "options": ["Two", "Three"], "answer": "Two"},
+            {"question": "What is the characteristic of a set that does not allow duplicate elements?", "options": ["Uniqueness", "Order"], "answer": "Uniqueness"},
+            {"question": "Is the order of elements important in a set?", "options": ["No", "Yes"], "answer": "No"},
+            {"question": "In graph theory, what is a sequence of edges connecting two vertices called?", "options": ["Path", "Cycle"], "answer": "Path"},
+            {"question": "What is the last node in a singly linked list called?", "options": ["Tail", "Head"], "answer": "Tail"},
+            {"question": "How many pointers does a node in a doubly linked list have?", "options": ["Two", "One"], "answer": "Two"}
         ]
         
         self.randomize_all_options()
