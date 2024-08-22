@@ -7,7 +7,7 @@ class Boss2(pygame.sprite.Sprite):
     def __init__(self, folder_path, screen_width, ground_level, main_character):
         super().__init__()
 
-        self.folder_path = config.BOSSES_FOLDER_PATH_2
+        self.folder_path = config.BOSSES2_FOLDER_PATH
 
         self.folder_path = os.path.join(config.BASE_SPRITES_PATH, 'Bosses', 'Boss2')
 

@@ -85,9 +85,7 @@ LEVELS = {
 ENEMY_TYPES = ["Homeless_1", "Homeless_2", "Homeless_3"]
 ENEMY_SPRITES_PATH = os.path.join(BASE_SPRITES_PATH, 'enemies')
 
-
-MAX_ENEMIES = 15
-
+MAX_ENEMIES = 5
 
 ENEMY_POSITION = 565
 # Attack animations paths
@@ -151,7 +149,7 @@ noway_image = pygame.image.load(os.path.join(PIC_PATH, 'anoway.png'))
 awesome_image = pygame.image.load(os.path.join(PIC_PATH, 'awesome.jpg'))
 excellent_image = pygame.image.load(os.path.join(PIC_PATH, 'fexcellent.png'))
 ending_image = pygame.image.load(os.path.join(PIC_PATH, 'ending.png'))
-wrong_image = pygame.image.load(os.path.join(PIC_PATH, 'ending.png'))
+wrong_image = pygame.image.load(os.path.join(PIC_PATH, 'fwrong.png'))
 
 # Define colors
 WHITE = (255, 255, 255)

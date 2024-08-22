@@ -52,7 +52,7 @@ class Game:
         self.questions = config.get_random_questions(5)
         self.waiting_for_answer = False
         self.correct_answers = 0
-        self.total_questions = 1
+        self.total_questions = 5
         self.enemy_count = 0
         self.defeated_enemies = 0
         self.first_encounter = 0
@@ -85,7 +85,7 @@ class Game:
         self.coffee_image = config.coffee_image
         self.noway_image = config.noway_image
 
-
+        
     def init_resources(self):
         # Loads resources like music and sounds
         self.music_player = MusicPlayer()
@@ -101,18 +101,18 @@ class Game:
         if self.boss_deaths in [1, 2]:
             self.show_dialog(f"You have completed Level {self.current_level}. Press 'X' to continue to the next level.", auto_hide_seconds=10)
             self.waiting_for_level_change = True
-        elif self.boss_deaths > 3:
+        elif self.boss_deaths >= 3:
             self.show_dialog("Congratulations! You have completed all 3 levels! Game Over!", auto_hide_seconds=10)
             self.game_over()
             self.game_completed = True
             self.waiting_for_level_change = False
         else:
             print(f"Unexpected boss_deaths value: {self.boss_deaths}")
-        pygame.event.clear()
+        pygame.event.clear()   
 
     def increment_max_enemies(self):
         """Increase MAX_ENEMIES by 15 after each level switch."""
-        config.MAX_ENEMIES += 15
+        config.MAX_ENEMIES += 5
         print(f"MAX_ENEMIES increased to {config.MAX_ENEMIES} for Level {self.current_level}")
 
     def start_level2(self):
@@ -138,11 +138,6 @@ class Game:
 
     def next_level(self):
         next_level(self)
-
-    def increment_max_enemies(self):
-        """Increase MAX_ENEMIES by 15 after each level switch."""
-        config.MAX_ENEMIES += 15
-        print(f"MAX_ENEMIES increased to {config.MAX_ENEMIES} for Level {self.current_level}")
 
     def run(self):
         self.ask_for_name()
@@ -190,8 +185,6 @@ class Game:
         self.boss_trigger = True
 
         pygame.time.delay(1000)
-        self.increment_max_enemies()
-
         self.change_level_dialogue()
 
     def show_dialog(self, message, auto_hide_seconds=None):

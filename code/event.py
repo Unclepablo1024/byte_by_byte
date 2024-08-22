@@ -50,6 +50,7 @@ def handle_events(self):
                 self.next_level()
                 self.boss_deaths += 1
                 self.boss_trigger = False
+                self.increment_max_enemies()
                 print(f"New level: {self.current_level}, Boss deaths: {self.boss_deaths}") 
             else:
                 self.dialog_box.add_char(event.unicode)
