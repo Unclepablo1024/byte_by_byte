@@ -18,7 +18,6 @@ SCROLL_SPEED = 5
 RUN_SPEED_MULTIPLIER = 2
 
 # Paths
-
 FONT_PATH = os.path.join("fonts", "determinationmono.ttf")
 AUDIO_PATH = os.path.join("audio")
 BASE_SPRITES_PATH = os.path.join("sprites")
@@ -86,7 +85,7 @@ ENEMY_TYPES = ["Homeless_1", "Homeless_2", "Homeless_3"]
 ENEMY_SPRITES_PATH = os.path.join(BASE_SPRITES_PATH, 'enemies')
 
 
-MAX_ENEMIES = 15
+MAX_ENEMIES = 5
 
 
 ENEMY_POSITION = 565

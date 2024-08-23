@@ -112,7 +112,7 @@ class Game:
 
     def increment_max_enemies(self):
         """Increase MAX_ENEMIES by 15 after each level switch."""
-        config.MAX_ENEMIES += 15
+        config.MAX_ENEMIES += 5
         print(f"MAX_ENEMIES increased to {config.MAX_ENEMIES} for Level {self.current_level}")
 
     def start_level2(self):
