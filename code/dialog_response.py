@@ -95,7 +95,7 @@ def ask_next_question(game):
                 auto_hide_seconds=5)
             
             # Trigger level change dialogue
-            # game.boss_deaths += 1
+            game.boss_deaths += 1
             game.boss_trigger = True
                        
         else:

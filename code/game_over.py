@@ -13,8 +13,13 @@ def game_over(surface):
     pygame.time.wait(500)
 
 def show_ending_screen(surface):
-    ending_image = pygame.image.load(os.path.join(config.PIC_PATH, 'ending.png'))    
-    ending_image = pygame.transform.scale(ending_image, (surface.get_width(), surface.get_height()))  
+    congrats_image = pygame.image.load(os.path.join(config.PIC_PATH, 'congrats.png'))
+    congrats_image = pygame.transform.scale(congrats_image, (surface.get_width(), surface.get_height()))
+    surface.blit(congrats_image, (0, 0))
+    pygame.display.flip()
+    pygame.time.wait(3000)
+    ending_image = pygame.image.load(os.path.join(config.PIC_PATH, 'ending.png'))
+    ending_image = pygame.transform.scale(ending_image, (surface.get_width(), surface.get_height()))
     surface.blit(ending_image, (0, 0))
     pygame.display.flip()
     pygame.time.wait(3000)
