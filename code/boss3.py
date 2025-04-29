@@ -60,6 +60,12 @@ class Boss3(pygame.sprite.Sprite):
                     self.current_frame += 1
                     self.image = self.dead_images[self.current_frame]
                 else:
+
+                    #Dialog trigger for game over
+                    if not self.is_dead: # checks for multiple triggers
+                        self.main_character.game.show_dialog("You have defeated the final boss!! Congrats!!!", auto_hide_seconds=10)
+                        self.main_character.game.waiting_for_boss3_response = True
+                        self.is_dead = True # to avoid multiple triggers
                     # Animation is done, the boss is truly dead now
                     if now - self.death_start_time > 2000:
                         self.kill()
